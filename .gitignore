@@ -30,3 +30,6 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# Local backup archives
+/Assets.7z

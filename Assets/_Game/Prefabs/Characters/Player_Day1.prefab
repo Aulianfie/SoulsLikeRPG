@@ -47,6 +47,7 @@ GameObject:
   - component: {fileID: 2898553348681140637}
   - component: {fileID: -7141277860283368510}
   - component: {fileID: 7065593382974756914}
+  - component: {fileID: 4855156850861977873}
   m_Layer: 0
   m_Name: Player_Day1
   m_TagString: Player
@@ -190,6 +191,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _animator: {fileID: 988915846045734863}
   _dampTime: 0.1
+--- !u!114 &4855156850861977873
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4208464230741577774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e17e9b481e0d5b344a57cd3bd32dbca5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _logStateChanges: 1
 --- !u!1 &6224024120811738658
 GameObject:
   m_ObjectHideFlags: 0

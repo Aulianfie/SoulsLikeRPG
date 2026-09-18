@@ -1,26 +1,22 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(CharacterController))]
-[RequireComponent(typeof(PlayerInputReader))]
 public sealed class PlayerMotor : MonoBehaviour
 {
     [SerializeField] private PlayerMovementConfig _config;
 
     private CharacterController _characterController;
-    private PlayerInputReader _inputReader;
     private Transform _cameraTransform;
+    private bool _isInitialized;
 
     private Vector3 _horizontalVelocity; // 负责地面上的前后左右移动
     private float _verticalVelocity; // 负责重力和贴地
+
     public float HorizontalSpeed => _horizontalVelocity.magnitude;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
-        _inputReader = GetComponent<PlayerInputReader>();
 
         if (_config == null)
         {
@@ -43,16 +39,30 @@ public sealed class PlayerMotor : MonoBehaviour
         }
 
         _cameraTransform = mainCamera.transform;
+        _isInitialized = true;
     }
-
-    private void Update()
+    /// <summary>
+    /// 把 Motor内部的Update换成了TickLocomotion方法，方便在状态机中调用
+    /// 本质上就是逐帧检查移动输入，并根据输入计算角色的移动方向、速度和旋转，然后应用这些变化到角色的Transform上。
+    /// </summary>
+    /// <param name="moveInput"></param>
+    /// <param name="sprintInput"></param>
+    /// <param name="deltaTime"></param>
+    public void TickLocomotion(
+        Vector2 moveInput,
+        bool sprintInput,
+        float deltaTime
+    )
     {
-        Vector3 moveDirection =
-            GetCameraRelativeDirection(_inputReader.MoveInput);
+        if (!_isInitialized)
+            return;
 
-        UpdateHorizontalVelocity(moveDirection);
-        RotateTowards(_horizontalVelocity);
-        Move();
+        Vector3 moveDirection =
+            GetCameraRelativeDirection(moveInput);
+
+        UpdateHorizontalVelocity(moveDirection, sprintInput, deltaTime);
+        RotateTowards(_horizontalVelocity, deltaTime);
+        Move(deltaTime);
     }
 
     /// <summary>
@@ -63,11 +73,15 @@ public sealed class PlayerMotor : MonoBehaviour
     /// 4. 将计算出的水平速度存储在 _horizontalVelocity 中，以便在后续的移动和旋转中使用。
     /// 方便后续拓展冲刺
     /// </summary>
-    /// <param name="moveDirection"></param>
-    private void UpdateHorizontalVelocity(Vector3 moveDirection)
+    private void UpdateHorizontalVelocity(
+        Vector3 moveDirection,
+        bool sprintInput,
+        float deltaTime
+    )
     {
         // 存在移动输入 并且 按下冲刺键 才会使用冲刺速度
-        bool isSprinting = _inputReader.SprintInput && moveDirection.sqrMagnitude > 0.0001f;
+        bool isSprinting =
+            sprintInput && moveDirection.sqrMagnitude > 0.0001f;
         float currentMoveSpeed = isSprinting ? _config.SprintSpeed : _config.MoveSpeed;
         
         // 如果没有输入，targetVelocity = moveDirection = 0
@@ -80,7 +94,7 @@ public sealed class PlayerMotor : MonoBehaviour
         _horizontalVelocity = Vector3.MoveTowards(
             _horizontalVelocity,
             targetVelocity,
-            speedChangeRate * Time.deltaTime
+            speedChangeRate * deltaTime
         );
     }
 
@@ -120,8 +134,7 @@ public sealed class PlayerMotor : MonoBehaviour
     /// 4. 使用 Quaternion.Slerp 在当前旋转和目标旋转之间进行插值，实现平滑旋转效果。
     /// 5. 将计算出的旋转应用到角色的 Transform 上。
     /// </summary>
-    /// <param name="moveDirection"></param>
-    private void RotateTowards(Vector3 moveDirection)
+    private void RotateTowards(Vector3 moveDirection, float deltaTime)
     {
         if (moveDirection.sqrMagnitude < 0.0001f)
             return;
@@ -131,7 +144,7 @@ public sealed class PlayerMotor : MonoBehaviour
 
         float rotationAmount =
             1f - Mathf.Exp(
-                -_config.RotationSharpness * Time.deltaTime
+                -_config.RotationSharpness * deltaTime
             );
 
         transform.rotation = Quaternion.Slerp(
@@ -149,7 +162,7 @@ public sealed class PlayerMotor : MonoBehaviour
     /// 4. 使用 CharacterController.Move 方法将角色移动到新的位置。
     /// 
     /// </summary>
-    private void Move()
+    private void Move(float deltaTime)
     {
         if (_characterController.isGrounded)
         {
@@ -157,14 +170,14 @@ public sealed class PlayerMotor : MonoBehaviour
         }
         else
         {
-            _verticalVelocity += _config.Gravity * Time.deltaTime;
+            _verticalVelocity += _config.Gravity * deltaTime;
         }
 
         Vector3 finalVelocity = _horizontalVelocity;
         finalVelocity.y = _verticalVelocity;
 
         _characterController.Move(
-            finalVelocity * Time.deltaTime
+            finalVelocity * deltaTime
         );
     }
 
