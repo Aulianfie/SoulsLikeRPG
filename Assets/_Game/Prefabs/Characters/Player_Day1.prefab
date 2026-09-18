@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 8181020591467456348}
   - component: {fileID: 2898553348681140637}
   - component: {fileID: -7141277860283368510}
+  - component: {fileID: 7065593382974756914}
   m_Layer: 0
   m_Name: Player_Day1
   m_TagString: Player
@@ -174,9 +175,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b291d0d5ec50bd946bf98607a37c5ae2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 4
-  _gravity: -20
-  _groundStickForce: -2
+  _config: {fileID: 11400000, guid: a1c63671154a7c3488a1c3834a11ada7, type: 2}
+--- !u!114 &7065593382974756914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4208464230741577774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5dc9e157f89bb4a4887cec99ff39a45f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 988915846045734863}
+  _dampTime: 0.1
 --- !u!1 &6224024120811738658
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,7 +392,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 8f138081e7634df429c6f3a11a5320a2, type: 2}
+      objectReference: {fileID: 9100000, guid: d54650e52f7cc5e49a573def0391005f, type: 2}
     - target: {fileID: 5866666021909216657, guid: ecbf38a150fa64d4389fdd389038742d,
         type: 3}
       propertyPath: m_CullingMode
@@ -399,6 +412,12 @@ PrefabInstance:
       addedObject: {fileID: 1733900123523234269}
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ecbf38a150fa64d4389fdd389038742d, type: 3}
+--- !u!95 &988915846045734863 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 5866666021909216657, guid: ecbf38a150fa64d4389fdd389038742d,
+    type: 3}
+  m_PrefabInstance: {fileID: 6688901051083336286}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &2935944607663498880 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -833920188732764962, guid: ecbf38a150fa64d4389fdd389038742d,

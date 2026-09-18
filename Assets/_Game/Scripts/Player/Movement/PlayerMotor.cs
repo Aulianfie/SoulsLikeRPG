@@ -7,20 +7,28 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputReader))]
 public sealed class PlayerMotor : MonoBehaviour
 {
-    [SerializeField] private float _moveSpeed = 4f;
-    [SerializeField] private float _rotationSharpness = 12f;
-    [SerializeField] private float _gravity = -20f;
-    [SerializeField] private float _groundStickForce = -2f;
+    [SerializeField] private PlayerMovementConfig _config;
 
     private CharacterController _characterController;
     private PlayerInputReader _inputReader;
     private Transform _cameraTransform;
-    private float _verticalVelocity; // 角色在 Y 轴上的速度
+
+    private Vector3 _horizontalVelocity; // 负责地面上的前后左右移动
+    private float _verticalVelocity; // 负责重力和贴地
+    public float HorizontalSpeed => _horizontalVelocity.magnitude;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
         _inputReader = GetComponent<PlayerInputReader>();
+
+        if (_config == null)
+        {
+            Debug.LogError("PlayerMotor 没有配置 PlayerMovementConfig。", this);
+            enabled = false;
+            return;
+        }
+
         Camera mainCamera = Camera.main;
 
         if (mainCamera == null)
@@ -42,8 +50,38 @@ public sealed class PlayerMotor : MonoBehaviour
         Vector3 moveDirection =
             GetCameraRelativeDirection(_inputReader.MoveInput);
 
-        RotateTowards(moveDirection);
-        Move(moveDirection);
+        UpdateHorizontalVelocity(moveDirection);
+        RotateTowards(_horizontalVelocity);
+        Move();
+    }
+
+    /// <summary>
+    /// 计算玩家现在想达到的速度，并根据加速度或减速度平滑地更新水平速度。
+    /// 1. 根据玩家的移动输入计算目标速度。
+    /// 2. 根据目标速度的大小选择使用加速度还是减速度。
+    /// 3. 使用 Vector3.MoveTowards 方法将当前水平速度平滑地移动到目标速度。
+    /// 4. 将计算出的水平速度存储在 _horizontalVelocity 中，以便在后续的移动和旋转中使用。
+    /// 方便后续拓展冲刺
+    /// </summary>
+    /// <param name="moveDirection"></param>
+    private void UpdateHorizontalVelocity(Vector3 moveDirection)
+    {
+        // 存在移动输入 并且 按下冲刺键 才会使用冲刺速度
+        bool isSprinting = _inputReader.SprintInput && moveDirection.sqrMagnitude > 0.0001f;
+        float currentMoveSpeed = isSprinting ? _config.SprintSpeed : _config.MoveSpeed;
+        
+        // 如果没有输入，targetVelocity = moveDirection = 0
+        Vector3 targetVelocity = moveDirection * currentMoveSpeed;
+        // 根据当前速度和目标速度的大小选择使用加速度还是减速度
+        float speedChangeRate = targetVelocity.sqrMagnitude > _horizontalVelocity.sqrMagnitude
+            ? _config.Acceleration
+            : _config.Deceleration;
+        
+        _horizontalVelocity = Vector3.MoveTowards(
+            _horizontalVelocity,
+            targetVelocity,
+            speedChangeRate * Time.deltaTime
+        );
     }
 
     /// <summary>
@@ -93,7 +131,7 @@ public sealed class PlayerMotor : MonoBehaviour
 
         float rotationAmount =
             1f - Mathf.Exp(
-                -_rotationSharpness * Time.deltaTime
+                -_config.RotationSharpness * Time.deltaTime
             );
 
         transform.rotation = Quaternion.Slerp(
@@ -104,29 +142,25 @@ public sealed class PlayerMotor : MonoBehaviour
     }
 
     /// <summary>
-    /// 根据移动方向和重力计算角色的最终移动速度，并使用 CharacterController.Move 方法移动角色。
-    /// 1. 计算水平速度，将移动方向乘以移动速度。
-    /// 2. 检查角色是否在地面上，如果是，则将垂直速度设置为一个小的负值，以确保角色贴地。
-    /// 3. 如果角色不在地面上，则将垂直速度增加重力值乘以时间增量，以模拟自由落体运动。
-    /// 4. 将水平速度和垂直速度组合成最终的移动速度。
-    /// 5. 使用 CharacterController.Move 方法将角色移动到新的位置。
+    /// 根据当前的水平速度和垂直速度移动角色。
+    /// 1. 检查角色是否在地面上，如果是，则将垂直速度设置为一个小的负值，以确保角色贴地。
+    /// 2. 如果角色不在地面上，则根据重力加速度更新垂直速度。
+    /// 3. 创建一个最终的速度向量，将水平速度和垂直速度组合在一起。
+    /// 4. 使用 CharacterController.Move 方法将角色移动到新的位置。
+    /// 
     /// </summary>
-    /// <param name="moveDirection"></param>
-    private void Move(Vector3 moveDirection)
+    private void Move()
     {
-        Vector3 horizontalVelocity =
-            moveDirection * _moveSpeed;
-
         if (_characterController.isGrounded)
         {
-            _verticalVelocity = _groundStickForce;
+            _verticalVelocity = _config.GroundStickForce;
         }
         else
         {
-            _verticalVelocity += _gravity * Time.deltaTime;
+            _verticalVelocity += _config.Gravity * Time.deltaTime;
         }
 
-        Vector3 finalVelocity = horizontalVelocity;
+        Vector3 finalVelocity = _horizontalVelocity;
         finalVelocity.y = _verticalVelocity;
 
         _characterController.Move(
@@ -136,6 +170,7 @@ public sealed class PlayerMotor : MonoBehaviour
 
     private void OnDisable()
     {
+        _horizontalVelocity = Vector3.zero;
         _verticalVelocity = 0f;
     }
 }
