@@ -13,7 +13,7 @@
 
 - Unity version: `2022.3.62f3c1` (`1623fc0bbb97`)
 - Render pipeline: Universal Render Pipeline 14.0.12
-- Input system: legacy Input Manager; the new Input System package is not installed
+- Input system: Unity Input System 1.14.2 is installed; Active Input Handling is `Both` so Day1 can use the new system while the Day0 legacy debug tester remains functional
 - Target platform: Standalone Windows 64-bit
 
 ## Important Packages And Frameworks
@@ -25,6 +25,7 @@
 | Tests | Unity Test Framework 1.1.33 | Confirmed | `Packages/manifest.json` |
 | UI | uGUI 1.0.0 and TextMesh Pro 3.0.7 | Confirmed | `Packages/manifest.json` |
 | Animation | Built-in Mecanim/Animator modules only | Confirmed | `Packages/manifest.json` |
+| Input | Unity Input System 1.14.2 with `Both` backends enabled | Confirmed | `Packages/manifest.json`, `ProjectSettings/ProjectSettings.asset` |
 
 ## Directory Structure
 
