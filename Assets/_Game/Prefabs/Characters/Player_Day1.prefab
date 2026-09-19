@@ -48,6 +48,7 @@ GameObject:
   - component: {fileID: -7141277860283368510}
   - component: {fileID: 7065593382974756914}
   - component: {fileID: 4855156850861977873}
+  - component: {fileID: 8650657064989702018}
   m_Layer: 0
   m_Name: Player_Day1
   m_TagString: Player
@@ -204,6 +205,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _logStateChanges: 1
+--- !u!114 &8650657064989702018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4208464230741577774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8d76695d343f99e4d99a2c9c8ed221aa, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _transitionDuration: 0.08
+  _completionNormalizedTime: 0.95
 --- !u!1 &6224024120811738658
 GameObject:
   m_ObjectHideFlags: 0

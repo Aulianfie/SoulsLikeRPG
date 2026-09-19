@@ -12,7 +12,9 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _lookAction;
     private InputAction _sprintAction;
     private InputAction _jumpAction;
+    private InputAction _lightAttackAction;
     private bool _jumpRequested;
+    private bool _lightAttackRequested;
 
     /// <summary>
     /// 初始化玩家输入读取器，绑定输入动作到相应的回调函数。
@@ -22,18 +24,27 @@ public class PlayerInputReader : MonoBehaviour
     /// 4. 在 OnDisable 中，取消订阅这些事件，以避免内存泄漏或重复调用。
     /// 5. 在 OnMove、OnLook 和 OnSprint 回调中，读取输入值并更新相应的属性，同时输出调试信息。
     /// </summary>
-    private void Awake()
+    private void CacheActions()
     {
         var playerInput = GetComponent<PlayerInput>();
-        _gameplayMap = playerInput.actions.FindActionMap("Gameplay");
-        _moveAction = _gameplayMap.FindAction("Move");
-        _lookAction = _gameplayMap.FindAction("Look");
-        _sprintAction = _gameplayMap.FindAction("Sprint");
-        _jumpAction = _gameplayMap.FindAction("Jump");
+        _gameplayMap = playerInput.actions.FindActionMap(
+            "Gameplay",
+            true
+        );
+        _moveAction = _gameplayMap.FindAction("Move", true);
+        _lookAction = _gameplayMap.FindAction("Look", true);
+        _sprintAction = _gameplayMap.FindAction("Sprint", true);
+        _jumpAction = _gameplayMap.FindAction("Jump", true);
+        _lightAttackAction = _gameplayMap.FindAction(
+            "LightAttack",
+            true
+        );
     }
 
     private void OnEnable()
     {
+        CacheActions();
+
         _moveAction.performed += OnMove;
         _moveAction.canceled += OnMove;
 
@@ -44,26 +55,41 @@ public class PlayerInputReader : MonoBehaviour
         _sprintAction.canceled += OnSprint;
 
         _jumpAction.performed += OnJump;
+        _lightAttackAction.performed += OnLightAttack;
 
         _gameplayMap.Enable();
     }
 
     private void OnDisable()
     {
-        _moveAction.performed -= OnMove;
-        _moveAction.canceled -= OnMove;
+        if (_moveAction != null)
+        {
+            _moveAction.performed -= OnMove;
+            _moveAction.canceled -= OnMove;
+        }
 
-        _lookAction.performed -= OnLook;
-        _lookAction.canceled -= OnLook;
+        if (_lookAction != null)
+        {
+            _lookAction.performed -= OnLook;
+            _lookAction.canceled -= OnLook;
+        }
 
-        _sprintAction.performed -= OnSprint;
-        _sprintAction.canceled -= OnSprint;
+        if (_sprintAction != null)
+        {
+            _sprintAction.performed -= OnSprint;
+            _sprintAction.canceled -= OnSprint;
+        }
 
-        _jumpAction.performed -= OnJump;
+        if (_jumpAction != null)
+            _jumpAction.performed -= OnJump;
+
+        if (_lightAttackAction != null)
+            _lightAttackAction.performed -= OnLightAttack;
 
         _jumpRequested = false;
+        _lightAttackRequested = false;
 
-        _gameplayMap.Disable();
+        _gameplayMap?.Disable();
     }
 
     private void OnMove(InputAction.CallbackContext context)
@@ -89,12 +115,26 @@ public class PlayerInputReader : MonoBehaviour
         _jumpRequested = true;
     }
 
+    private void OnLightAttack(InputAction.CallbackContext context)
+    {
+        _lightAttackRequested = true;
+    }
+
     public bool ConsumeJump()
     {
         if (!_jumpRequested)
             return false;
 
         _jumpRequested = false;
+        return true;
+    }
+
+    public bool ConsumeLightAttack()
+    {
+        if (!_lightAttackRequested)
+            return false;
+
+        _lightAttackRequested = false;
         return true;
     }
 }

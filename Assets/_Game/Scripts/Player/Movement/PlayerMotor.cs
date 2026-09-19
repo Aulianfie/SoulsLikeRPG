@@ -86,6 +86,11 @@ public sealed class PlayerMotor : MonoBehaviour
         );
     }
 
+    public void StopHorizontalMovement()
+    {
+        _horizontalVelocity = Vector3.zero;
+    }
+
     /// <summary>
     /// 计算玩家现在想达到的速度，并根据加速度或减速度平滑地更新水平速度。
     /// 1. 根据玩家的移动输入计算目标速度。

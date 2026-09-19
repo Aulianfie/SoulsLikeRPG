@@ -8,6 +8,8 @@ public sealed class PlayerLocomotionState : PlayerState
     public override void Tick(float deltaTime)
     {
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
+        bool lightAttackRequested =
+            StateMachine.InputReader.ConsumeLightAttack();
 
         if (
             StateMachine.Motor.IsGrounded &&
@@ -16,6 +18,15 @@ public sealed class PlayerLocomotionState : PlayerState
         {
             StateMachine.Motor.Jump();
             StateMachine.ChangeState(StateMachine.AirborneState);
+            return;
+        }
+
+        if (
+            StateMachine.Motor.IsGrounded &&
+            lightAttackRequested
+        )
+        {
+            StateMachine.ChangeState(StateMachine.AttackState);
             return;
         }
 

@@ -3,25 +3,30 @@ using UnityEngine;
 [DisallowMultipleComponent]
 [RequireComponent(typeof(PlayerInputReader))]
 [RequireComponent(typeof(PlayerMotor))]
+[RequireComponent(typeof(PlayerCombat))]
 public sealed class PlayerStateMachine : MonoBehaviour
 {
     [SerializeField] private bool _logStateChanges = true;
 
     public PlayerInputReader InputReader { get; private set; }
     public PlayerMotor Motor { get; private set; }
+    public PlayerCombat Combat { get; private set; }
     public PlayerState CurrentState { get; private set; }
     public string CurrentStateName =>
         CurrentState == null ? "None" : CurrentState.GetType().Name;
 
     public PlayerLocomotionState LocomotionState { get; private set; }
     public PlayerAirborneState AirborneState { get; private set; }
+    public PlayerAttackState AttackState { get; private set; }
 
     private void Awake()
     {
         InputReader = GetComponent<PlayerInputReader>();
         Motor = GetComponent<PlayerMotor>();
+        Combat = GetComponent<PlayerCombat>();
         LocomotionState = new PlayerLocomotionState(this);
         AirborneState = new PlayerAirborneState(this);
+        AttackState = new PlayerAttackState(this);
     }
 
     private void OnEnable()
