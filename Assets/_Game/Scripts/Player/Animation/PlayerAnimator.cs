@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMotor))]
@@ -9,6 +7,8 @@ public class PlayerAnimator : MonoBehaviour
     [SerializeField, Min(0f)] private float _dampTime = 0.1f;
     
     private static readonly int MoveSpeedHash = Animator.StringToHash("MoveSpeed");
+    private static readonly int GroundedHash = Animator.StringToHash("Grounded");
+    private static readonly int VerticalSpeedHash = Animator.StringToHash("VerticalSpeed");
 
     private PlayerMotor _motor;
 
@@ -22,8 +22,7 @@ public class PlayerAnimator : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
         _animator.SetFloat(
             MoveSpeedHash,
@@ -31,6 +30,9 @@ public class PlayerAnimator : MonoBehaviour
             _dampTime,
             Time.deltaTime
         );
+
+        _animator.SetBool(GroundedHash, _motor.IsGrounded);
+        _animator.SetFloat(VerticalSpeedHash, _motor.VerticalVelocity);
     }
 
     /// <summary>
@@ -41,6 +43,8 @@ public class PlayerAnimator : MonoBehaviour
         if (_animator != null)
         {
             _animator.SetFloat(MoveSpeedHash, 0f);
+            _animator.SetBool(GroundedHash, true);
+            _animator.SetFloat(VerticalSpeedHash, 0f);
         }
     }
 }

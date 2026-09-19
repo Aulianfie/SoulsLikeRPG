@@ -168,7 +168,7 @@
                 {
                     "name": "",
                     "id": "895a86cd-5951-4d7e-a905-779da0dda9e9",
-                    "path": "<Gamepad>/leftStickPress",
+                    "path": "<Gamepad>/buttonSouth",
                     "interactions": "",
                     "processors": "",
                     "groups": "",

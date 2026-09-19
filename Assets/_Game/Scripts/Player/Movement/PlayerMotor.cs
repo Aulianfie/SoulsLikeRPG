@@ -13,6 +13,9 @@ public sealed class PlayerMotor : MonoBehaviour
     private float _verticalVelocity; // 负责重力和贴地
 
     public float HorizontalSpeed => _horizontalVelocity.magnitude;
+    public float VerticalVelocity => _verticalVelocity;
+    public bool IsGrounded =>
+        _characterController != null && _characterController.isGrounded;
 
     private void Awake()
     {
@@ -63,6 +66,24 @@ public sealed class PlayerMotor : MonoBehaviour
         UpdateHorizontalVelocity(moveDirection, sprintInput, deltaTime);
         RotateTowards(_horizontalVelocity, deltaTime);
         Move(deltaTime);
+    }
+
+    public void TickAirborne(float deltaTime)
+    {
+        if (!_isInitialized)
+            return;
+
+        Move(deltaTime);
+    }
+
+    public void Jump()
+    {
+        if (!_isInitialized)
+            return;
+
+        _verticalVelocity = Mathf.Sqrt(
+            _config.JumpHeight * -2f * _config.Gravity
+        );
     }
 
     /// <summary>
@@ -164,7 +185,7 @@ public sealed class PlayerMotor : MonoBehaviour
     /// </summary>
     private void Move(float deltaTime)
     {
-        if (_characterController.isGrounded)
+        if (IsGrounded && _verticalVelocity < 0f)
         {
             _verticalVelocity = _config.GroundStickForce;
         }

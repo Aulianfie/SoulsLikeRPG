@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1789665406
+  lastShownTimestamp: 1789752611
   lastUpdateResponse:
     version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1789665406
+  checkedLastUpdateTimestamp: 1789752611
   lastQOTDResponse:
     questionId: 343
     questionText: How many classes should your game have?
@@ -27,7 +27,7 @@ MonoBehaviour:
     answerC: As many as needed and no more
     answerD: Just one
     answerE: 
-  lastQotdTimestamp: 1789665406
+  lastQotdTimestamp: 1789752611
   lastDynamicHeaderResponse:
     topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/codeMonkeyToolkit50Off.png
     topText: My Toolkit is 50% OFF! 50+ Tools and Elements to help you make games
@@ -36,11 +36,11 @@ MonoBehaviour:
     bottomText: Escape Tutorial Hell and level up your skills, try my Practice Lab
       for FREE!
     bottomLink: practicelab
-  lastDynamicHeaderTimestamp: 1789665406
+  lastDynamicHeaderTimestamp: 1789752611
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1789665406
+  websiteLatestMessageTimestamp: 1789752611
   websiteLatestVideos:
     videos:
     - youTubeId: WFk_vADgnAo
@@ -51,4 +51,4 @@ MonoBehaviour:
       title: Every Game you make should make your NEXT Game Easier!
     - youTubeId: QNXgOuo7-Iw
       title: TOP 10 FREE NEW Assets SEPTEMBER 2026!
-  websiteLatestVideosTimestamp: 1789665406
+  websiteLatestVideosTimestamp: 1789752611

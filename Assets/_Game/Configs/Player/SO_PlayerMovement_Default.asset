@@ -19,3 +19,4 @@ MonoBehaviour:
   _rotationSharpness: 12
   _gravity: -20
   _groundStickForce: -2
+  _jumpHeight: 1.5

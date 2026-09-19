@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -13,6 +11,8 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _moveAction;
     private InputAction _lookAction;
     private InputAction _sprintAction;
+    private InputAction _jumpAction;
+    private bool _jumpRequested;
 
     /// <summary>
     /// 初始化玩家输入读取器，绑定输入动作到相应的回调函数。
@@ -29,6 +29,7 @@ public class PlayerInputReader : MonoBehaviour
         _moveAction = _gameplayMap.FindAction("Move");
         _lookAction = _gameplayMap.FindAction("Look");
         _sprintAction = _gameplayMap.FindAction("Sprint");
+        _jumpAction = _gameplayMap.FindAction("Jump");
     }
 
     private void OnEnable()
@@ -41,6 +42,8 @@ public class PlayerInputReader : MonoBehaviour
 
         _sprintAction.performed += OnSprint;
         _sprintAction.canceled += OnSprint;
+
+        _jumpAction.performed += OnJump;
 
         _gameplayMap.Enable();
     }
@@ -55,6 +58,10 @@ public class PlayerInputReader : MonoBehaviour
 
         _sprintAction.performed -= OnSprint;
         _sprintAction.canceled -= OnSprint;
+
+        _jumpAction.performed -= OnJump;
+
+        _jumpRequested = false;
 
         _gameplayMap.Disable();
     }
@@ -75,5 +82,19 @@ public class PlayerInputReader : MonoBehaviour
     {
         SprintInput = context.ReadValueAsButton();
         // Debug.Log($"Sprint: {SprintInput}");
+    }
+
+    private void OnJump(InputAction.CallbackContext context)
+    {
+        _jumpRequested = true;
+    }
+
+    public bool ConsumeJump()
+    {
+        if (!_jumpRequested)
+            return false;
+
+        _jumpRequested = false;
+        return true;
     }
 }

@@ -13,18 +13,20 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public string CurrentStateName =>
         CurrentState == null ? "None" : CurrentState.GetType().Name;
 
-    private PlayerLocomotionState _locomotionState;
+    public PlayerLocomotionState LocomotionState { get; private set; }
+    public PlayerAirborneState AirborneState { get; private set; }
 
     private void Awake()
     {
         InputReader = GetComponent<PlayerInputReader>();
         Motor = GetComponent<PlayerMotor>();
-        _locomotionState = new PlayerLocomotionState(this);
+        LocomotionState = new PlayerLocomotionState(this);
+        AirborneState = new PlayerAirborneState(this);
     }
 
     private void OnEnable()
     {
-        ChangeState(_locomotionState);
+        ChangeState(LocomotionState);
     }
 
     /// <summary>
