@@ -13,8 +13,10 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _sprintAction;
     private InputAction _jumpAction;
     private InputAction _lightAttackAction;
+    private InputAction _dodgeAction;
     private bool _jumpRequested;
     private bool _lightAttackRequested;
+    private bool _dodgeRequested;
 
     /// <summary>
     /// 初始化玩家输入读取器，绑定输入动作到相应的回调函数。
@@ -39,6 +41,7 @@ public class PlayerInputReader : MonoBehaviour
             "LightAttack",
             true
         );
+        _dodgeAction = _gameplayMap.FindAction("Dodge", true);
     }
 
     private void OnEnable()
@@ -56,6 +59,7 @@ public class PlayerInputReader : MonoBehaviour
 
         _jumpAction.performed += OnJump;
         _lightAttackAction.performed += OnLightAttack;
+        _dodgeAction.performed += OnDodge;
 
         _gameplayMap.Enable();
     }
@@ -86,8 +90,12 @@ public class PlayerInputReader : MonoBehaviour
         if (_lightAttackAction != null)
             _lightAttackAction.performed -= OnLightAttack;
 
+        if (_dodgeAction != null)
+            _dodgeAction.performed -= OnDodge;
+
         _jumpRequested = false;
         _lightAttackRequested = false;
+        _dodgeRequested = false;
 
         _gameplayMap?.Disable();
     }
@@ -120,6 +128,11 @@ public class PlayerInputReader : MonoBehaviour
         _lightAttackRequested = true;
     }
 
+    private void OnDodge(InputAction.CallbackContext context)
+    {
+        _dodgeRequested = true;
+    }
+
     public bool ConsumeJump()
     {
         if (!_jumpRequested)
@@ -135,6 +148,15 @@ public class PlayerInputReader : MonoBehaviour
             return false;
 
         _lightAttackRequested = false;
+        return true;
+    }
+
+    public bool ConsumeDodge()
+    {
+        if (!_dodgeRequested)
+            return false;
+
+        _dodgeRequested = false;
         return true;
     }
 }

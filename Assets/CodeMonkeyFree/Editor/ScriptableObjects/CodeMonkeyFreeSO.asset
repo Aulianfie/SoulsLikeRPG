@@ -14,20 +14,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1789752611
+  lastShownTimestamp: 1789883964
   lastUpdateResponse:
     version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1789752611
+  checkedLastUpdateTimestamp: 1789883964
   lastQOTDResponse:
-    questionId: 343
-    questionText: How many classes should your game have?
-    answerA: Less than 100
-    answerB: At least 100
-    answerC: As many as needed and no more
-    answerD: Just one
+    questionId: 344
+    questionText: 'What will be the value of isOne?
+
+      <p>float oneThird = 1f
+      / 3f;</p>
+
+      <p>bool isOne = (oneThird * 3f) == 1f;</p>'
+    answerA: true
+    answerB: false
+    answerC: 
+    answerD: 
     answerE: 
-  lastQotdTimestamp: 1789752611
+  lastQotdTimestamp: 1789883964
   lastDynamicHeaderResponse:
     topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/codeMonkeyToolkit50Off.png
     topText: My Toolkit is 50% OFF! 50+ Tools and Elements to help you make games
@@ -36,11 +41,11 @@ MonoBehaviour:
     bottomText: Escape Tutorial Hell and level up your skills, try my Practice Lab
       for FREE!
     bottomLink: practicelab
-  lastDynamicHeaderTimestamp: 1789752611
+  lastDynamicHeaderTimestamp: 1789883964
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1789752611
+  websiteLatestMessageTimestamp: 1789883964
   websiteLatestVideos:
     videos:
     - youTubeId: WFk_vADgnAo
@@ -51,4 +56,4 @@ MonoBehaviour:
       title: Every Game you make should make your NEXT Game Easier!
     - youTubeId: QNXgOuo7-Iw
       title: TOP 10 FREE NEW Assets SEPTEMBER 2026!
-  websiteLatestVideosTimestamp: 1789752611
+  websiteLatestVideosTimestamp: 1789883964

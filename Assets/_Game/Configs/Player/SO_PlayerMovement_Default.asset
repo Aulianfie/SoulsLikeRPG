@@ -20,3 +20,5 @@ MonoBehaviour:
   _gravity: -20
   _groundStickForce: -2
   _jumpHeight: 1.5
+  _dodgeSpeed: 7.5
+  _dodgeDuration: 0.6

@@ -5,9 +5,9 @@
 ## Project Summary
 
 - Project root: `G:/Unity Project/SoulsLikeRPG/SoulsLikeRPG`
-- Purpose: third-person Souls-like RPG combat demo; current scope is Day0 infrastructure and asset validation only.
-- Last analyzed: 2026-09-18
-- Last analyzed commit: unavailable (no Git repository detected)
+- Purpose: third-person Souls-like RPG combat demo; current scope is Day3 combat-system work, implemented one task at a time.
+- Last analyzed: 2026-09-20
+- Last analyzed commit: `eaa28dc`
 
 ## Confirmed Environment
 
@@ -31,7 +31,7 @@
 
 | Path | Purpose | Confidence | Evidence |
 | --- | --- | --- | --- |
-| `Assets/_Game/` | Project-owned Day0 content | Confirmed | `Day0.md` |
+| `Assets/_Game/` | Project-owned gameplay, scenes, prefabs, configuration, and validation content | Confirmed | Repository inspection |
 | `Assets/ThirdParty/` | Imported third-party source assets | Confirmed | `AGENTS.md` |
 | `Assets/Settings/` | URP renderer and quality assets | Confirmed | Repository inspection |
 | `Assets/_Assets/` | Existing Kitchen Chaos sample content; unrelated to Day0 | Confirmed | Repository inspection |
@@ -50,26 +50,30 @@
 
 ## Architecture
 
-- No first-party gameplay architecture exists yet. Day0 added only an import utility, a content builder, and a small animation-test component.
-- Existing sample assets must not be treated as project architecture.
+- A component-oriented player architecture is established: `PlayerStateMachine` owns plain-C# states, `PlayerInputReader` owns Input System requests, `PlayerMotor` owns movement, `PlayerAnimator` owns animation, and `PlayerCombat` owns attack timing.
+- Combat hit detection uses `WeaponHitbox` with `Physics.OverlapBoxNonAlloc`; Day3 Task 1 adds the narrow `IDamageable` boundary and passes hit context through `DamageInfo`.
+- Enemy combat feedback uses `EnemyStateMachine` with plain-C# `Idle`, `Hurt`, and `Dead` states. `EnemyHealth` owns HP, the state machine owns transitions, and `EnemyAnimator` owns animation playback.
+- Player dodge uses `PlayerDodgeState`; `PlayerInputReader` buffers a one-shot Dodge request, `PlayerMotor` owns locked-direction code-driven movement and gravity, and `PlayerAnimator` owns the in-place Roll animation.
+- Existing sample assets under `Assets/_Assets/` are unrelated and must not be treated as project architecture.
 
 ## Coding Conventions
 
-- Day0 scripts are small, debug/editor-only, and single-purpose. No gameplay managers or framework abstractions were introduced.
+- First-party scripts use the global namespace, one type per file, `PascalCase` types/methods, `_camelCase` private fields, and `[SerializeField] private` for Inspector data.
+- Runtime responsibilities remain small and component-oriented; no global manager or service framework is present.
 
 ## Testing And Validation
 
 - Unity Test Framework is installed.
-- No first-party EditMode or PlayMode test cases were detected; Unity Test Runner completed with zero discovered tests.
-- Day0 validation used Editor compilation, prefab/scene serialization checks, screenshots, live animation playback, and UAL2-to-UAL1 Humanoid retarget playback.
+- No first-party EditMode or PlayMode test cases were detected.
+- Current validation relies on Unity Editor compilation, Console inspection, prefab/scene serialization checks, and manual Play Mode acceptance.
 
 ## Available Unity Tooling
 
 | Capability | Status | Evidence |
 | --- | --- | --- |
 | Unity connection and editor version | available | Live MCP instance `SoulsLikeRPG@78c87c5379d11f49` |
-| Console read | available | Baseline returned 0 warnings/errors |
-| Scene inspect/modify | available | Live `SampleScene` hierarchy read succeeded |
+| Console read | available | Live Console queries succeed |
+| Scene inspect/modify | available | Live `01_CombatTest` queries succeed |
 | Build Settings read/modify | available | Live Build Settings read succeeded |
 | GameObject/prefab/asset operations | available | CoplayDev Unity MCP tools |
 | Animation/Animator operations | available | `manage_animation` tool |
@@ -77,7 +81,8 @@
 
 ## Important Constraints
 
-- Day0 must not introduce combat, FSM, combo, damage, health, skills, enemy AI, lock-on, inventory, equipment, save, or quest systems.
+- Day3 work must follow `实现计划/Day3/Day3_Three_Agent_Tasks.md` sequentially and must not implement later tasks early.
+- Day3 Task 3 implements only a basic Locomotion-to-Dodge transition. It intentionally excludes i-frames, stamina, cancel windows, roll attacks, backsteps, lock-on dodge, and Root Motion.
 - Third-party source assets stay under `Assets/ThirdParty/`; project-owned derivatives go under `Assets/_Game/`.
 - Humanoid Avatar and retargeting must be tested rather than inferred from import success.
 - Scene, prefab, Animator, Rig, and Console decisions remain with the main agent.
@@ -93,7 +98,7 @@
 ## Unknowns And Confidence
 
 - Dedicated great-sword/great-axe and spear/polearm animation quality remains unverified; current placeholders are generic melee/sword clips.
-- Repository has no Git metadata, so checkpoints cannot be committed automatically.
+- `01_CombatTest` contains user-authored scene changes unrelated to Day3 Task 1; preserve its diff and do not treat it as Task 1 work.
 
 ## Source Files Inspected
 
@@ -104,6 +109,18 @@
 - `ProjectSettings/EditorBuildSettings.asset`
 - `Packages/manifest.json`
 - `Packages/packages-lock.json`
+- `Assets/_Game/Scripts/Player/StateMachine/PlayerStateMachine.cs`
+- `Assets/_Game/Scripts/Player/Input/PlayerInputReader.cs`
+- `Assets/_Game/Scripts/Player/Combat/PlayerCombat.cs`
+- `Assets/_Game/Scripts/Player/StateMachine/States/PlayerDodgeState.cs`
+- `Assets/_Game/Scripts/Player/Movement/PlayerMotor.cs`
+- `Assets/_Game/Scripts/Player/Animation/PlayerAnimator.cs`
+- `Assets/_Game/Input/Player.inputactions`
+- `Assets/_Game/Scripts/Combat/WeaponHitbox.cs`
+- `Assets/_Game/Scripts/Combat/EnemyHealth.cs`
+- `Assets/_Game/Scripts/Enemy/Animation/EnemyAnimator.cs`
+- `Assets/_Game/Scripts/Enemy/StateMachine/EnemyStateMachine.cs`
+- `实现计划/Day3/Day3_Three_Agent_Tasks.md`
 - Live Unity MCP project/editor/scene/console resources
 
 <!-- unity-onboarding:generated:end -->

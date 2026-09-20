@@ -4,6 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputReader))]
 [RequireComponent(typeof(PlayerMotor))]
 [RequireComponent(typeof(PlayerCombat))]
+[RequireComponent(typeof(PlayerAnimator))]
 public sealed class PlayerStateMachine : MonoBehaviour
 {
     [SerializeField] private bool _logStateChanges = true;
@@ -11,6 +12,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerInputReader InputReader { get; private set; }
     public PlayerMotor Motor { get; private set; }
     public PlayerCombat Combat { get; private set; }
+    public PlayerAnimator PlayerAnimator { get; private set; }
     public PlayerState CurrentState { get; private set; }
     public string CurrentStateName =>
         CurrentState == null ? "None" : CurrentState.GetType().Name;
@@ -18,15 +20,18 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerLocomotionState LocomotionState { get; private set; }
     public PlayerAirborneState AirborneState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
+    public PlayerDodgeState DodgeState { get; private set; }
 
     private void Awake()
     {
         InputReader = GetComponent<PlayerInputReader>();
         Motor = GetComponent<PlayerMotor>();
         Combat = GetComponent<PlayerCombat>();
+        PlayerAnimator = GetComponent<PlayerAnimator>();
         LocomotionState = new PlayerLocomotionState(this);
         AirborneState = new PlayerAirborneState(this);
         AttackState = new PlayerAttackState(this);
+        DodgeState = new PlayerDodgeState(this);
     }
 
     private void OnEnable()

@@ -10,6 +10,8 @@ public sealed class PlayerLocomotionState : PlayerState
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
         bool lightAttackRequested =
             StateMachine.InputReader.ConsumeLightAttack();
+        bool dodgeRequested =
+            StateMachine.InputReader.ConsumeDodge();
 
         if (
             StateMachine.Motor.IsGrounded &&
@@ -27,6 +29,15 @@ public sealed class PlayerLocomotionState : PlayerState
         )
         {
             StateMachine.ChangeState(StateMachine.AttackState);
+            return;
+        }
+
+        if (
+            StateMachine.Motor.IsGrounded &&
+            dodgeRequested
+        )
+        {
+            StateMachine.ChangeState(StateMachine.DodgeState);
             return;
         }
 

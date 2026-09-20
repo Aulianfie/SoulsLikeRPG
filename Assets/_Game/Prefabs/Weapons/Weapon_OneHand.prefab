@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetLayers:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 256
   _shape: {fileID: 6935039375331086935}
 --- !u!1 &7073338940195601557
 GameObject:
@@ -100,7 +100,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 0
   serializedVersion: 3
-  m_Size: {x: 0.16, y: 1.28, z: 0.13}
+  m_Size: {x: 0.22, y: 1.28, z: 0.13}
   m_Center: {x: 0, y: 0.77, z: 0}
 --- !u!1001 &1599000570617649161
 PrefabInstance:

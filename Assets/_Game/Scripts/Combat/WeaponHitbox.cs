@@ -7,7 +7,7 @@ public sealed class WeaponHitbox : MonoBehaviour
     private const int MaxOverlaps = 16;
 
     [SerializeField]
-    private LayerMask _targetLayers = ~0;
+    private LayerMask _targetLayers;
 
     [SerializeField]
     private BoxCollider _shape;
@@ -15,14 +15,17 @@ public sealed class WeaponHitbox : MonoBehaviour
     private readonly Collider[] _overlaps =
         new Collider[MaxOverlaps];
 
-    private readonly HashSet<EnemyHealth> _hitTargets =
-        new HashSet<EnemyHealth>();
+    private readonly HashSet<IDamageable> _hitTargets =
+        new HashSet<IDamageable>();
 
+    private GameObject _attacker;
     private bool _isActive;
     private int _damage;
 
     private void Awake()
     {
+        _attacker = transform.root.gameObject;
+
         if (_shape == null)
             _shape = GetComponentInChildren<BoxCollider>(true);
 
@@ -89,13 +92,30 @@ public sealed class WeaponHitbox : MonoBehaviour
 
         for (int i = 0; i < overlapCount; i++)
         {
-            EnemyHealth target =
-                _overlaps[i].GetComponentInParent<EnemyHealth>();
+            Collider targetCollider = _overlaps[i];
+            IDamageable target =
+                targetCollider.GetComponentInParent<IDamageable>();
 
             if (target == null || !_hitTargets.Add(target))
                 continue;
 
-            target.TakeDamage(_damage);
+            Vector3 hitPoint = targetCollider.ClosestPoint(center);
+            Vector3 directionOrigin = _attacker != null
+                ? _attacker.transform.position
+                : center;
+            Vector3 hitDirection =
+                (targetCollider.bounds.center - directionOrigin)
+                .normalized;
+
+            DamageInfo damageInfo = new DamageInfo
+            {
+                Damage = _damage,
+                HitPoint = hitPoint,
+                HitDirection = hitDirection,
+                Attacker = _attacker
+            };
+
+            target.TakeDamage(damageInfo);
         }
     }
 

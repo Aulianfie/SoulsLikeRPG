@@ -16,6 +16,8 @@ public sealed class PlayerMotor : MonoBehaviour
     public float VerticalVelocity => _verticalVelocity;
     public bool IsGrounded =>
         _characterController != null && _characterController.isGrounded;
+    public float DodgeDuration =>
+        _config == null ? 0f : _config.DodgeDuration;
 
     private void Awake()
     {
@@ -89,6 +91,57 @@ public sealed class PlayerMotor : MonoBehaviour
     public void StopHorizontalMovement()
     {
         _horizontalVelocity = Vector3.zero;
+    }
+
+    public Vector3 GetDodgeDirection(Vector2 moveInput)
+    {
+        if (!_isInitialized)
+            return transform.forward;
+
+        Vector3 dodgeDirection =
+            GetCameraRelativeDirection(moveInput);
+
+        if (dodgeDirection.sqrMagnitude < 0.0001f)
+            dodgeDirection = transform.forward;
+
+        dodgeDirection.y = 0f;
+        return dodgeDirection.normalized;
+    }
+
+    public void BeginDodge(Vector3 dodgeDirection)
+    {
+        if (!_isInitialized)
+            return;
+
+        _horizontalVelocity =
+            dodgeDirection * _config.DodgeSpeed;
+
+        if (dodgeDirection.sqrMagnitude >= 0.0001f)
+        {
+            transform.rotation = Quaternion.LookRotation(
+                dodgeDirection,
+                Vector3.up
+            );
+        }
+    }
+
+    public void TickDodge(
+        bool applyHorizontalMovement,
+        float deltaTime
+    )
+    {
+        if (!_isInitialized)
+            return;
+
+        if (!applyHorizontalMovement)
+            _horizontalVelocity = Vector3.zero;
+
+        Move(deltaTime);
+    }
+
+    public void EndDodge()
+    {
+        StopHorizontalMovement();
     }
 
     /// <summary>

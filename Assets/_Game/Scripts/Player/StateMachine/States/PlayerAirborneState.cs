@@ -9,6 +9,7 @@ public sealed class PlayerAirborneState : PlayerState
     {
         StateMachine.InputReader.ConsumeJump();
         StateMachine.InputReader.ConsumeLightAttack();
+        StateMachine.InputReader.ConsumeDodge();
     }
 
     public override void Tick(float deltaTime)
@@ -16,6 +17,7 @@ public sealed class PlayerAirborneState : PlayerState
         // Day2 暂不实现 Jump Buffer，空中输入直接丢弃。
         StateMachine.InputReader.ConsumeJump();
         StateMachine.InputReader.ConsumeLightAttack();
+        StateMachine.InputReader.ConsumeDodge();
 
         StateMachine.Motor.TickAirborne(deltaTime);
 

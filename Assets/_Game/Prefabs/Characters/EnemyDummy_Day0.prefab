@@ -405,7 +405,9 @@ GameObject:
   - component: {fileID: 7215516622850703947}
   - component: {fileID: 9157208473193813541}
   - component: {fileID: 2137004011873954271}
-  m_Layer: 0
+  - component: {fileID: 5102995507527938740}
+  - component: {fileID: 132279562396598228}
+  m_Layer: 8
   m_Name: EnemyDummy_Day0
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -465,6 +467,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _maxHealth: 100
+--- !u!114 &5102995507527938740
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8082192399273176202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5782ce62f829bba458bc8ea2ed4780a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _animator: {fileID: 0}
+  _transitionDuration: 0.08
+  _hurtCompletionNormalizedTime: 0.95
+--- !u!114 &132279562396598228
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8082192399273176202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9a2d8f6a8a5691244b95c490e3b8cbee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _logStateChanges: 1
 --- !u!1001 &7275019754705713998
 PrefabInstance:
   m_ObjectHideFlags: 0

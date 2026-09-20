@@ -13,6 +13,8 @@ public class PlayerAnimator : MonoBehaviour
         Animator.StringToHash("Base Layer.Locomotion");
     private static readonly int LightAttackStateHash =
         Animator.StringToHash("Base Layer.LightAttack");
+    private static readonly int DodgeStateHash =
+        Animator.StringToHash("Base Layer.Dodge");
 
     private const int BaseLayerIndex = 0;
 
@@ -91,6 +93,28 @@ public class PlayerAnimator : MonoBehaviour
             transitionDuration,
             BaseLayerIndex
         );
+    }
+
+    public void PlayDodge(float transitionDuration)
+    {
+        _animator.CrossFadeInFixedTime(
+            DodgeStateHash,
+            transitionDuration,
+            BaseLayerIndex
+        );
+    }
+
+    public bool IsDodgeFinished(float completionNormalizedTime)
+    {
+        if (_animator.IsInTransition(BaseLayerIndex))
+            return false;
+
+        AnimatorStateInfo stateInfo =
+            _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+
+        return
+            stateInfo.fullPathHash == DodgeStateHash &&
+            stateInfo.normalizedTime >= completionNormalizedTime;
     }
 
     /// <summary>

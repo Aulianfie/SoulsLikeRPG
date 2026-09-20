@@ -20,6 +20,10 @@ public sealed class PlayerMovementConfig : ScriptableObject
     [SerializeField] private float _groundStickForce = -2f;
     [SerializeField, Min(0f)] private float _jumpHeight = 1.5f;
 
+    [Header("Dodge")]
+    [SerializeField, Min(0f)] private float _dodgeSpeed = 7.5f;
+    [SerializeField, Min(0f)] private float _dodgeDuration = 0.6f;
+
     public float MoveSpeed => _moveSpeed;
     public float SprintSpeed => _sprintSpeed;
     public float Acceleration => _acceleration;
@@ -28,4 +32,6 @@ public sealed class PlayerMovementConfig : ScriptableObject
     public float Gravity => _gravity;
     public float GroundStickForce => _groundStickForce;
     public float JumpHeight => _jumpHeight;
+    public float DodgeSpeed => _dodgeSpeed;
+    public float DodgeDuration => _dodgeDuration;
 }
