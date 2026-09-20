@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetLayers:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 8
   _shape: {fileID: 6935039375331086935}
 --- !u!1 &7073338940195601557
 GameObject:

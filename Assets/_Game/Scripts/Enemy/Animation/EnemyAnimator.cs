@@ -6,14 +6,14 @@ public sealed class EnemyAnimator : MonoBehaviour
     private const int BaseLayerIndex = 0;
 
     /// <summary>
-    /// Animator.StringToHash() 会把它转换成一个整数，"Base Layer.Hit" → 123456789之后播放动画时就可以传整数
+    /// Animator.StringToHash() 会把状态路径转换成整数，供播放和状态比较使用。
     /// </summary>
     private static readonly int IdleStateHash =
         Animator.StringToHash("Base Layer.Idle");
     private static readonly int HurtStateHash =
-        Animator.StringToHash("Base Layer.Hit");
+        Animator.StringToHash("Base Layer.Hurt");
     private static readonly int DeathStateHash =
-        Animator.StringToHash("Base Layer.Death");
+        Animator.StringToHash("Base Layer.Dead");
 
     [SerializeField]
     private Animator _animator;

@@ -52,6 +52,7 @@ public sealed class WeaponHitbox : MonoBehaviour
 
     public void BeginAttack(int damage)
     {
+        // Debug.Log($"WeaponHitbox BeginAttack, damage = {damage}");
         _damage = damage;
         _hitTargets.Clear();
         _isActive = true;
@@ -89,6 +90,7 @@ public sealed class WeaponHitbox : MonoBehaviour
             _targetLayers,
             QueryTriggerInteraction.Ignore
         );
+        Debug.Log($"Overlap Count = {overlapCount}");
 
         for (int i = 0; i < overlapCount; i++)
         {

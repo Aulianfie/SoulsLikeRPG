@@ -5,9 +5,12 @@ using UnityEngine;
 
 internal static class Day0ImportUtility
 {
+    private const string StandardAnimationLibraryPath =
+        "Assets/ThirdParty/Quaternius/UniversalAnimationLibrary/AnimationLibrary_Unity_Standard.fbx";
+
     private static readonly string[] HumanoidModels =
     {
-        "Assets/ThirdParty/Quaternius/UniversalAnimationLibrary/AnimationLibrary_Unity_Standard.fbx",
+        StandardAnimationLibraryPath,
         "Assets/ThirdParty/Quaternius/UniversalAnimationLibrary2/UAL2_Standard.fbx",
         "Assets/ThirdParty/Quaternius/UniversalAnimationLibrary2/Models/Mannequin_F.fbx"
     };
@@ -41,7 +44,10 @@ internal static class Day0ImportUtility
                 clip.lockRootPositionXZ = true;
                 clip.keepOriginalOrientation = false;
                 clip.keepOriginalPositionY = false;
-                clip.keepOriginalPositionXZ = false;
+                clip.heightFromFeet =
+                    path == StandardAnimationLibraryPath;
+                clip.keepOriginalPositionXZ =
+                    path == StandardAnimationLibraryPath;
             }
 
             importer.clipAnimations = clips;
@@ -51,6 +57,42 @@ internal static class Day0ImportUtility
 
         AssetDatabase.SaveAssets();
         Debug.Log("[Day0] Humanoid import configuration completed.");
+    }
+
+    [MenuItem("Day0/Configure UAL1 Root Position")]
+    private static void ConfigureUal1RootPosition()
+    {
+        if (
+            AssetImporter.GetAtPath(StandardAnimationLibraryPath)
+            is not ModelImporter importer
+        )
+        {
+            Debug.LogError(
+                $"[Day0] ModelImporter not found: {StandardAnimationLibraryPath}"
+            );
+            return;
+        }
+
+        ModelImporterClipAnimation[] clips =
+            importer.clipAnimations;
+
+        if (clips.Length == 0)
+            clips = importer.defaultClipAnimations;
+
+        foreach (ModelImporterClipAnimation clip in clips)
+        {
+            // Y Based Upon = Feet, XZ Based Upon = Original.
+            clip.keepOriginalPositionY = false;
+            clip.heightFromFeet = true;
+            clip.keepOriginalPositionXZ = true;
+        }
+
+        importer.clipAnimations = clips;
+        importer.SaveAndReimport();
+
+        Debug.Log(
+            $"[Day0] Updated root position settings for {clips.Length} clips: {StandardAnimationLibraryPath}"
+        );
     }
 
     [MenuItem("Day0/Report Imported Animations")]
