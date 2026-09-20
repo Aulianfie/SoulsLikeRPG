@@ -60,15 +60,28 @@ public class PlayerAnimator : MonoBehaviour
     /// <returns></returns>
     public bool IsLightAttackFinished(float completionNormalizedTime)
     {
+        return
+            TryGetLightAttackNormalizedTime(out float normalizedTime) &&
+            normalizedTime >= completionNormalizedTime;
+    }
+
+    public bool TryGetLightAttackNormalizedTime(
+        out float normalizedTime
+    )
+    {
+        normalizedTime = 0f;
+
         if (_animator.IsInTransition(BaseLayerIndex))
             return false;
 
         AnimatorStateInfo stateInfo =
             _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
 
-        return
-            stateInfo.fullPathHash == LightAttackStateHash &&
-            stateInfo.normalizedTime >= completionNormalizedTime;
+        if (stateInfo.fullPathHash != LightAttackStateHash)
+            return false;
+
+        normalizedTime = stateInfo.normalizedTime;
+        return true;
     }
 
     public void PlayLocomotion(float transitionDuration)

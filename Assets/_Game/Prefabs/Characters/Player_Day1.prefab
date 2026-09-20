@@ -215,10 +215,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8d76695d343f99e4d99a2c9c8ed221aa, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   _transitionDuration: 0.08
   _completionNormalizedTime: 0.95
+  _weaponHitbox: {fileID: 4152490936108040189}
+  _lightAttackDamage: 25
+  _hitWindowStart: 0.25
+  _hitWindowEnd: 0.55
 --- !u!1 &6224024120811738658
 GameObject:
   m_ObjectHideFlags: 0
@@ -324,6 +328,18 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 6091388812186588993}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4152490936108040189 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7865652578172020924, guid: ddefe3877f9a87147a9ed19f5f277aec,
+    type: 3}
+  m_PrefabInstance: {fileID: 6091388812186588993}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 328a09958d6da734e8003dbe298349e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &6688901051083336286
 PrefabInstance:
   m_ObjectHideFlags: 0
