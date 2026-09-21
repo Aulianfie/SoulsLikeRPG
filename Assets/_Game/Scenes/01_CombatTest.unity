@@ -468,6 +468,30 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 82798564}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!134 &207779372
+PhysicMaterial:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: ' (Instance) (Instance) (Instance) (Instance)'
+  dynamicFriction: 0.6
+  staticFriction: 0.6
+  bounciness: 0
+  frictionCombine: 0
+  bounceCombine: 0
+--- !u!134 &230148794
+PhysicMaterial:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  dynamicFriction: 0.6
+  staticFriction: 0.6
+  bounciness: 0
+  frictionCombine: 0
+  bounceCombine: 0
 --- !u!1 &461919307
 GameObject:
   m_ObjectHideFlags: 0
@@ -500,18 +524,6 @@ Transform:
   - {fileID: 61464627}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!134 &489840139
-PhysicMaterial:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_Name: ' (Instance) (Instance) (Instance) (Instance)'
-  dynamicFriction: 0.6
-  staticFriction: 0.6
-  bounciness: 0
-  frictionCombine: 0
-  bounceCombine: 0
 --- !u!134 &493118277
 PhysicMaterial:
   m_ObjectHideFlags: 0
@@ -532,6 +544,11 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2969298692096069895, guid: c48ef8ee473037c4882a9804a1c68520,
+        type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 230148794}
     - target: {fileID: 4858507693607516859, guid: c48ef8ee473037c4882a9804a1c68520,
         type: 3}
       propertyPath: m_SizeDelta.x
@@ -2010,12 +2027,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 489840139}
+      objectReference: {fileID: 2033217818}
     - target: {fileID: 2898553348681140637, guid: 9ac4226d5b6a13348b0a65072259b62a,
         type: 3}
       propertyPath: m_Material
       value: 
-      objectReference: {fileID: 1924983449}
+      objectReference: {fileID: 207779372}
     - target: {fileID: 3798434752929678614, guid: 9ac4226d5b6a13348b0a65072259b62a,
         type: 3}
       propertyPath: m_Material
@@ -2346,13 +2363,13 @@ MonoBehaviour:
   m_LightCookieSize: {x: 1, y: 1}
   m_LightCookieOffset: {x: 0, y: 0}
   m_SoftShadowQuality: 0
---- !u!134 &1924983449
+--- !u!134 &2033217818
 PhysicMaterial:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ' (Instance) (Instance) (Instance)'
+  m_Name: ' (Instance) (Instance) (Instance) (Instance) (Instance)'
   dynamicFriction: 0.6
   staticFriction: 0.6
   bounciness: 0

@@ -10,6 +10,10 @@ public sealed class EnemyAnimator : MonoBehaviour
     /// </summary>
     private static readonly int IdleStateHash =
         Animator.StringToHash("Base Layer.Idle");
+    private static readonly int ChaseStateHash =
+        Animator.StringToHash("Base Layer.Chase");
+    private static readonly int AttackStateHash =
+        Animator.StringToHash("Base Layer.Attack");
     private static readonly int HurtStateHash =
         Animator.StringToHash("Base Layer.Hurt");
     private static readonly int DeathStateHash =
@@ -23,6 +27,9 @@ public sealed class EnemyAnimator : MonoBehaviour
 
     [SerializeField, Range(0.5f, 1f)]
     private float _hurtCompletionNormalizedTime = 0.95f;
+
+    [SerializeField, Range(0.5f, 1f)]
+    private float _attackCompletionNormalizedTime = 0.95f;
 
     private void Awake()
     {
@@ -50,6 +57,16 @@ public sealed class EnemyAnimator : MonoBehaviour
         CrossFade(HurtStateHash);
     }
 
+    public void PlayChase()
+    {
+        CrossFade(ChaseStateHash);
+    }
+
+    public void PlayAttack()
+    {
+        CrossFade(AttackStateHash);
+    }
+
     public void PlayDeath()
     {
         CrossFade(DeathStateHash);
@@ -72,6 +89,31 @@ public sealed class EnemyAnimator : MonoBehaviour
             stateInfo.fullPathHash == HurtStateHash &&
             stateInfo.normalizedTime >=
                 _hurtCompletionNormalizedTime;
+    }
+
+    public bool TryGetAttackNormalizedTime(out float normalizedTime)
+    {
+        normalizedTime = 0f;
+
+        if (_animator == null)
+            return false;
+
+        AnimatorStateInfo stateInfo =
+            _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+
+        if (stateInfo.fullPathHash != AttackStateHash)
+            return false;
+
+        normalizedTime = stateInfo.normalizedTime;
+        return true;
+    }
+
+    public bool IsAttackFinished()
+    {
+        return
+            TryGetAttackNormalizedTime(out float normalizedTime) &&
+            !_animator.IsInTransition(BaseLayerIndex) &&
+            normalizedTime >= _attackCompletionNormalizedTime;
     }
 
     private void CrossFade(int stateHash)

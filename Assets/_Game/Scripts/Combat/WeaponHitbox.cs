@@ -5,6 +5,9 @@ using UnityEngine;
 public sealed class WeaponHitbox : MonoBehaviour
 {
     private const int MaxOverlaps = 16;
+    private const int MaxSweepSamples = 6;
+    private const float MaxSweepStepDistance = 0.15f;
+    private const float MaxSweepStepAngle = 15f;
 
     [SerializeField]
     private LayerMask _targetLayers;
@@ -20,7 +23,10 @@ public sealed class WeaponHitbox : MonoBehaviour
 
     private GameObject _attacker;
     private bool _isActive;
+    private bool _hasPreviousPose;
     private int _damage;
+    private Vector3 _previousCenter;
+    private Quaternion _previousRotation;
 
     private void Awake()
     {
@@ -44,7 +50,7 @@ public sealed class WeaponHitbox : MonoBehaviour
         _shape.enabled = false;
     }
 
-    private void Update()
+    private void LateUpdate()
     {
         if (_isActive)
             DetectTargets();
@@ -52,15 +58,16 @@ public sealed class WeaponHitbox : MonoBehaviour
 
     public void BeginAttack(int damage)
     {
-        // Debug.Log($"WeaponHitbox BeginAttack, damage = {damage}");
         _damage = damage;
         _hitTargets.Clear();
+        _hasPreviousPose = false;
         _isActive = true;
     }
 
     public void EndAttack()
     {
         _isActive = false;
+        _hasPreviousPose = false;
         _damage = 0;
         _hitTargets.Clear();
     }
@@ -82,16 +89,68 @@ public sealed class WeaponHitbox : MonoBehaviour
             scale
         );
 
+        Quaternion rotation = shapeTransform.rotation;
+
+        if (!_hasPreviousPose)
+        {
+            DetectTargetsAtPose(center, halfExtents, rotation);
+            RememberPose(center, rotation);
+            return;
+        }
+
+        int positionSamples = Mathf.CeilToInt(
+            Vector3.Distance(_previousCenter, center) /
+            MaxSweepStepDistance
+        );
+        int rotationSamples = Mathf.CeilToInt(
+            Quaternion.Angle(_previousRotation, rotation) /
+            MaxSweepStepAngle
+        );
+        int sampleCount = Mathf.Clamp(
+            Mathf.Max(positionSamples, rotationSamples),
+            1,
+            MaxSweepSamples
+        );
+
+        // 补查武器在相邻两帧之间扫过的空间，避免快速挥砍穿过目标。
+        for (int i = 1; i <= sampleCount; i++)
+        {
+            float interpolation = i / (float)sampleCount;
+            Vector3 sampleCenter = Vector3.Lerp(
+                _previousCenter,
+                center,
+                interpolation
+            );
+            Quaternion sampleRotation = Quaternion.Slerp(
+                _previousRotation,
+                rotation,
+                interpolation
+            );
+
+            DetectTargetsAtPose(
+                sampleCenter,
+                halfExtents,
+                sampleRotation
+            );
+        }
+
+        RememberPose(center, rotation);
+    }
+
+    private void DetectTargetsAtPose(
+        Vector3 center,
+        Vector3 halfExtents,
+        Quaternion rotation
+    )
+    {
         int overlapCount = Physics.OverlapBoxNonAlloc(
             center,
             halfExtents,
             _overlaps,
-            shapeTransform.rotation,
+            rotation,
             _targetLayers,
             QueryTriggerInteraction.Ignore
         );
-        Debug.Log($"Overlap Count = {overlapCount}");
-
         for (int i = 0; i < overlapCount; i++)
         {
             Collider targetCollider = _overlaps[i];
@@ -119,6 +178,13 @@ public sealed class WeaponHitbox : MonoBehaviour
 
             target.TakeDamage(damageInfo);
         }
+    }
+
+    private void RememberPose(Vector3 center, Quaternion rotation)
+    {
+        _previousCenter = center;
+        _previousRotation = rotation;
+        _hasPreviousPose = true;
     }
 
     private void OnDisable()

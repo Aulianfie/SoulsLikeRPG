@@ -1,6 +1,6 @@
 public sealed class PlayerHurtState : PlayerState
 {
-    private const float TransitionDuration = 0.08f;
+    private const float ExitTransitionDuration = 0.08f;
     private const float CompletionNormalizedTime = 0.95f;
 
     public PlayerHurtState(PlayerStateMachine stateMachine)
@@ -13,7 +13,7 @@ public sealed class PlayerHurtState : PlayerState
         ConsumeBufferedInput();
         StateMachine.Health.DisableIFrame();
         StateMachine.Motor.StopHorizontalMovement();
-        StateMachine.PlayerAnimator.PlayHurt(TransitionDuration);
+        StateMachine.PlayerAnimator.PlayHurt();
     }
 
     public override void Tick(float deltaTime)
@@ -36,7 +36,7 @@ public sealed class PlayerHurtState : PlayerState
     public override void Exit()
     {
         StateMachine.PlayerAnimator.PlayLocomotion(
-            TransitionDuration
+            ExitTransitionDuration
         );
     }
 

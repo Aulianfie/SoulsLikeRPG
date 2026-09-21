@@ -132,12 +132,15 @@ public class PlayerAnimator : MonoBehaviour
         return true;
     }
 
-    public void PlayHurt(float transitionDuration)
+    public void PlayHurt()
     {
+        // 受击是 10 帧短动画，用零时长的 CrossFade 做瞬时切换：
+        // 混合时间会稀释前几帧，让受击反应看起来慢半拍。
         _animator.CrossFadeInFixedTime(
             HurtStateHash,
-            transitionDuration,
-            BaseLayerIndex
+            0f,
+            BaseLayerIndex,
+            0f
         );
     }
 

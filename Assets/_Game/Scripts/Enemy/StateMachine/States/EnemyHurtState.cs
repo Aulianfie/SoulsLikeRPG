@@ -7,6 +7,8 @@ public sealed class EnemyHurtState : EnemyState
 
     public override void Enter()
     {
+        StateMachine.Motor.Stop();
+        StateMachine.Combat.CancelAttack();
         StateMachine.EnemyAnimator.PlayHurt();
     }
 
@@ -14,7 +16,7 @@ public sealed class EnemyHurtState : EnemyState
     {
         if (StateMachine.EnemyAnimator.IsHurtFinished())
         {
-            StateMachine.ChangeState(StateMachine.IdleState);
+            StateMachine.EvaluateTargetState();
         }
     }
 }

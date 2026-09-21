@@ -7,6 +7,8 @@ public sealed class EnemyDeadState : EnemyState
 
     public override void Enter()
     {
+        StateMachine.Motor.Stop();
+        StateMachine.Combat.CancelAttack();
         StateMachine.EnemyAnimator.PlayDeath();
     }
 }
