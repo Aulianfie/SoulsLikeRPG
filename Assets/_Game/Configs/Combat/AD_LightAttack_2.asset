@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AD_LightAttack_2
   m_EditorClassIdentifier: 
   _animationStateName: Attack2
+  _startTimeOffset: 0.4
   _damage: 25
   _staminaCost: 20
   _hitWindowStart: 0.3

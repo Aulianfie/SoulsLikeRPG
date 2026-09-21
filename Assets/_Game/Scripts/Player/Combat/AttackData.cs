@@ -13,6 +13,12 @@ public sealed class AttackData : ScriptableObject
     [Tooltip("AnimatorController 中 Base Layer 下的状态名，例如 Attack1")]
     [SerializeField] private string _animationStateName = "Attack1";
 
+    [Tooltip(
+        "动画起始播放入点（秒，动画时间轴上的绝对时间）。\n" +
+        "连击切入该段时从该时间点开始播放，用于跳过长前摇；0 = 从动画开头播放。\n" +
+        "换算：秒 = 归一化时间 × 动画时长")]
+    [SerializeField, Min(0f)] private float _startTimeOffset = 0f;
+
     [Header("Damage & Stamina")]
     [SerializeField, Min(0)] private int _damage = 25;
     [SerializeField, Min(0f)] private float _staminaCost = 20f;
@@ -45,6 +51,7 @@ public sealed class AttackData : ScriptableObject
     [SerializeField, Min(0f)] private float _forwardImpulse = 0f;
 
     public string AnimationStateName => _animationStateName;
+    public float StartTimeOffset => _startTimeOffset;
     public int Damage => _damage;
     public float StaminaCost => _staminaCost;
     public float HitWindowStart => _hitWindowStart;

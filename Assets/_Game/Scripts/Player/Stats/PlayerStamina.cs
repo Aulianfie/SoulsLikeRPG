@@ -57,10 +57,19 @@ public sealed class PlayerStamina : MonoBehaviour
         return amount >= 0f && _currentStamina >= amount;
     }
 
+    /// <summary>
+    /// 消耗体力。
+    /// amount == 0 是合法配置（无需体力的攻击），视为消费成功：
+    /// 不改变当前体力，也不刷新恢复延迟（避免 0 消耗打断正在进行的体力恢复）。
+    /// </summary>
     public bool Consume(float amount)
     {
-        if (amount <= 0f || !CanConsume(amount) || _config == null)
+        if (amount < 0f || _config == null || !CanConsume(amount))
             return false;
+
+        // 0 消耗：成功但不产生任何副作用。
+        if (amount <= 0f)
+            return true;
 
         _currentStamina -= amount;
         _regenResumeTime = Time.time + _config.StaminaRegenDelay;

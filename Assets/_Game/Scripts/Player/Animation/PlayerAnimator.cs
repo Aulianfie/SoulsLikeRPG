@@ -48,32 +48,71 @@ public class PlayerAnimator : MonoBehaviour
 
     /// <summary>
     /// 播放 Base Layer 下指定名称的轻攻击状态（例如 Attack1，来自 AttackData）。
-    /// fixedTimeOffset = 0 保证每段都从动画开头播放。
+    /// startTimeOffset：从动画的第几秒开始播放（用于连击时跳过前摇），0 = 从头。
+    /// 返回 false 表示状态名无效或 Animator 上不存在该状态（此时不会切换动画），
+    /// 调用方必须安全中止攻击流程。
     /// </summary>
-    public void PlayLightAttack(
+    public bool PlayLightAttack(
         string animationStateName,
-        float transitionDuration
+        float transitionDuration,
+        float startTimeOffset
     )
     {
         if (string.IsNullOrEmpty(animationStateName))
         {
             Debug.LogError(
-                "PlayerAnimator 收到空的攻击状态名。",
+                $"PlayerAnimator（{gameObject.name}）收到空的攻击状态名。",
                 this
             );
-            return;
+            return false;
         }
 
-        _currentAttackStateHash = Animator.StringToHash(
-            "Base Layer." + animationStateName
-        );
+        if (_animator == null)
+        {
+            Debug.LogError(
+                $"PlayerAnimator（{gameObject.name}）没有可用的 Animator。",
+                this
+            );
+            return false;
+        }
+
+        string fullPathName = "Base Layer." + animationStateName;
+
+        // HasState 要求 stateID 为状态名哈希，个别版本对 fullPathHash 的
+        // 处理不一致，这里两种哈希都检查，避免误判"状态不存在"。
+        // 状态名写错时两个哈希都不存在，仍会正确报错。
+        bool stateExists =
+            _animator.HasState(
+                BaseLayerIndex,
+                Animator.StringToHash(animationStateName)
+            ) ||
+            _animator.HasState(
+                BaseLayerIndex,
+                Animator.StringToHash(fullPathName)
+            );
+
+        if (!stateExists)
+        {
+            Debug.LogError(
+                $"PlayerAnimator（{gameObject.name}）在 Animator 中找不到 " +
+                $"状态 \"{fullPathName}\"（AnimationStateName = " +
+                $"\"{animationStateName}\"）。请检查 AttackData 与 " +
+                "AnimatorController 的状态名是否一致。",
+                this
+            );
+            return false;
+        }
+
+        _currentAttackStateHash = Animator.StringToHash(fullPathName);
 
         _animator.CrossFadeInFixedTime(
             _currentAttackStateHash,
             transitionDuration,
             BaseLayerIndex,
-            0f
+            startTimeOffset
         );
+
+        return true;
     }
     /// <summary>
     /// 判断当前动画状态是否为轻攻击状态，并且动画播放的归一化时间是否达到指定的完成时间。

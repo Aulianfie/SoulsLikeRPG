@@ -62,12 +62,15 @@ public sealed class PlayerLocomotionState : PlayerState
     }
 
     /// <summary>
-    /// 第一段攻击的体力消耗：优先使用 AttackData 配置，
-    /// 连招未配置时回退到 PlayerStamina 上的默认消耗。
+    /// 第一段攻击的体力消耗：只有连招未配置（AttackData 为 null）时
+    /// 才回退到 PlayerStamina 上的默认消耗；
+    /// 配置里的 0 是合法值，必须原样使用。
     /// </summary>
     private float GetLightAttackStaminaCost()
     {
-        float cost = StateMachine.Combat.FirstAttackStaminaCost;
-        return cost > 0f ? cost : StateMachine.Stamina.AttackCost;
+        if (StateMachine.Combat.HasFirstAttack)
+            return StateMachine.Combat.FirstAttackStaminaCost;
+
+        return StateMachine.Stamina.AttackCost;
     }
 }

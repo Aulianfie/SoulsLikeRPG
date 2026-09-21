@@ -20,7 +20,7 @@ MonoBehaviour:
   _completionNormalizedTime: 0.46
   _recoveryTime: 0.1
   _comboInputStart: 0.1
-  _comboInputEnd: 0.4
+  _comboInputEnd: 0.31
   _rotateAssistTime: 0.18
   _moveDistance: 0
   _forwardImpulse: 0

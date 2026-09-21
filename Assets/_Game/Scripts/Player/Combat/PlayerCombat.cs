@@ -66,6 +66,13 @@ public sealed class PlayerCombat : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 第一段攻击是否已配置 AttackData。
+    /// 用于区分"合法的 0 消耗"与"未配置时的 fallback"。
+    /// </summary>
+    public bool HasFirstAttack =>
+        _attackCombo != null && _attackCombo.Get(0) != null;
+
     /// <summary>当前段允许的转向辅助时长（秒）。</summary>
     public float CurrentRotateAssistTime =>
         CurrentAttack != null ? CurrentAttack.RotateAssistTime : 0f;
@@ -90,6 +97,31 @@ public sealed class PlayerCombat : MonoBehaviour
             return
                 normalizedTime >= data.ComboInputStart &&
                 normalizedTime <= data.ComboInputEnd;
+        }
+    }
+
+    /// <summary>
+    /// 是否已到达"允许正式衔接下一段攻击"的动画位置。
+    /// ComboTransitionPoint 复用手感窗口终点 ComboInputEnd：
+    /// 已缓存的下一段会在此点直接切段，不再等待完成点与后摇。
+    /// </summary>
+    public bool IsComboTransitionReached
+    {
+        get
+        {
+            AttackData data = CurrentAttack;
+
+            if (
+                data == null ||
+                !_playerAnimator.TryGetLightAttackNormalizedTime(
+                    out float normalizedTime
+                )
+            )
+            {
+                return false;
+            }
+
+            return normalizedTime >= data.ComboInputEnd;
         }
     }
 
@@ -121,19 +153,26 @@ public sealed class PlayerCombat : MonoBehaviour
 
     /// <summary>
     /// 开始第一段攻击，并重置连击状态。
+    /// 返回 false 表示 AttackData 缺失或 Animator State 不存在（播放失败），
+    /// 此时连击已重置、命中窗口已关闭，调用方应立即安全退出攻击流程。
     /// </summary>
-    public void StartLightAttack()
+    public bool StartLightAttack()
     {
         ComboIndex = 0;
         AttackQueued = false;
         _recoveryTimer = 0f;
         CloseHitWindow();
-        PlayCurrentAttack();
+
+        if (PlayCurrentAttack())
+            return true;
+
+        ResetCombo();
+        return false;
     }
 
     /// <summary>
     /// 缓存一次下一段攻击输入。每段攻击最多缓存一次，
-    /// 由调用方在连击窗口与体力检查通过后调用。
+    /// 由调用方在连击窗口与体力预检查通过后调用（此阶段不扣体力）。
     /// </summary>
     public void QueueNextAttack()
     {
@@ -141,9 +180,10 @@ public sealed class PlayerCombat : MonoBehaviour
     }
 
     /// <summary>
-    /// 当前段结束（含后摇）后尝试进入下一段。
+    /// 到达 ComboTransitionPoint（或完成点）后尝试进入已缓存的下一段攻击。
     /// 返回 true 表示已切换到下一段动画，攻击状态应继续保持；
-    /// 返回 false 表示连击结束，comboIndex 已重置。
+    /// 返回 false 表示没有可衔接的下一段（连击已重置），
+    /// 或下一段动画播放失败（命中窗口已关闭、连击已重置，调用方应立即退出攻击流程）。
     /// </summary>
     public bool TryStartNextComboHit()
     {
@@ -157,8 +197,12 @@ public sealed class PlayerCombat : MonoBehaviour
         ComboIndex++;
         _recoveryTimer = 0f;
         CloseHitWindow();
-        PlayCurrentAttack();
-        return true;
+
+        if (PlayCurrentAttack())
+            return true;
+
+        ResetCombo();
+        return false;
     }
 
     /// <summary>
@@ -226,7 +270,11 @@ public sealed class PlayerCombat : MonoBehaviour
         CloseHitWindow();
     }
 
-    private void PlayCurrentAttack()
+    /// <summary>
+    /// 播放当前段的攻击动画。
+    /// 返回 false 表示 AttackData 缺失或动画状态不存在，调用方必须中止攻击流程。
+    /// </summary>
+    private bool PlayCurrentAttack()
     {
         AttackData data = CurrentAttack;
 
@@ -236,13 +284,28 @@ public sealed class PlayerCombat : MonoBehaviour
                 "PlayerCombat 当前连击段没有 AttackData。",
                 this
             );
-            return;
+            return false;
         }
 
-        _playerAnimator.PlayLightAttack(
-            data.AnimationStateName,
-            _transitionDuration
+        if (
+            _playerAnimator.PlayLightAttack(
+                data.AnimationStateName,
+                _transitionDuration,
+                data.StartTimeOffset
+            )
+        )
+        {
+            return true;
+        }
+
+        Debug.LogError(
+            $"PlayerCombat 播放攻击失败：AttackData \"{data.name}\" 配置的 " +
+            $"AnimationStateName \"{data.AnimationStateName}\" 在 Animator " +
+            $"Base Layer 中不存在（查找状态：\"Base Layer.{data.AnimationStateName}\"）。" +
+            "已中止本次攻击，请检查 AttackCombo 配置。",
+            this
         );
+        return false;
     }
 
     private void TickHitWindow(AttackData data)

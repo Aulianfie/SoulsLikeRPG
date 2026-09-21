@@ -2,6 +2,12 @@ public sealed class PlayerAttackState : PlayerState
 {
     private float _elapsedTime;
 
+    /// <summary>
+    /// 第一段攻击是否启动失败（AttackData 缺失 / Animator State 不存在）。
+    /// 启动失败时不允许停留在 AttackState，下一帧立即退出到 Locomotion。
+    /// </summary>
+    private bool _startFailed;
+
     public PlayerAttackState(PlayerStateMachine stateMachine)
         : base(stateMachine)
     {
@@ -13,12 +19,20 @@ public sealed class PlayerAttackState : PlayerState
         StateMachine.InputReader.ConsumeLightAttack();
         StateMachine.InputReader.ConsumeDodge();
         StateMachine.Motor.StopHorizontalMovement();
-        StateMachine.Combat.StartLightAttack();
         _elapsedTime = 0f;
+        _startFailed = !StateMachine.Combat.StartLightAttack();
     }
 
     public override void Tick(float deltaTime)
     {
+        // 攻击启动失败（配置错误）：立即安全退出，避免卡死在 AttackState。
+        // Combo 与命中窗口已由 PlayerCombat 重置。
+        if (_startFailed)
+        {
+            StateMachine.ChangeState(StateMachine.LocomotionState);
+            return;
+        }
+
         // Jump / Dodge 输入在攻击期间丢弃（Day4 不做取消窗口）。
         StateMachine.InputReader.ConsumeJump();
         StateMachine.InputReader.ConsumeDodge();
@@ -35,7 +49,7 @@ public sealed class PlayerAttackState : PlayerState
         _elapsedTime += deltaTime;
 
         // 连击窗口内允许缓存一次下一段输入；
-        // 窗口外、没有下一段或体力不足时忽略。
+        // 这里只做体力预检查（不扣体力），真正扣除在衔接点进行。
         if (StateMachine.InputReader.ConsumeLightAttack())
         {
             if (
@@ -53,7 +67,38 @@ public sealed class PlayerAttackState : PlayerState
 
         StateMachine.Combat.TickLightAttack();
 
-        // 挥砍未完成或后摇未结束时，保持攻击状态。
+        // 情况 A：已缓存下一段且到达 ComboTransitionPoint：
+        // 再次确认体力后直接进入下一段，不等待完成点与后摇。
+        if (
+            StateMachine.Combat.AttackQueued &&
+            StateMachine.Combat.HasNextAttack &&
+            StateMachine.Combat.IsComboTransitionReached
+        )
+        {
+            if (
+                StateMachine.Stamina.Consume(
+                    StateMachine.Combat.NextAttackStaminaCost
+                )
+            )
+            {
+                if (StateMachine.Combat.TryStartNextComboHit())
+                {
+                    _elapsedTime = 0f;
+                    return;
+                }
+
+                // 下一段动画播放失败（配置错误）：
+                // Combo 与命中窗口已被重置，立即退出攻击流程，避免卡死。
+                StateMachine.ChangeState(StateMachine.LocomotionState);
+                return;
+            }
+
+            // 体力不足：放弃衔接，继续播放当前攻击，
+            // 之后按 Completion -> Recovery -> Locomotion 正常收尾。
+        }
+
+        // 情况 B：没有缓存的下一段（或衔接失败/体力不足）：
+        // 挥砍未完成或后摇未结束时保持攻击状态。
         if (
             !StateMachine.Combat.IsLightAttackFinished() ||
             !StateMachine.Combat.IsRecoveryDone()
@@ -62,21 +107,7 @@ public sealed class PlayerAttackState : PlayerState
             return;
         }
 
-        // 后摇结束：若已缓存、还有下一段、体力够，衔接下一段。
-        if (
-            StateMachine.Combat.AttackQueued &&
-            StateMachine.Combat.HasNextAttack &&
-            StateMachine.Stamina.Consume(
-                StateMachine.Combat.NextAttackStaminaCost
-            ) &&
-            StateMachine.Combat.TryStartNextComboHit()
-        )
-        {
-            _elapsedTime = 0f;
-            return;
-        }
-
-        // 没有下一段：回 Locomotion（Combat 已在 TryStartNextComboHit 中重置连击）。
+        // 完成点 + 后摇都已结束：回 Locomotion。
         StateMachine.ChangeState(StateMachine.LocomotionState);
     }
 
