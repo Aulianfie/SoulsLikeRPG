@@ -23,18 +23,26 @@ public sealed class PlayerLocomotionState : PlayerState
             return;
         }
 
+        // Day4：检查并扣除 Stamina；只有扣除成功才进入攻击状态。
         if (
             StateMachine.Motor.IsGrounded &&
-            lightAttackRequested
+            lightAttackRequested &&
+            StateMachine.Stamina.Consume(
+                StateMachine.Stamina.AttackCost
+            )
         )
         {
             StateMachine.ChangeState(StateMachine.AttackState);
             return;
         }
 
+        // Day4：检查并扣除 Stamina；只有扣除成功才进入 Dodge 状态。
         if (
             StateMachine.Motor.IsGrounded &&
-            dodgeRequested
+            dodgeRequested &&
+            StateMachine.Stamina.Consume(
+                StateMachine.Stamina.DodgeCost
+            )
         )
         {
             StateMachine.ChangeState(StateMachine.DodgeState);
