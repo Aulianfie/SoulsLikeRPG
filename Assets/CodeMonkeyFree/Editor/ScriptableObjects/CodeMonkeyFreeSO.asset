@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1789883964
+  lastShownTimestamp: 1789972253
   lastUpdateResponse:
     version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1789883964
+  checkedLastUpdateTimestamp: 1789972253
   lastQOTDResponse:
     questionId: 344
     questionText: 'What will be the value of isOne?
@@ -32,7 +32,7 @@ MonoBehaviour:
     answerC: 
     answerD: 
     answerE: 
-  lastQotdTimestamp: 1789883964
+  lastQotdTimestamp: 1789972253
   lastDynamicHeaderResponse:
     topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/codeMonkeyToolkit50Off.png
     topText: My Toolkit is 50% OFF! 50+ Tools and Elements to help you make games
@@ -41,11 +41,11 @@ MonoBehaviour:
     bottomText: Escape Tutorial Hell and level up your skills, try my Practice Lab
       for FREE!
     bottomLink: practicelab
-  lastDynamicHeaderTimestamp: 1789883964
+  lastDynamicHeaderTimestamp: 1789972253
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1789883964
+  websiteLatestMessageTimestamp: 1789972253
   websiteLatestVideos:
     videos:
     - youTubeId: WFk_vADgnAo
@@ -56,4 +56,4 @@ MonoBehaviour:
       title: Every Game you make should make your NEXT Game Easier!
     - youTubeId: QNXgOuo7-Iw
       title: TOP 10 FREE NEW Assets SEPTEMBER 2026!
-  websiteLatestVideosTimestamp: 1789883964
+  websiteLatestVideosTimestamp: 1789972253

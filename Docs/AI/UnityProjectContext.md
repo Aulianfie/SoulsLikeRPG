@@ -51,8 +51,8 @@
 ## Architecture
 
 - A component-oriented player architecture is established: `PlayerStateMachine` owns plain-C# states, `PlayerInputReader` owns Input System requests, `PlayerMotor` owns movement, `PlayerAnimator` owns animation, and `PlayerCombat` owns attack timing.
-- Combat hit detection uses `WeaponHitbox` with `Physics.OverlapBoxNonAlloc`; Day3 Task 1 adds the narrow `IDamageable` boundary and passes hit context through `DamageInfo`.
-- Enemy combat feedback uses `EnemyStateMachine` with plain-C# `Idle`, `Hurt`, and `Dead` states. `EnemyHealth` owns HP, the state machine owns transitions, and `EnemyAnimator` owns animation playback.
+- Combat hit detection uses `WeaponHitbox` with `Physics.OverlapBoxNonAlloc`; Day3 Task 1 adds the narrow `IDamageable` boundary and passes hit context through `DamageInfo`. The project-defined `Enemy` layer is index 3, so its serialized layer mask value is `8` (`1 << 3`).
+- Enemy combat feedback uses `EnemyStateMachine` with plain-C# `Idle`, `Hurt`, and `Dead` states. `EnemyHealth` owns HP, the state machine owns transitions, and `EnemyAnimator` directly cross-fades the matching states in `Assets/_Game/Animations/Controllers/AC_Enemy.controller`.
 - Player dodge uses `PlayerDodgeState`; `PlayerInputReader` buffers a one-shot Dodge request, `PlayerMotor` owns locked-direction code-driven movement and gravity, and `PlayerAnimator` owns the in-place Roll animation.
 - Existing sample assets under `Assets/_Assets/` are unrelated and must not be treated as project architecture.
 
