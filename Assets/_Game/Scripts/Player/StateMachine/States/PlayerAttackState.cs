@@ -1,5 +1,7 @@
 public sealed class PlayerAttackState : PlayerState
 {
+    private float _elapsedTime;
+
     public PlayerAttackState(PlayerStateMachine stateMachine)
         : base(stateMachine)
     {
@@ -12,6 +14,7 @@ public sealed class PlayerAttackState : PlayerState
         StateMachine.InputReader.ConsumeDodge();
         StateMachine.Motor.StopHorizontalMovement();
         StateMachine.Combat.StartLightAttack();
+        _elapsedTime = 0f;
     }
 
     public override void Tick(float deltaTime)
@@ -20,14 +23,27 @@ public sealed class PlayerAttackState : PlayerState
         StateMachine.InputReader.ConsumeJump();
         StateMachine.InputReader.ConsumeDodge();
 
-        // Day4 简单连击：整段攻击动画期间都允许缓存一次下一段输入。
-        // 体力不足时不缓存，保证"不足时不能进入下一击"。
+        // Day4：攻击开头的 rotateAssistTime 内允许向移动输入方向转向。
+        if (_elapsedTime < StateMachine.Combat.CurrentRotateAssistTime)
+        {
+            StateMachine.Motor.RotateTowardsInput(
+                StateMachine.InputReader.MoveInput,
+                deltaTime
+            );
+        }
+
+        _elapsedTime += deltaTime;
+
+        // 连击窗口内允许缓存一次下一段输入；
+        // 窗口外、没有下一段或体力不足时忽略。
         if (StateMachine.InputReader.ConsumeLightAttack())
         {
             if (
                 !StateMachine.Combat.AttackQueued &&
+                StateMachine.Combat.HasNextAttack &&
+                StateMachine.Combat.IsInComboInputWindow &&
                 StateMachine.Stamina.CanConsume(
-                    StateMachine.Stamina.AttackCost
+                    StateMachine.Combat.NextAttackStaminaCost
                 )
             )
             {
@@ -37,20 +53,26 @@ public sealed class PlayerAttackState : PlayerState
 
         StateMachine.Combat.TickLightAttack();
 
-        if (!StateMachine.Combat.IsLightAttackFinished())
+        // 挥砍未完成或后摇未结束时，保持攻击状态。
+        if (
+            !StateMachine.Combat.IsLightAttackFinished() ||
+            !StateMachine.Combat.IsRecoveryDone()
+        )
+        {
             return;
+        }
 
-        // 当前段结束：若已缓存、还有下一段、且体力够，进入下一段（继续留在攻击状态）。
+        // 后摇结束：若已缓存、还有下一段、体力够，衔接下一段。
         if (
             StateMachine.Combat.AttackQueued &&
-            StateMachine.Combat.ComboIndex + 1 <
-                StateMachine.Combat.MaxComboCount &&
+            StateMachine.Combat.HasNextAttack &&
             StateMachine.Stamina.Consume(
-                StateMachine.Stamina.AttackCost
+                StateMachine.Combat.NextAttackStaminaCost
             ) &&
             StateMachine.Combat.TryStartNextComboHit()
         )
         {
+            _elapsedTime = 0f;
             return;
         }
 

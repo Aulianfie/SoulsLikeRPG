@@ -4,72 +4,19 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerAnimator))]
 public sealed class PlayerCombat : MonoBehaviour
 {
-    [System.Serializable]
-    private struct LightAttackTiming
-    {
-        [SerializeField, Range(0f, 1f)]
-        private float _hitWindowStart;
-
-        [SerializeField, Range(0f, 1f)]
-        private float _hitWindowEnd;
-
-        [SerializeField, Range(0.1f, 1f)]
-        private float _completionNormalizedTime;
-
-        public float HitWindowStart => _hitWindowStart;
-        public float HitWindowEnd => _hitWindowEnd;
-        public float CompletionNormalizedTime =>
-            _completionNormalizedTime;
-
-        public LightAttackTiming(
-            float hitWindowStart,
-            float hitWindowEnd,
-            float completionNormalizedTime
-        )
-        {
-            _hitWindowStart = hitWindowStart;
-            _hitWindowEnd = hitWindowEnd;
-            _completionNormalizedTime = completionNormalizedTime;
-        }
-
-        public void Validate()
-        {
-            _hitWindowEnd = Mathf.Max(
-                _hitWindowStart,
-                _hitWindowEnd
-            );
-            _completionNormalizedTime = Mathf.Max(
-                _hitWindowEnd,
-                _completionNormalizedTime
-            );
-        }
-    }
-
     [SerializeField, Min(0f)]
     private float _transitionDuration = 0.08f;
 
     [SerializeField]
     private WeaponHitbox _weaponHitbox;
 
-    [SerializeField, Min(1)]
-    private int _lightAttackDamage = 25;
-
-    [SerializeField, Min(1)]
-    private int _maxComboCount = 5;
-
-    [Header("Attack Timing (Normalized 0-1)")]
+    [Tooltip("轻攻击连招配置：每段参数（动画/伤害/体力/连击窗口/后摇等）见 AttackData")]
     [SerializeField]
-    private LightAttackTiming[] _lightAttackTimings =
-    {
-        new LightAttackTiming(0.14f, 0.27f, 0.46f),
-        new LightAttackTiming(0.30f, 0.46f, 0.56f),
-        new LightAttackTiming(0.22f, 0.38f, 0.48f),
-        new LightAttackTiming(0.23f, 0.38f, 0.44f),
-        new LightAttackTiming(0.22f, 0.38f, 0.50f)
-    };
+    private AttackCombo _attackCombo;
 
     private PlayerAnimator _playerAnimator;
     private bool _hitboxActive;
+    private float _recoveryTimer;
 
     /// <summary>
     /// 当前连击段索引（0-based），0 表示第一段。
@@ -81,16 +28,73 @@ public sealed class PlayerCombat : MonoBehaviour
     /// </summary>
     public bool AttackQueued { get; private set; }
 
-    public int MaxComboCount => Mathf.Min(
-        _maxComboCount,
-        _lightAttackTimings == null
-            ? 0
-            : _lightAttackTimings.Length
-    );
+    public int MaxComboCount => _attackCombo != null
+        ? _attackCombo.Count
+        : 0;
+
+    /// <summary>是否还有下一段攻击可以衔接。</summary>
+    public bool HasNextAttack =>
+        _attackCombo != null && ComboIndex + 1 < _attackCombo.Count;
+
+    /// <summary>当前段的配置数据；未配置连招时返回 null。</summary>
+    public AttackData CurrentAttack =>
+        _attackCombo != null ? _attackCombo.Get(ComboIndex) : null;
+
+    /// <summary>下一段攻击的体力消耗；没有下一段时返回 0。</summary>
+    public float NextAttackStaminaCost
+    {
+        get
+        {
+            AttackData next = _attackCombo != null
+                ? _attackCombo.Get(ComboIndex + 1)
+                : null;
+
+            return next != null ? next.StaminaCost : 0f;
+        }
+    }
+
+    /// <summary>第一段攻击的体力消耗（供 Locomotion 进入攻击前检查）。</summary>
+    public float FirstAttackStaminaCost
+    {
+        get
+        {
+            AttackData first = _attackCombo != null
+                ? _attackCombo.Get(0)
+                : null;
+
+            return first != null ? first.StaminaCost : 0f;
+        }
+    }
+
+    /// <summary>当前段允许的转向辅助时长（秒）。</summary>
+    public float CurrentRotateAssistTime =>
+        CurrentAttack != null ? CurrentAttack.RotateAssistTime : 0f;
+
+    /// <summary>当前动画是否处在"允许缓存下一段输入"的连击窗口内。</summary>
+    public bool IsInComboInputWindow
+    {
+        get
+        {
+            AttackData data = CurrentAttack;
+
+            if (
+                data == null ||
+                !_playerAnimator.TryGetLightAttackNormalizedTime(
+                    out float normalizedTime
+                )
+            )
+            {
+                return false;
+            }
+
+            return
+                normalizedTime >= data.ComboInputStart &&
+                normalizedTime <= data.ComboInputEnd;
+        }
+    }
 
     private void Awake()
     {
-        EnsureAttackTimings();
         _playerAnimator = GetComponent<PlayerAnimator>();
 
         if (_weaponHitbox == null)
@@ -105,6 +109,14 @@ public sealed class PlayerCombat : MonoBehaviour
                 this
             );
         }
+
+        if (_attackCombo == null || _attackCombo.Count == 0)
+        {
+            Debug.LogError(
+                "PlayerCombat 没有配置 AttackCombo，攻击无法播放。",
+                this
+            );
+        }
     }
 
     /// <summary>
@@ -114,13 +126,14 @@ public sealed class PlayerCombat : MonoBehaviour
     {
         ComboIndex = 0;
         AttackQueued = false;
+        _recoveryTimer = 0f;
         CloseHitWindow();
-        _playerAnimator.PlayLightAttack(ComboIndex, _transitionDuration);
+        PlayCurrentAttack();
     }
 
     /// <summary>
     /// 缓存一次下一段攻击输入。每段攻击最多缓存一次，
-    /// 由调用方在体力检查通过后调用。
+    /// 由调用方在连击窗口与体力检查通过后调用。
     /// </summary>
     public void QueueNextAttack()
     {
@@ -128,13 +141,13 @@ public sealed class PlayerCombat : MonoBehaviour
     }
 
     /// <summary>
-    /// 当前段结束时尝试进入下一段。
+    /// 当前段结束（含后摇）后尝试进入下一段。
     /// 返回 true 表示已切换到下一段动画，攻击状态应继续保持；
     /// 返回 false 表示连击结束，comboIndex 已重置。
     /// </summary>
     public bool TryStartNextComboHit()
     {
-        if (!AttackQueued || ComboIndex + 1 >= MaxComboCount)
+        if (!AttackQueued || !HasNextAttack)
         {
             ResetCombo();
             return false;
@@ -142,8 +155,9 @@ public sealed class PlayerCombat : MonoBehaviour
 
         AttackQueued = false;
         ComboIndex++;
+        _recoveryTimer = 0f;
         CloseHitWindow();
-        _playerAnimator.PlayLightAttack(ComboIndex, _transitionDuration);
+        PlayCurrentAttack();
         return true;
     }
 
@@ -154,42 +168,42 @@ public sealed class PlayerCombat : MonoBehaviour
     {
         ComboIndex = 0;
         AttackQueued = false;
+        _recoveryTimer = 0f;
     }
 
     public void TickLightAttack()
     {
-        if (
-            _weaponHitbox == null ||
-            !_playerAnimator.TryGetLightAttackNormalizedTime(
-                out float normalizedTime
-            )
-        )
-        {
+        AttackData data = CurrentAttack;
+
+        if (data == null)
             return;
-        }
 
-        LightAttackTiming timing = GetCurrentAttackTiming();
-        bool shouldBeActive =
-            normalizedTime >= timing.HitWindowStart &&
-            normalizedTime < timing.HitWindowEnd;
-
-        if (shouldBeActive && !_hitboxActive)
-        {
-            _weaponHitbox.BeginAttack(_lightAttackDamage);
-            _hitboxActive = true;
-        }
-        else if (!shouldBeActive && _hitboxActive)
-        {
-            CloseHitWindow();
-        }
+        TickHitWindow(data);
+        TickRecovery(data);
     }
 
+    /// <summary>动画是否到达本段的完成点（挥砍结束）。</summary>
     public bool IsLightAttackFinished()
     {
-        LightAttackTiming timing = GetCurrentAttackTiming();
+        AttackData data = CurrentAttack;
+
+        if (data == null)
+            return true;
+
         return _playerAnimator.IsLightAttackFinished(
-            timing.CompletionNormalizedTime
+            data.CompletionNormalizedTime
         );
+    }
+
+    /// <summary>完成点之后的额外后摇是否结束。</summary>
+    public bool IsRecoveryDone()
+    {
+        AttackData data = CurrentAttack;
+
+        if (data == null)
+            return true;
+
+        return _recoveryTimer >= data.RecoveryTime;
     }
 
     public void FinishLightAttack()
@@ -212,49 +226,66 @@ public sealed class PlayerCombat : MonoBehaviour
         CloseHitWindow();
     }
 
-    private void OnValidate()
+    private void PlayCurrentAttack()
     {
-        EnsureAttackTimings();
+        AttackData data = CurrentAttack;
 
-        for (int i = 0; i < _lightAttackTimings.Length; i++)
+        if (data == null)
         {
-            LightAttackTiming timing = _lightAttackTimings[i];
-            timing.Validate();
-            _lightAttackTimings[i] = timing;
+            Debug.LogError(
+                "PlayerCombat 当前连击段没有 AttackData。",
+                this
+            );
+            return;
         }
-    }
 
-    private LightAttackTiming GetCurrentAttackTiming()
-    {
-        EnsureAttackTimings();
-        int timingIndex = Mathf.Clamp(
-            ComboIndex,
-            0,
-            _lightAttackTimings.Length - 1
+        _playerAnimator.PlayLightAttack(
+            data.AnimationStateName,
+            _transitionDuration
         );
-        return _lightAttackTimings[timingIndex];
     }
 
-    private void EnsureAttackTimings()
+    private void TickHitWindow(AttackData data)
     {
         if (
-            _lightAttackTimings == null ||
-            _lightAttackTimings.Length == 0
+            _weaponHitbox == null ||
+            !_playerAnimator.TryGetLightAttackNormalizedTime(
+                out float normalizedTime
+            )
         )
         {
-            _lightAttackTimings = BuildDefaultAttackTimings();
+            return;
+        }
+
+        bool shouldBeActive =
+            normalizedTime >= data.HitWindowStart &&
+            normalizedTime < data.HitWindowEnd;
+
+        if (shouldBeActive && !_hitboxActive)
+        {
+            _weaponHitbox.BeginAttack(data.Damage);
+            _hitboxActive = true;
+        }
+        else if (!shouldBeActive && _hitboxActive)
+        {
+            CloseHitWindow();
         }
     }
 
-    private static LightAttackTiming[] BuildDefaultAttackTimings()
+    private void TickRecovery(AttackData data)
     {
-        return new[]
+        if (_recoveryTimer >= data.RecoveryTime)
+            return;
+
+        if (
+            !_playerAnimator.IsLightAttackFinished(
+                data.CompletionNormalizedTime
+            )
+        )
         {
-            new LightAttackTiming(0.14f, 0.27f, 0.46f),
-            new LightAttackTiming(0.30f, 0.46f, 0.56f),
-            new LightAttackTiming(0.22f, 0.38f, 0.48f),
-            new LightAttackTiming(0.23f, 0.38f, 0.44f),
-            new LightAttackTiming(0.22f, 0.38f, 0.50f)
-        };
+            return;
+        }
+
+        _recoveryTimer += Time.deltaTime;
     }
 }

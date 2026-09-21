@@ -222,24 +222,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _transitionDuration: 0.08
   _weaponHitbox: {fileID: 4152490936108040189}
-  _lightAttackDamage: 25
-  _maxComboCount: 5
-  _lightAttackTimings:
-  - _hitWindowStart: 0.14
-    _hitWindowEnd: 0.27
-    _completionNormalizedTime: 0.46
-  - _hitWindowStart: 0.3
-    _hitWindowEnd: 0.46
-    _completionNormalizedTime: 0.56
-  - _hitWindowStart: 0.22
-    _hitWindowEnd: 0.38
-    _completionNormalizedTime: 0.48
-  - _hitWindowStart: 0.23
-    _hitWindowEnd: 0.38
-    _completionNormalizedTime: 0.44
-  - _hitWindowStart: 0.22
-    _hitWindowEnd: 0.38
-    _completionNormalizedTime: 0.5
+  _attackCombo: {fileID: 11400000, guid: a5d1c0de000000000000000000000001, type: 2}
 --- !u!114 &4871860948031446777
 MonoBehaviour:
   m_ObjectHideFlags: 0

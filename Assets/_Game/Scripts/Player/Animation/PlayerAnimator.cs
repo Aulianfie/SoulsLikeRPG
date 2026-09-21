@@ -11,14 +11,6 @@ public class PlayerAnimator : MonoBehaviour
     private static readonly int VerticalSpeedHash = Animator.StringToHash("VerticalSpeed");
     private static readonly int LocomotionStateHash =
         Animator.StringToHash("Base Layer.Locomotion");
-    private static readonly int[] LightAttackStateHashes =
-    {
-        Animator.StringToHash("Base Layer.Attack1"),
-        Animator.StringToHash("Base Layer.Attack2"),
-        Animator.StringToHash("Base Layer.Attack3"),
-        Animator.StringToHash("Base Layer.Attack4"),
-        Animator.StringToHash("Base Layer.Attack5")
-    };
     private static readonly int DodgeStateHash =
         Animator.StringToHash("Base Layer.Dodge");
     private static readonly int HurtStateHash =
@@ -55,18 +47,27 @@ public class PlayerAnimator : MonoBehaviour
     }
 
     /// <summary>
-    /// 播放连击的第 comboIndex 段攻击动画（0-based），
+    /// 播放 Base Layer 下指定名称的轻攻击状态（例如 Attack1，来自 AttackData）。
     /// fixedTimeOffset = 0 保证每段都从动画开头播放。
     /// </summary>
-    public void PlayLightAttack(int comboIndex, float transitionDuration)
+    public void PlayLightAttack(
+        string animationStateName,
+        float transitionDuration
+    )
     {
-        comboIndex = Mathf.Clamp(
-            comboIndex,
-            0,
-            LightAttackStateHashes.Length - 1
+        if (string.IsNullOrEmpty(animationStateName))
+        {
+            Debug.LogError(
+                "PlayerAnimator 收到空的攻击状态名。",
+                this
+            );
+            return;
+        }
+
+        _currentAttackStateHash = Animator.StringToHash(
+            "Base Layer." + animationStateName
         );
 
-        _currentAttackStateHash = LightAttackStateHashes[comboIndex];
         _animator.CrossFadeInFixedTime(
             _currentAttackStateHash,
             transitionDuration,

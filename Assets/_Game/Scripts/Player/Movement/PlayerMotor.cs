@@ -108,6 +108,21 @@ public sealed class PlayerMotor : MonoBehaviour
         return dodgeDirection.normalized;
     }
 
+    /// <summary>
+    /// 攻击转向辅助：把角色朝当前移动输入（相机相对方向）平滑旋转。
+    /// 由攻击状态在 rotateAssistTime 期间逐帧调用。
+    /// </summary>
+    public void RotateTowardsInput(Vector2 moveInput, float deltaTime)
+    {
+        if (!_isInitialized)
+            return;
+
+        RotateTowards(
+            GetCameraRelativeDirection(moveInput),
+            deltaTime
+        );
+    }
+
     public void BeginDodge(Vector3 dodgeDirection)
     {
         if (!_isInitialized)
