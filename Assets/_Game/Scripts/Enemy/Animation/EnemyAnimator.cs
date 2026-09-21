@@ -67,6 +67,26 @@ public sealed class EnemyAnimator : MonoBehaviour
         CrossFade(AttackStateHash);
     }
 
+    /// <summary>
+    /// 设置动画播放速度（全局）。
+    /// 攻击前摇段会临时减速，切换状态时务必还原为 1。
+    /// </summary>
+    public void SetSpeed(float speed)
+    {
+        if (_animator == null)
+            return;
+
+        if (!Mathf.Approximately(_animator.speed, speed))
+        {
+            Debug.Log(
+                $"[EnemyAnimator] speed {_animator.speed:0.00} -> {speed:0.00}",
+                _animator
+            );
+
+            _animator.speed = speed;
+        }
+    }
+
     public void PlayDeath()
     {
         CrossFade(DeathStateHash);

@@ -534,9 +534,11 @@ MonoBehaviour:
   m_EditorClassIdentifier:
   _weaponHitbox: {fileID: 3231610368539799852}
   _attackDamage: 20
+  _windupSpeedMultiplier: 0.5
+  _windupEndNormalizedTime: 0.4
   _hitboxStartNormalizedTime: 0.12
   _hitboxEndNormalizedTime: 0.6
-  _attackCooldown: 1
+  _attackCooldown: 0.5
 --- !u!1001 &7275019754705713998
 PrefabInstance:
   m_ObjectHideFlags: 0

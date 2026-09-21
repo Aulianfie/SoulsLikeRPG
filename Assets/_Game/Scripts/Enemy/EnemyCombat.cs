@@ -9,6 +9,15 @@ public sealed class EnemyCombat : MonoBehaviour
     [SerializeField, Min(1)]
     private int _attackDamage = 20;
 
+    [Header("Wind-up（前摇）")]
+    [Tooltip("攻击动画前摇段的播放速度，<1 表示抬手更慢更长")]
+    [SerializeField, Range(0.2f, 1f)]
+    private float _windupSpeedMultiplier = 0.5f;
+
+    [Tooltip("前摇段的结束点（normalizedTime），之后恢复正常播放速度")]
+    [SerializeField, Range(0f, 1f)]
+    private float _windupEndNormalizedTime = 0.4f;
+
     [SerializeField, Range(0f, 1f)]
     private float _hitboxStartNormalizedTime = 0.12f;
 
@@ -16,7 +25,7 @@ public sealed class EnemyCombat : MonoBehaviour
     private float _hitboxEndNormalizedTime = 0.6f;
 
     [SerializeField, Min(0f)]
-    private float _attackCooldown = 1f;
+    private float _attackCooldown = 0.5f;
 
     private bool _attackInProgress;
     private bool _hitboxActive;
@@ -26,6 +35,9 @@ public sealed class EnemyCombat : MonoBehaviour
         _weaponHitbox != null &&
         !_attackInProgress &&
         Time.time >= _nextAttackTime;
+
+    public float WindupSpeedMultiplier => _windupSpeedMultiplier;
+    public float WindupEndNormalizedTime => _windupEndNormalizedTime;
 
     private void Awake()
     {
@@ -105,6 +117,12 @@ public sealed class EnemyCombat : MonoBehaviour
         _hitboxEndNormalizedTime = Mathf.Max(
             _hitboxStartNormalizedTime,
             _hitboxEndNormalizedTime
+        );
+        _windupEndNormalizedTime = Mathf.Clamp01(
+            Mathf.Min(
+                _windupEndNormalizedTime,
+                _hitboxEndNormalizedTime
+            )
         );
     }
 }
