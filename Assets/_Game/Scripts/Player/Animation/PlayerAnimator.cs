@@ -11,8 +11,14 @@ public class PlayerAnimator : MonoBehaviour
     private static readonly int VerticalSpeedHash = Animator.StringToHash("VerticalSpeed");
     private static readonly int LocomotionStateHash =
         Animator.StringToHash("Base Layer.Locomotion");
-    private static readonly int LightAttackStateHash =
-        Animator.StringToHash("Base Layer.LightAttack");
+    private static readonly int[] LightAttackStateHashes =
+    {
+        Animator.StringToHash("Base Layer.Attack1"),
+        Animator.StringToHash("Base Layer.Attack2"),
+        Animator.StringToHash("Base Layer.Attack3"),
+        Animator.StringToHash("Base Layer.Attack4"),
+        Animator.StringToHash("Base Layer.Attack5")
+    };
     private static readonly int DodgeStateHash =
         Animator.StringToHash("Base Layer.Dodge");
     private static readonly int HurtStateHash =
@@ -23,6 +29,7 @@ public class PlayerAnimator : MonoBehaviour
     private const int BaseLayerIndex = 0;
 
     private PlayerMotor _motor;
+    private int _currentAttackStateHash;
 
     private void Awake()
     {
@@ -47,12 +54,24 @@ public class PlayerAnimator : MonoBehaviour
         _animator.SetFloat(VerticalSpeedHash, _motor.VerticalVelocity);
     }
 
-    public void PlayLightAttack(float transitionDuration)
+    /// <summary>
+    /// 播放连击的第 comboIndex 段攻击动画（0-based），
+    /// fixedTimeOffset = 0 保证每段都从动画开头播放。
+    /// </summary>
+    public void PlayLightAttack(int comboIndex, float transitionDuration)
     {
+        comboIndex = Mathf.Clamp(
+            comboIndex,
+            0,
+            LightAttackStateHashes.Length - 1
+        );
+
+        _currentAttackStateHash = LightAttackStateHashes[comboIndex];
         _animator.CrossFadeInFixedTime(
-            LightAttackStateHash,
+            _currentAttackStateHash,
             transitionDuration,
-            BaseLayerIndex
+            BaseLayerIndex,
+            0f
         );
     }
     /// <summary>
@@ -83,7 +102,7 @@ public class PlayerAnimator : MonoBehaviour
         AnimatorStateInfo stateInfo =
             _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
 
-        if (stateInfo.fullPathHash != LightAttackStateHash)
+        if (stateInfo.fullPathHash != _currentAttackStateHash)
             return false;
 
         normalizedTime = stateInfo.normalizedTime;

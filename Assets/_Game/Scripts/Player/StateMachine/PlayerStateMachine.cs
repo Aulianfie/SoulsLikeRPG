@@ -28,6 +28,8 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerHurtState HurtState { get; private set; }
     public PlayerDeadState DeadState { get; private set; }
 
+    private bool _hasStarted;
+
     private void Awake()
     {
         InputReader = GetComponent<PlayerInputReader>();
@@ -46,9 +48,16 @@ public sealed class PlayerStateMachine : MonoBehaviour
 
     private void OnEnable()
     {
-        ChangeState(Health != null && Health.IsDead
-            ? DeadState
-            : LocomotionState);
+        // 首次启用时，其他组件的 Awake 尚未保证全部执行完毕。
+        // 等到 Start 再读取 PlayerHealth，避免把默认生命值 0 误判为死亡。
+        if (_hasStarted)
+            EnterInitialState();
+    }
+
+    private void Start()
+    {
+        _hasStarted = true;
+        EnterInitialState();
     }
 
     /// <summary>
@@ -95,5 +104,12 @@ public sealed class PlayerStateMachine : MonoBehaviour
             return;
 
         ChangeState(Health.IsDead ? DeadState : HurtState);
+    }
+
+    private void EnterInitialState()
+    {
+        ChangeState(Health != null && Health.IsDead
+            ? DeadState
+            : LocomotionState);
     }
 }
