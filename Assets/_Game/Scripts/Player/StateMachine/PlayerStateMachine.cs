@@ -5,6 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerMotor))]
 [RequireComponent(typeof(PlayerCombat))]
 [RequireComponent(typeof(PlayerAnimator))]
+[RequireComponent(typeof(PlayerHealth))]
 [RequireComponent(typeof(PlayerStamina))]
 public sealed class PlayerStateMachine : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerMotor Motor { get; private set; }
     public PlayerCombat Combat { get; private set; }
     public PlayerAnimator PlayerAnimator { get; private set; }
+    public PlayerHealth Health { get; private set; }
     public PlayerStamina Stamina { get; private set; }
     public PlayerState CurrentState { get; private set; }
     public string CurrentStateName =>
@@ -23,6 +25,8 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerAirborneState AirborneState { get; private set; }
     public PlayerAttackState AttackState { get; private set; }
     public PlayerDodgeState DodgeState { get; private set; }
+    public PlayerHurtState HurtState { get; private set; }
+    public PlayerDeadState DeadState { get; private set; }
 
     private void Awake()
     {
@@ -30,16 +34,21 @@ public sealed class PlayerStateMachine : MonoBehaviour
         Motor = GetComponent<PlayerMotor>();
         Combat = GetComponent<PlayerCombat>();
         PlayerAnimator = GetComponent<PlayerAnimator>();
+        Health = GetComponent<PlayerHealth>();
         Stamina = GetComponent<PlayerStamina>();
         LocomotionState = new PlayerLocomotionState(this);
         AirborneState = new PlayerAirborneState(this);
         AttackState = new PlayerAttackState(this);
         DodgeState = new PlayerDodgeState(this);
+        HurtState = new PlayerHurtState(this);
+        DeadState = new PlayerDeadState(this);
     }
 
     private void OnEnable()
     {
-        ChangeState(LocomotionState);
+        ChangeState(Health != null && Health.IsDead
+            ? DeadState
+            : LocomotionState);
     }
 
     /// <summary>
@@ -58,7 +67,11 @@ public sealed class PlayerStateMachine : MonoBehaviour
 
     public void ChangeState(PlayerState newState)
     {
-        if (newState == null || newState == CurrentState)
+        if (
+            newState == null ||
+            newState == CurrentState ||
+            CurrentState == DeadState
+        )
             return;
 
         string previousStateName = CurrentStateName;
@@ -74,5 +87,13 @@ public sealed class PlayerStateMachine : MonoBehaviour
                 this
             );
         }
+    }
+
+    public void HandleDamageTaken()
+    {
+        if (Health == null)
+            return;
+
+        ChangeState(Health.IsDead ? DeadState : HurtState);
     }
 }

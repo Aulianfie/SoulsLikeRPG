@@ -15,6 +15,10 @@ public class PlayerAnimator : MonoBehaviour
         Animator.StringToHash("Base Layer.LightAttack");
     private static readonly int DodgeStateHash =
         Animator.StringToHash("Base Layer.Dodge");
+    private static readonly int HurtStateHash =
+        Animator.StringToHash("Base Layer.Hurt");
+    private static readonly int DeadStateHash =
+        Animator.StringToHash("Base Layer.Dead");
 
     private const int BaseLayerIndex = 0;
 
@@ -106,6 +110,39 @@ public class PlayerAnimator : MonoBehaviour
 
     public bool IsDodgeFinished(float completionNormalizedTime)
     {
+        return
+            TryGetDodgeNormalizedTime(out float normalizedTime) &&
+            normalizedTime >= completionNormalizedTime;
+    }
+
+    public bool TryGetDodgeNormalizedTime(out float normalizedTime)
+    {
+        normalizedTime = 0f;
+
+        if (_animator.IsInTransition(BaseLayerIndex))
+            return false;
+
+        AnimatorStateInfo stateInfo =
+            _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+
+        if (stateInfo.fullPathHash != DodgeStateHash)
+            return false;
+
+        normalizedTime = stateInfo.normalizedTime;
+        return true;
+    }
+
+    public void PlayHurt(float transitionDuration)
+    {
+        _animator.CrossFadeInFixedTime(
+            HurtStateHash,
+            transitionDuration,
+            BaseLayerIndex
+        );
+    }
+
+    public bool IsHurtFinished(float completionNormalizedTime)
+    {
         if (_animator.IsInTransition(BaseLayerIndex))
             return false;
 
@@ -113,8 +150,17 @@ public class PlayerAnimator : MonoBehaviour
             _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
 
         return
-            stateInfo.fullPathHash == DodgeStateHash &&
+            stateInfo.fullPathHash == HurtStateHash &&
             stateInfo.normalizedTime >= completionNormalizedTime;
+    }
+
+    public void PlayDeath(float transitionDuration)
+    {
+        _animator.CrossFadeInFixedTime(
+            DeadStateHash,
+            transitionDuration,
+            BaseLayerIndex
+        );
     }
 
     /// <summary>

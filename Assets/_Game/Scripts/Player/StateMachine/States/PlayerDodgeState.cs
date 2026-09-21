@@ -4,6 +4,8 @@ public sealed class PlayerDodgeState : PlayerState
 {
     private const float TransitionDuration = 0.08f;
     private const float CompletionNormalizedTime = 0.95f;
+    private const float IFrameStartNormalizedTime = 0.2f;
+    private const float IFrameEndNormalizedTime = 0.65f;
 
     private Vector3 _dodgeDirection;
     private float _elapsedTime;
@@ -18,6 +20,7 @@ public sealed class PlayerDodgeState : PlayerState
         StateMachine.InputReader.ConsumeJump();
         StateMachine.InputReader.ConsumeLightAttack();
         StateMachine.InputReader.ConsumeDodge();
+        StateMachine.Health.DisableIFrame();
 
         _elapsedTime = 0f;
         _dodgeDirection = StateMachine.Motor.GetDodgeDirection(
@@ -37,6 +40,22 @@ public sealed class PlayerDodgeState : PlayerState
 
         _elapsedTime += deltaTime;
 
+        if (
+            StateMachine.PlayerAnimator.TryGetDodgeNormalizedTime(
+                out float normalizedTime
+            )
+        )
+        {
+            bool isInsideIFrame =
+                normalizedTime >= IFrameStartNormalizedTime &&
+                normalizedTime < IFrameEndNormalizedTime;
+
+            if (isInsideIFrame)
+                StateMachine.Health.EnableIFrame();
+            else
+                StateMachine.Health.DisableIFrame();
+        }
+
         StateMachine.Motor.TickDodge(
             _elapsedTime < StateMachine.Motor.DodgeDuration,
             deltaTime
@@ -55,6 +74,7 @@ public sealed class PlayerDodgeState : PlayerState
 
     public override void Exit()
     {
+        StateMachine.Health.DisableIFrame();
         StateMachine.Motor.EndDodge();
         StateMachine.PlayerAnimator.PlayLocomotion(
             TransitionDuration
