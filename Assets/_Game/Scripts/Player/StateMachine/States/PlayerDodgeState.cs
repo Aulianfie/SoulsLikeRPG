@@ -18,8 +18,8 @@ public sealed class PlayerDodgeState : PlayerState
     public override void Enter()
     {
         StateMachine.InputReader.ConsumeJump();
-        StateMachine.InputReader.ConsumeLightAttack();
-        StateMachine.InputReader.ConsumeDodge();
+        StateMachine.InputReader.ConsumeBufferedDodge();
+        StateMachine.InputReader.ClearLightAttackBuffer();
         StateMachine.Health.DisableIFrame();
 
         _elapsedTime = 0f;
@@ -33,10 +33,9 @@ public sealed class PlayerDodgeState : PlayerState
 
     public override void Tick(float deltaTime)
     {
-        // Day3 暂不实现取消窗口，翻滚期间的新输入直接丢弃。
+        // 翻滚期间不允许攻击或再次翻滚。
         StateMachine.InputReader.ConsumeJump();
-        StateMachine.InputReader.ConsumeLightAttack();
-        StateMachine.InputReader.ConsumeDodge();
+        StateMachine.InputReader.ClearAllBuffers();
 
         _elapsedTime += deltaTime;
 
@@ -74,6 +73,7 @@ public sealed class PlayerDodgeState : PlayerState
 
     public override void Exit()
     {
+        StateMachine.InputReader.ClearAllBuffers();
         StateMachine.Health.DisableIFrame();
         StateMachine.Motor.EndDodge();
         StateMachine.PlayerAnimator.PlayLocomotion(

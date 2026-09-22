@@ -100,6 +100,21 @@ public sealed class PlayerCombat : MonoBehaviour
         }
     }
 
+    public bool IsInDodgeCancelWindow
+    {
+        get
+        {
+            AttackData data = CurrentAttack;
+            if (data == null ||
+                !_playerAnimator.TryGetLightAttackNormalizedTime(
+                    out float normalizedTime))
+                return false;
+
+            return normalizedTime >= data.DodgeCancelStart &&
+                normalizedTime <= data.DodgeCancelEnd;
+        }
+    }
+
     /// <summary>
     /// 是否已到达"允许正式衔接下一段攻击"的动画位置。
     /// ComboTransitionPoint 复用手感窗口终点 ComboInputEnd：

@@ -26,7 +26,6 @@ public sealed class PlayerDeadState : PlayerState
     private void ConsumeBufferedInput()
     {
         StateMachine.InputReader.ConsumeJump();
-        StateMachine.InputReader.ConsumeLightAttack();
-        StateMachine.InputReader.ConsumeDodge();
+        StateMachine.InputReader.ClearAllBuffers();
     }
 }

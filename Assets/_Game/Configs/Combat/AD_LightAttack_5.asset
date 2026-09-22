@@ -21,6 +21,8 @@ MonoBehaviour:
   _recoveryTime: 0.3
   _comboInputStart: 0.1
   _comboInputEnd: 0.45
+  _dodgeCancelStart: 0.51
+  _dodgeCancelEnd: 0.6
   _rotateAssistTime: 0.2
   _moveDistance: 0
   _forwardImpulse: 0

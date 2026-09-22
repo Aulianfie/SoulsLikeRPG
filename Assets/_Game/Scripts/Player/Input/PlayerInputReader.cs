@@ -3,6 +3,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerInputReader : MonoBehaviour
 {
+    [Header("Input Buffer")]
+    [SerializeField, Min(0f)] private float _lightAttackBufferDuration = 0.20f;
+    [SerializeField, Min(0f)] private float _dodgeBufferDuration = 0.15f;
+
     public Vector2 MoveInput { get; private set; }
     public Vector2 LookInput { get; private set; }
     public bool SprintInput { get; private set; }
@@ -17,6 +21,14 @@ public class PlayerInputReader : MonoBehaviour
     private bool _jumpRequested;
     private bool _lightAttackRequested;
     private bool _dodgeRequested;
+    private float _lightAttackExpireTime;
+    private float _dodgeExpireTime;
+
+    public bool HasBufferedLightAttack =>
+        _lightAttackRequested && Time.time <= _lightAttackExpireTime;
+
+    public bool HasBufferedDodge =>
+        _dodgeRequested && Time.time <= _dodgeExpireTime;
 
     /// <summary>
     /// 初始化玩家输入读取器，绑定输入动作到相应的回调函数。
@@ -94,8 +106,7 @@ public class PlayerInputReader : MonoBehaviour
             _dodgeAction.performed -= OnDodge;
 
         _jumpRequested = false;
-        _lightAttackRequested = false;
-        _dodgeRequested = false;
+        ClearAllBuffers();
 
         _gameplayMap?.Disable();
     }
@@ -126,11 +137,13 @@ public class PlayerInputReader : MonoBehaviour
     private void OnLightAttack(InputAction.CallbackContext context)
     {
         _lightAttackRequested = true;
+        _lightAttackExpireTime = Time.time + _lightAttackBufferDuration;
     }
 
     private void OnDodge(InputAction.CallbackContext context)
     {
         _dodgeRequested = true;
+        _dodgeExpireTime = Time.time + _dodgeBufferDuration;
     }
 
     public bool ConsumeJump()
@@ -144,19 +157,43 @@ public class PlayerInputReader : MonoBehaviour
 
     public bool ConsumeLightAttack()
     {
-        if (!_lightAttackRequested)
-            return false;
-
-        _lightAttackRequested = false;
-        return true;
+        return ConsumeBufferedLightAttack();
     }
 
     public bool ConsumeDodge()
     {
-        if (!_dodgeRequested)
-            return false;
+        return ConsumeBufferedDodge();
+    }
 
+    public bool ConsumeBufferedLightAttack()
+    {
+        bool wasBuffered = HasBufferedLightAttack;
+        ClearLightAttackBuffer();
+        return wasBuffered;
+    }
+
+    public bool ConsumeBufferedDodge()
+    {
+        bool wasBuffered = HasBufferedDodge;
+        ClearDodgeBuffer();
+        return wasBuffered;
+    }
+
+    public void ClearLightAttackBuffer()
+    {
+        _lightAttackRequested = false;
+        _lightAttackExpireTime = 0f;
+    }
+
+    public void ClearDodgeBuffer()
+    {
         _dodgeRequested = false;
-        return true;
+        _dodgeExpireTime = 0f;
+    }
+
+    public void ClearAllBuffers()
+    {
+        ClearLightAttackBuffer();
+        ClearDodgeBuffer();
     }
 }

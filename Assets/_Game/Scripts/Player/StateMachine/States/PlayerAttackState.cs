@@ -16,8 +16,6 @@ public sealed class PlayerAttackState : PlayerState
     public override void Enter()
     {
         StateMachine.InputReader.ConsumeJump();
-        StateMachine.InputReader.ConsumeLightAttack();
-        StateMachine.InputReader.ConsumeDodge();
         StateMachine.Motor.StopHorizontalMovement();
         _elapsedTime = 0f;
         _startFailed = !StateMachine.Combat.StartLightAttack();
@@ -29,13 +27,27 @@ public sealed class PlayerAttackState : PlayerState
         // Combo 与命中窗口已由 PlayerCombat 重置。
         if (_startFailed)
         {
+            StateMachine.InputReader.ClearLightAttackBuffer();
             StateMachine.ChangeState(StateMachine.LocomotionState);
             return;
         }
 
-        // Jump / Dodge 输入在攻击期间丢弃（Day4 不做取消窗口）。
+        // Jump 暂不缓存；Dodge 在当前攻击的取消窗口中优先于连击。
         StateMachine.InputReader.ConsumeJump();
-        StateMachine.InputReader.ConsumeDodge();
+
+        if (
+            StateMachine.InputReader.HasBufferedDodge &&
+            StateMachine.Combat.IsInDodgeCancelWindow &&
+            StateMachine.Motor.IsGrounded &&
+            StateMachine.Stamina.Consume(
+                StateMachine.Stamina.DodgeCost
+            )
+        )
+        {
+            StateMachine.InputReader.ConsumeBufferedDodge();
+            StateMachine.ChangeState(StateMachine.DodgeState);
+            return;
+        }
 
         // Day4：攻击开头的 rotateAssistTime 内允许向移动输入方向转向。
         if (_elapsedTime < StateMachine.Combat.CurrentRotateAssistTime)
@@ -50,7 +62,8 @@ public sealed class PlayerAttackState : PlayerState
 
         // 连击窗口内允许缓存一次下一段输入；
         // 这里只做体力预检查（不扣体力），真正扣除在衔接点进行。
-        if (StateMachine.InputReader.ConsumeLightAttack())
+        if (StateMachine.InputReader.HasBufferedLightAttack &&
+            !StateMachine.InputReader.HasBufferedDodge)
         {
             if (
                 !StateMachine.Combat.AttackQueued &&
@@ -61,6 +74,7 @@ public sealed class PlayerAttackState : PlayerState
                 )
             )
             {
+                StateMachine.InputReader.ConsumeBufferedLightAttack();
                 StateMachine.Combat.QueueNextAttack();
             }
         }
@@ -83,6 +97,7 @@ public sealed class PlayerAttackState : PlayerState
             {
                 if (StateMachine.Combat.TryStartNextComboHit())
                 {
+                    StateMachine.InputReader.ClearLightAttackBuffer();
                     _elapsedTime = 0f;
                     return;
                 }

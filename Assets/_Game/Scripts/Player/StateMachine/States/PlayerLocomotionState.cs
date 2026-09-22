@@ -8,10 +8,6 @@ public sealed class PlayerLocomotionState : PlayerState
     public override void Tick(float deltaTime)
     {
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
-        bool lightAttackRequested =
-            StateMachine.InputReader.ConsumeLightAttack();
-        bool dodgeRequested =
-            StateMachine.InputReader.ConsumeDodge();
 
         if (
             StateMachine.Motor.IsGrounded &&
@@ -23,29 +19,31 @@ public sealed class PlayerLocomotionState : PlayerState
             return;
         }
 
-        // Day4：攻击体力消耗来自连招第一段的 AttackData；不足时忽略攻击输入。
+        // 同时缓存闪避和攻击时，优先执行闪避。
         if (
             StateMachine.Motor.IsGrounded &&
-            lightAttackRequested &&
-            StateMachine.Stamina.Consume(
-                GetLightAttackStaminaCost()
-            )
-        )
-        {
-            StateMachine.ChangeState(StateMachine.AttackState);
-            return;
-        }
-
-        // Day4：检查并扣除 Stamina；只有扣除成功才进入 Dodge 状态。
-        if (
-            StateMachine.Motor.IsGrounded &&
-            dodgeRequested &&
+            StateMachine.InputReader.HasBufferedDodge &&
             StateMachine.Stamina.Consume(
                 StateMachine.Stamina.DodgeCost
             )
         )
         {
+            StateMachine.InputReader.ConsumeBufferedDodge();
             StateMachine.ChangeState(StateMachine.DodgeState);
+            return;
+        }
+
+        // 第一段攻击的体力消耗来自 AttackData，扣除成功才消耗缓存。
+        if (
+            StateMachine.Motor.IsGrounded &&
+            StateMachine.InputReader.HasBufferedLightAttack &&
+            StateMachine.Stamina.Consume(
+                GetLightAttackStaminaCost()
+            )
+        )
+        {
+            StateMachine.InputReader.ConsumeBufferedLightAttack();
+            StateMachine.ChangeState(StateMachine.AttackState);
             return;
         }
 

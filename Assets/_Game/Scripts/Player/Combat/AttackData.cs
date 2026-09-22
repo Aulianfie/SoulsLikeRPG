@@ -42,6 +42,10 @@ public sealed class AttackData : ScriptableObject
     [Tooltip("允许缓存下一段攻击输入的结束点（normalizedTime）")]
     [SerializeField, Range(0f, 1f)] private float _comboInputEnd = 0.5f;
 
+    [Header("Dodge Cancel Window (Normalized)")]
+    [SerializeField, Range(0f, 1f)] private float _dodgeCancelStart = 0.55f;
+    [SerializeField, Range(0f, 1f)] private float _dodgeCancelEnd = 0.90f;
+
     [Header("Rotation Assist")]
     [Tooltip("攻击开始后允许向输入方向转向的持续时间（秒）")]
     [SerializeField, Min(0f)] private float _rotateAssistTime = 0.12f;
@@ -60,6 +64,8 @@ public sealed class AttackData : ScriptableObject
     public float RecoveryTime => _recoveryTime;
     public float ComboInputStart => _comboInputStart;
     public float ComboInputEnd => _comboInputEnd;
+    public float DodgeCancelStart => _dodgeCancelStart;
+    public float DodgeCancelEnd => _dodgeCancelEnd;
     public float RotateAssistTime => _rotateAssistTime;
     public float MoveDistance => _moveDistance;
     public float ForwardImpulse => _forwardImpulse;
@@ -76,5 +82,6 @@ public sealed class AttackData : ScriptableObject
             _comboInputStart,
             _comboInputEnd
         );
+        _dodgeCancelEnd = Mathf.Max(_dodgeCancelStart, _dodgeCancelEnd);
     }
 }
