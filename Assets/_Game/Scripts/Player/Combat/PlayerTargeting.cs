@@ -11,6 +11,13 @@ public sealed class PlayerTargeting : MonoBehaviour
     [SerializeField] private bool _logTargetChanges = true;
 
     private readonly List<Candidate> _candidates = new List<Candidate>();
+
+    // 本轮锁定会话的目标快照（建立时按"距屏幕中心"排序，会话期间固定）。
+    private readonly List<Targetable> _sessionTargets = new List<Targetable>();
+
+    // 本轮会话中已经锁定过的目标，用于防止重复锁定。
+    private readonly List<Targetable> _visitedTargets = new List<Targetable>();
+
     private PlayerInputReader _inputReader;
 
     public Targetable CurrentTarget { get; private set; }
@@ -20,7 +27,6 @@ public sealed class PlayerTargeting : MonoBehaviour
     private struct Candidate
     {
         public Targetable Target;
-        public Vector3 Viewport;
         public float CenterDistanceSquared;
     }
 
@@ -39,58 +45,111 @@ public sealed class PlayerTargeting : MonoBehaviour
 
     private void Update()
     {
+        // 当前目标失效（死亡 / 禁用 / 超出 LockRange）：
+        // 直接解除锁定并结束本轮会话，等待下次中键重新建立。
         if (!ReferenceEquals(CurrentTarget, null) &&
             !IsTargetValid(CurrentTarget))
-            SetTarget(null);
+        {
+            EndSession();
+            return;
+        }
 
         if (_inputReader.ConsumeLockOn())
-            SelectTarget();
+            HandleLockOnPressed();
     }
 
     private void OnDisable()
     {
-        SetTarget(null);
+        EndSession();
         _candidates.Clear();
     }
 
-    private void SelectTarget()
+    /// <summary>
+    /// 中键处理：
+    /// 未锁定时建立新一轮会话并锁定"距屏幕中心最近"的目标；
+    /// 已锁定时切换到会话中下一个未访问的目标，没有则解锁并结束会话。
+    /// </summary>
+    private void HandleLockOnPressed()
+    {
+        if (CurrentTarget == null)
+            StartSession();
+        else
+            AdvanceToNextTarget();
+    }
+
+    /// <summary>
+    /// 建立新的锁定会话：
+    /// 搜索可视目标 -> 按"距屏幕中心"升序排序 -> 保存本轮快照，
+    /// 锁定首个目标并标记已访问。
+    /// 会话建立后目标集合固定：中途新进入范围的敌人不参与本轮。
+    /// </summary>
+    private void StartSession()
     {
         FindVisibleTargets();
         if (_candidates.Count == 0)
             return;
 
-        if (CurrentTarget == null)
-        {
-            Candidate best = _candidates[0];
-            for (int i = 1; i < _candidates.Count; i++)
-            {
-                if (_candidates[i].CenterDistanceSquared <
-                    best.CenterDistanceSquared)
-                    best = _candidates[i];
-            }
+        // 主要顺序只由"距屏幕中心"决定（不依赖 OverlapSphere /
+        // Hierarchy / InstanceID 的返回顺序）。
+        _candidates.Sort((a, b) =>
+            a.CenterDistanceSquared.CompareTo(b.CenterDistanceSquared));
 
-            SetTarget(best.Target);
+        _sessionTargets.Clear();
+        _visitedTargets.Clear();
+
+        foreach (Candidate candidate in _candidates)
+            _sessionTargets.Add(candidate.Target);
+
+        LockTarget(_sessionTargets[0]);
+    }
+
+    /// <summary>
+    /// 切换到会话中下一个未访问且仍然有效的目标；
+    /// 找不到（全部访问完 / 剩余目标都已失效）时解锁并清空会话。
+    /// </summary>
+    private void AdvanceToNextTarget()
+    {
+        Targetable next = null;
+
+        foreach (Targetable target in _sessionTargets)
+        {
+            if (target == null)
+                continue;
+
+            if (_visitedTargets.Contains(target))
+                continue;
+
+            if (!IsTargetValid(target))
+                continue;
+
+            next = target;
+            break;
+        }
+
+        if (next == null)
+        {
+            EndSession();
             return;
         }
 
-        _candidates.Sort((a, b) =>
-        {
-            int xOrder = a.Viewport.x.CompareTo(b.Viewport.x);
-            if (xOrder != 0)
-                return xOrder;
+        LockTarget(next);
+    }
 
-            int yOrder = a.Viewport.y.CompareTo(b.Viewport.y);
-            return yOrder != 0
-                ? yOrder
-                : a.Target.GetInstanceID().CompareTo(b.Target.GetInstanceID());
-        });
+    /// <summary>锁定目标并记入已访问列表。</summary>
+    private void LockTarget(Targetable target)
+    {
+        SetTarget(target);
 
-        int currentIndex = _candidates.FindIndex(
-            candidate => candidate.Target == CurrentTarget);
-        int nextIndex = currentIndex < 0
-            ? 0
-            : (currentIndex + 1) % _candidates.Count;
-        SetTarget(_candidates[nextIndex].Target);
+        if (!_visitedTargets.Contains(target))
+            _visitedTargets.Add(target);
+    }
+
+    /// <summary>结束会话：解除锁定并清空快照与访问记录。</summary>
+    private void EndSession()
+    {
+        SetTarget(null);
+        _sessionTargets.Clear();
+        _visitedTargets.Clear();
     }
 
     private void FindVisibleTargets()
@@ -133,7 +192,6 @@ public sealed class PlayerTargeting : MonoBehaviour
             _candidates.Add(new Candidate
             {
                 Target = target,
-                Viewport = viewport,
                 CenterDistanceSquared = x * x + y * y
             });
         }
