@@ -7,6 +7,7 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerAnimator))]
 [RequireComponent(typeof(PlayerHealth))]
 [RequireComponent(typeof(PlayerStamina))]
+[RequireComponent(typeof(PlayerTargeting))]
 public sealed class PlayerStateMachine : MonoBehaviour
 {
     [SerializeField] private bool _logStateChanges = true;
@@ -17,6 +18,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerAnimator PlayerAnimator { get; private set; }
     public PlayerHealth Health { get; private set; }
     public PlayerStamina Stamina { get; private set; }
+    public PlayerTargeting Targeting { get; private set; }
     public PlayerState CurrentState { get; private set; }
     public string CurrentStateName =>
         CurrentState == null ? "None" : CurrentState.GetType().Name;
@@ -38,6 +40,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         PlayerAnimator = GetComponent<PlayerAnimator>();
         Health = GetComponent<PlayerHealth>();
         Stamina = GetComponent<PlayerStamina>();
+        Targeting = GetComponent<PlayerTargeting>();
         LocomotionState = new PlayerLocomotionState(this);
         AirborneState = new PlayerAirborneState(this);
         AttackState = new PlayerAttackState(this);

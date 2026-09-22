@@ -10,6 +10,15 @@ public sealed class PlayerCombat : MonoBehaviour
     [SerializeField]
     private WeaponHitbox _weaponHitbox;
 
+    [Header("Attack Target Assist (Day5 Task3)")]
+    [Tooltip("锁定攻击辅助的最大水平距离（米）：目标更远时不做朝向修正。")]
+    [SerializeField, Min(0f)]
+    private float _attackAssistRange = 4f;
+
+    [Tooltip("锁定攻击辅助的最大夹角（度）：目标超出该夹角（例如在背后）时不做朝向修正。")]
+    [SerializeField, Range(0f, 180f)]
+    private float _attackAssistAngle = 60f;
+
     [Tooltip("轻攻击连招配置：每段参数（动画/伤害/体力/连击窗口/后摇等）见 AttackData")]
     [SerializeField]
     private AttackCombo _attackCombo;
@@ -76,6 +85,12 @@ public sealed class PlayerCombat : MonoBehaviour
     /// <summary>当前段允许的转向辅助时长（秒）。</summary>
     public float CurrentRotateAssistTime =>
         CurrentAttack != null ? CurrentAttack.RotateAssistTime : 0f;
+
+    /// <summary>锁定攻击辅助的最大水平距离（米）。</summary>
+    public float AttackAssistRange => _attackAssistRange;
+
+    /// <summary>锁定攻击辅助的最大夹角（度）。</summary>
+    public float AttackAssistAngle => _attackAssistAngle;
 
     /// <summary>当前动画是否处在"允许缓存下一段输入"的连击窗口内。</summary>
     public bool IsInComboInputWindow

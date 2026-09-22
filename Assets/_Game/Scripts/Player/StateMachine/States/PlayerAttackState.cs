@@ -49,13 +49,11 @@ public sealed class PlayerAttackState : PlayerState
             return;
         }
 
-        // Day4：攻击开头的 rotateAssistTime 内允许向移动输入方向转向。
+        // Day5 Task3：rotateAssistTime 内优先向锁定目标修正朝向；
+        // 无目标、或目标超出 AttackAssist 距离/角度时回退为朝移动输入转向。
         if (_elapsedTime < StateMachine.Combat.CurrentRotateAssistTime)
         {
-            StateMachine.Motor.RotateTowardsInput(
-                StateMachine.InputReader.MoveInput,
-                deltaTime
-            );
+            TryRotateTowardsTarget(deltaTime);
         }
 
         _elapsedTime += deltaTime;
@@ -131,5 +129,36 @@ public sealed class PlayerAttackState : PlayerState
         // FinishLightAttack 会关闭命中窗口并重置连击进度，
         // 因此被 Hurt / Dodge / Dead 打断时连击也会正确重置。
         StateMachine.Combat.FinishLightAttack();
+    }
+
+    /// <summary>
+    /// 锁定攻击辅助：目标在 AttackAssistRange 内、且夹角不超过
+    /// AttackAssistAngle 时平滑面向目标（修正朝向）；
+    /// 不满足条件（无目标 / 太远 / 背后）时回退为朝移动输入方向转向。
+    /// 只修正朝向，不产生位移，也不直接结算伤害。
+    /// </summary>
+    private void TryRotateTowardsTarget(float deltaTime)
+    {
+        Targetable target = StateMachine.Targeting != null
+            ? StateMachine.Targeting.CurrentTarget
+            : null;
+
+        bool assisted =
+            target != null &&
+            target.LockPoint != null &&
+            StateMachine.Motor.RotateTowardsTarget(
+                target.LockPoint,
+                StateMachine.Combat.AttackAssistRange,
+                StateMachine.Combat.AttackAssistAngle,
+                deltaTime
+            );
+
+        if (assisted)
+            return;
+
+        StateMachine.Motor.RotateTowardsInput(
+            StateMachine.InputReader.MoveInput,
+            deltaTime
+        );
     }
 }

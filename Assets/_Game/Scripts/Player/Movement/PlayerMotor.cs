@@ -123,6 +123,44 @@ public sealed class PlayerMotor : MonoBehaviour
         );
     }
 
+    /// <summary>
+    /// Day5 Task3 攻击目标辅助：目标在 maxDistance（水平距离）内且与
+    /// 角色正面的夹角不超过 maxAngle 时，朝目标方向平滑旋转并返回 true；
+    /// 超出任一限制（例如目标在背后）时返回 false，调用方回退到输入转向，
+    /// 从而避免瞬间 180° 转身。
+    /// </summary>
+    public bool RotateTowardsTarget(
+        Transform target,
+        float maxDistance,
+        float maxAngle,
+        float deltaTime
+    )
+    {
+        if (!_isInitialized || target == null)
+            return false;
+
+        Vector3 toTarget = target.position - transform.position;
+        toTarget.y = 0f;
+
+        float sqrDistance = toTarget.sqrMagnitude;
+
+        if (
+            sqrDistance < 0.0001f ||
+            sqrDistance > maxDistance * maxDistance
+        )
+        {
+            return false;
+        }
+
+        toTarget /= Mathf.Sqrt(sqrDistance);
+
+        if (Vector3.Angle(transform.forward, toTarget) > maxAngle)
+            return false;
+
+        RotateTowards(toTarget, deltaTime);
+        return true;
+    }
+
     public void BeginDodge(Vector3 dodgeDirection)
     {
         if (!_isInitialized)

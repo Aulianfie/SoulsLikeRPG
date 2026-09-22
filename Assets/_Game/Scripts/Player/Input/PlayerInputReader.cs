@@ -18,9 +18,11 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _jumpAction;
     private InputAction _lightAttackAction;
     private InputAction _dodgeAction;
+    private InputAction _lockOnAction;
     private bool _jumpRequested;
     private bool _lightAttackRequested;
     private bool _dodgeRequested;
+    private bool _lockOnRequested;
     private float _lightAttackExpireTime;
     private float _dodgeExpireTime;
 
@@ -54,6 +56,7 @@ public class PlayerInputReader : MonoBehaviour
             true
         );
         _dodgeAction = _gameplayMap.FindAction("Dodge", true);
+        _lockOnAction = _gameplayMap.FindAction("LockOn", true);
     }
 
     private void OnEnable()
@@ -72,6 +75,7 @@ public class PlayerInputReader : MonoBehaviour
         _jumpAction.performed += OnJump;
         _lightAttackAction.performed += OnLightAttack;
         _dodgeAction.performed += OnDodge;
+        _lockOnAction.performed += OnLockOn;
 
         _gameplayMap.Enable();
     }
@@ -105,7 +109,11 @@ public class PlayerInputReader : MonoBehaviour
         if (_dodgeAction != null)
             _dodgeAction.performed -= OnDodge;
 
+        if (_lockOnAction != null)
+            _lockOnAction.performed -= OnLockOn;
+
         _jumpRequested = false;
+        _lockOnRequested = false;
         ClearAllBuffers();
 
         _gameplayMap?.Disable();
@@ -146,12 +154,26 @@ public class PlayerInputReader : MonoBehaviour
         _dodgeExpireTime = Time.time + _dodgeBufferDuration;
     }
 
+    private void OnLockOn(InputAction.CallbackContext context)
+    {
+        _lockOnRequested = true;
+    }
+
     public bool ConsumeJump()
     {
         if (!_jumpRequested)
             return false;
 
         _jumpRequested = false;
+        return true;
+    }
+
+    public bool ConsumeLockOn()
+    {
+        if (!_lockOnRequested)
+            return false;
+
+        _lockOnRequested = false;
         return true;
     }
 

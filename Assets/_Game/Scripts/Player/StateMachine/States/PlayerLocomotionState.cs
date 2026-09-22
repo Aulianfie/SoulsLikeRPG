@@ -47,6 +47,9 @@ public sealed class PlayerLocomotionState : PlayerState
             return;
         }
 
+        // Day5 Task3（按反馈调整）：锁定与否共用同一套相机相对移动，
+        // 角色朝移动方向转身、可奔跑；
+        // 锁定的差异只体现在相机（看向目标）与攻击朝向辅助上。
         StateMachine.Motor.TickLocomotion(
             StateMachine.InputReader.MoveInput,
             StateMachine.InputReader.SprintInput,

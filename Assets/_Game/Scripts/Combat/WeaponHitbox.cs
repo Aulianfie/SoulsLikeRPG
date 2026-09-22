@@ -13,7 +13,7 @@ public sealed class WeaponHitbox : MonoBehaviour
     private LayerMask _targetLayers;
 
     [SerializeField]
-    private BoxCollider _shape;
+    private BoxCollider _shape; // Weapon的HitBox 
 
     private readonly Collider[] _overlaps =
         new Collider[MaxOverlaps];
@@ -91,6 +91,7 @@ public sealed class WeaponHitbox : MonoBehaviour
 
         Quaternion rotation = shapeTransform.rotation;
 
+        // 补查武器在相邻两帧之间扫过的空间，避免快速挥砍穿过目标。
         if (!_hasPreviousPose)
         {
             DetectTargetsAtPose(center, halfExtents, rotation);
@@ -136,13 +137,19 @@ public sealed class WeaponHitbox : MonoBehaviour
 
         RememberPose(center, rotation);
     }
-
+    /// <summary>
+    /// 在指定的姿态下检测武器碰撞体与目标的重叠情况，并对每个新命中的目标调用 TakeDamage。
+    /// </summary>
+    /// <param name="center"></param>
+    /// <param name="halfExtents"></param>
+    /// <param name="rotation"></param>
     private void DetectTargetsAtPose(
         Vector3 center,
         Vector3 halfExtents,
         Quaternion rotation
     )
     {
+        // 使用 OverlapBoxNonAlloc 检测与武器碰撞体重叠的目标，避免 GC 分配。把碰撞体传入 _overlaps 数组中，返回重叠的数量。
         int overlapCount = Physics.OverlapBoxNonAlloc(
             center,
             halfExtents,
@@ -179,7 +186,11 @@ public sealed class WeaponHitbox : MonoBehaviour
             target.TakeDamage(damageInfo);
         }
     }
-
+    /// <summary>
+    /// 记住武器的当前姿态（位置和旋转），用于下一帧的碰撞检测。
+    /// </summary>
+    /// <param name="center"></param>
+    /// <param name="rotation"></param>
     private void RememberPose(Vector3 center, Quaternion rotation)
     {
         _previousCenter = center;
