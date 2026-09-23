@@ -661,11 +661,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 132279562396598228, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_Enabled
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7215516622850703947, guid: c48ef8ee473037c4882a9804a1c68520,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -776,41 +771,6 @@ PrefabInstance:
       propertyPath: m_Material
       value: 
       objectReference: {fileID: 230148794}
-    - target: {fileID: 4070022703723648989, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0.03
-      objectReference: {fileID: 0}
-    - target: {fileID: 4070022703723648989, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0.28
-      objectReference: {fileID: 0}
-    - target: {fileID: 4070022703723648989, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.23
-      objectReference: {fileID: 0}
-    - target: {fileID: 4070022703723648989, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 0.89879405
-      objectReference: {fileID: 0}
-    - target: {fileID: 4070022703723648989, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0.4383711
-      objectReference: {fileID: 0}
-    - target: {fileID: 4070022703723648989, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4070022703723648989, guid: c48ef8ee473037c4882a9804a1c68520,
-        type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 52
-      objectReference: {fileID: 0}
     - target: {fileID: 4183459953893232673, guid: c48ef8ee473037c4882a9804a1c68520,
         type: 3}
       propertyPath: m_Material
@@ -930,6 +890,69 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -3, y: 0, z: -2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &726531606
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 726531608}
+  - component: {fileID: 726531607}
+  m_Layer: 0
+  m_Name: Navigation
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &726531607
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726531606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a5ac11cc976e418e8d13136b07e1f52, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  m_AgentTypeID: 0
+  m_CollectObjects: 0
+  m_Size: {x: 10, y: 10, z: 10}
+  m_Center: {x: 0, y: 2, z: 0}
+  m_LayerMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_UseGeometry: 1
+  m_DefaultArea: 0
+  m_GenerateLinks: 0
+  m_IgnoreNavMeshAgent: 1
+  m_IgnoreNavMeshObstacle: 1
+  m_OverrideTileSize: 0
+  m_TileSize: 256
+  m_OverrideVoxelSize: 0
+  m_VoxelSize: 0.16666667
+  m_MinRegionArea: 2
+  m_NavMeshData: {fileID: 23800000, guid: 8e068497155e48f4a8d08d55a08f3093, type: 2}
+  m_BuildHeightMesh: 0
+--- !u!4 &726531608
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 726531606}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.25745422, y: 1.0195721, z: -2.7001593}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2959,3 +2982,4 @@ SceneRoots:
   - {fileID: 729709959}
   - {fileID: 270363097}
   - {fileID: 453213188}
+  - {fileID: 726531608}

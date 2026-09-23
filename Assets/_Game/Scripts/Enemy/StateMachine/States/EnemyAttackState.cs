@@ -14,7 +14,7 @@ public sealed class EnemyAttackState : EnemyState
 
     public override void Tick(float deltaTime)
     {
-        if (StateMachine.Target != null)
+        if (StateMachine.HasValidTarget())
         {
             StateMachine.Motor.FaceTarget(
                 StateMachine.Target.position,

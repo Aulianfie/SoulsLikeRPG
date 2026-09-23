@@ -21,6 +21,12 @@ public sealed class EnemyPatrolState : EnemyState
 
     public override void Tick(float deltaTime)
     {
+        if (!StateMachine.Territory.IsInsideLeashArea(StateMachine.transform.position))
+        {
+            StateMachine.ChangeState(StateMachine.ReturnHomeState);
+            return;
+        }
+
         if (StateMachine.HasTargetInDetectionRange())
         {
             StateMachine.EvaluateTargetState();

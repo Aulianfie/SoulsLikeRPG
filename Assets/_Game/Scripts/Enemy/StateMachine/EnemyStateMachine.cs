@@ -2,7 +2,7 @@ using UnityEngine;
 
 
 /// <summary>
-/// 敌人状态机，管理敌人的不同状态（Idle、Hurt、Dead）以及状态之间的转换。
+/// 管理敌人的巡逻、战斗、返回领地、受击和死亡状态。
 /// </summary>
 [DisallowMultipleComponent]
 [RequireComponent(typeof(EnemyHealth))]
@@ -19,12 +19,13 @@ public sealed class EnemyStateMachine : MonoBehaviour
     private Transform _targetOverride;
 
     [SerializeField, Min(0.1f)]
-    private float _detectionRange = 8f;
-
-    [SerializeField, Min(0.1f)]
     private float _attackRange = 1.8f;
 
     private PlayerHealth _targetHealth;
+    // Detection 只负责首次索敌；进入战斗后由 Leash 决定何时放弃。
+    private bool _hasEngagedTarget;
+    // 返回途中受击后，Hurt 结束仍应继续返回。
+    private bool _isReturningHome;
 
     [Header("Debug")]
     [SerializeField]
@@ -37,17 +38,19 @@ public sealed class EnemyStateMachine : MonoBehaviour
     public EnemyTerritory Territory { get; private set; }
     public Transform Target { get; private set; }
     public float AttackRange => _attackRange;
+    public bool HasEngagedTarget => _hasEngagedTarget;
     
     public string CurrentStateName =>
         CurrentState == null ? "None" : CurrentState.GetType().Name;
     /// <summary>
-    /// 维护一个当前状态和不同的状态实例（Idle、Hurt、Dead），并提供方法来切换状态和处理敌人受到伤害的逻辑。
+    /// 当前状态及其状态实例。
     /// </summary>
     public EnemyState CurrentState { get; private set; }
     public EnemyIdleState IdleState { get; private set; }
     public EnemyPatrolState PatrolState { get; private set; }
     public EnemyChaseState ChaseState { get; private set; }
     public EnemyAttackState AttackState { get; private set; }
+    public EnemyReturnHomeState ReturnHomeState { get; private set; }
     public EnemyHurtState HurtState { get; private set; }
     public EnemyDeadState DeadState { get; private set; }
 
@@ -63,12 +66,15 @@ public sealed class EnemyStateMachine : MonoBehaviour
         PatrolState = new EnemyPatrolState(this);
         ChaseState = new EnemyChaseState(this);
         AttackState = new EnemyAttackState(this);
+        ReturnHomeState = new EnemyReturnHomeState(this);
         HurtState = new EnemyHurtState(this);
         DeadState = new EnemyDeadState(this);
     }
 
     private void OnEnable()
     {
+        _hasEngagedTarget = false;
+        _isReturningHome = false;
         ResolveTarget();
         ChangeState(PatrolState);
     }
@@ -98,10 +104,40 @@ public sealed class EnemyStateMachine : MonoBehaviour
 
     public void EvaluateTargetState()
     {
-        if (!HasValidTarget() || DistanceToTarget > _detectionRange)
+        if (Health.CurrentHealth <= 0)
         {
-            ChangeState(PatrolState);
+            ChangeState(DeadState);
             return;
+        }
+
+        if (_isReturningHome)
+        {
+            ChangeState(ReturnHomeState);
+            return;
+        }
+
+        if (!HasValidTarget())
+        {
+            ChangeState(_hasEngagedTarget ? ReturnHomeState : PatrolState);
+            return;
+        }
+
+        if (!Territory.IsInsideLeashArea(transform.position) ||
+            (_hasEngagedTarget && !Territory.IsInsideLeashArea(Target.position)))
+        {
+            ChangeState(ReturnHomeState);
+            return;
+        }
+
+        if (!_hasEngagedTarget)
+        {
+            if (!Territory.IsInsideDetectionArea(Target.position))
+            {
+                ChangeState(PatrolState);
+                return;
+            }
+
+            _hasEngagedTarget = true;
         }
 
         if (HasTargetInAttackRange())
@@ -119,7 +155,26 @@ public sealed class EnemyStateMachine : MonoBehaviour
 
     public bool HasTargetInDetectionRange()
     {
-        return HasValidTarget() && DistanceToTarget <= _detectionRange;
+        return HasValidTarget() && Territory.IsInsideDetectionArea(Target.position);
+    }
+
+    public bool ShouldReturnHome()
+    {
+        return !HasValidTarget() ||
+            !Territory.IsInsideLeashArea(transform.position) ||
+            !Territory.IsInsideLeashArea(Target.position);
+    }
+
+    public void BeginReturnHome()
+    {
+        _isReturningHome = true;
+    }
+
+    public void CompleteReturnHome()
+    {
+        _isReturningHome = false;
+        _hasEngagedTarget = false;
+        ChangeState(PatrolState);
     }
 
     public bool HasTargetInAttackRange()
@@ -166,9 +221,9 @@ public sealed class EnemyStateMachine : MonoBehaviour
         }
     }
 
-    private bool HasValidTarget()
+    public bool HasValidTarget()
     {
-        if (Target == null)
+        if (Target == null || !Target.gameObject.activeInHierarchy)
             return false;
 
         return _targetHealth == null || !_targetHealth.IsDead;
@@ -189,7 +244,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
         if (Target == null)
         {
             Debug.LogWarning(
-                "EnemyStateMachine 未找到 PlayerHealth，敌人将保持待机。",
+                "EnemyStateMachine 未找到 PlayerHealth，敌人将继续巡逻。",
                 this
             );
         }
@@ -197,6 +252,9 @@ public sealed class EnemyStateMachine : MonoBehaviour
 
     private void OnValidate()
     {
-        _attackRange = Mathf.Min(_attackRange, _detectionRange);
+        _attackRange = Mathf.Max(0.1f, _attackRange);
+        EnemyTerritory territory = GetComponent<EnemyTerritory>();
+        if (territory != null)
+            _attackRange = Mathf.Min(_attackRange, territory.DetectionRadius);
     }
 }

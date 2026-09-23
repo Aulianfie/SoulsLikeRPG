@@ -13,9 +13,9 @@ public sealed class EnemyIdleState : EnemyState
 
     public override void Tick(float deltaTime)
     {
-        if (!StateMachine.HasTargetInDetectionRange())
+        if (StateMachine.ShouldReturnHome())
         {
-            StateMachine.ChangeState(StateMachine.PatrolState);
+            StateMachine.ChangeState(StateMachine.ReturnHomeState);
             return;
         }
 
@@ -32,7 +32,6 @@ public sealed class EnemyIdleState : EnemyState
             return;
         }
 
-        if (StateMachine.HasTargetInDetectionRange())
-            StateMachine.ChangeState(StateMachine.ChaseState);
+        StateMachine.ChangeState(StateMachine.ChaseState);
     }
 }

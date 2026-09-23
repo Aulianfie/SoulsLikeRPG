@@ -16,9 +16,9 @@ public sealed class EnemyChaseState : EnemyState
 
     public override void Tick(float deltaTime)
     {
-        if (!StateMachine.HasTargetInDetectionRange())
+        if (!StateMachine.HasValidTarget() || StateMachine.ShouldReturnHome())
         {
-            StateMachine.ChangeState(StateMachine.PatrolState);
+            StateMachine.ChangeState(StateMachine.ReturnHomeState);
             return;
         }
 
