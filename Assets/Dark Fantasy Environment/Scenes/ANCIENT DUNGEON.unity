@@ -60913,6 +60913,16 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2898553348681140637, guid: 9ac4226d5b6a13348b0a65072259b62a,
+        type: 3}
+      propertyPath: m_Height
+      value: 1.8
+      objectReference: {fileID: 0}
+    - target: {fileID: 2898553348681140637, guid: 9ac4226d5b6a13348b0a65072259b62a,
+        type: 3}
+      propertyPath: m_Center.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4208464230741577774, guid: 9ac4226d5b6a13348b0a65072259b62a,
         type: 3}
       propertyPath: m_Name
