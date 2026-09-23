@@ -45,13 +45,18 @@ public sealed class LockOnCameraRig : MonoBehaviour
     [Tooltip("CameraRoot 世界 Y 轴跟随玩家高度的平滑时间（秒）。")]
     [SerializeField, Min(0.01f)] private float _rootVerticalSmoothTime = 0.15f;
 
-    [Tooltip("目标高度与当前平滑高度相差超过此值时，立即同步，避免传送后相机缓慢追赶。")]
+    [Tooltip("目标高度单帧变化超过此值时，视为传送并立即同步。")]
     [SerializeField, Min(0f)] private float _rootVerticalSnapDistance = 2f;
+
+    [Tooltip("持续升降时 CameraRoot 与目标高度允许的最大距离（米）。")]
+    [SerializeField, Min(0.01f)] private float _rootVerticalMaxLag = 1.5f;
 
     private Vector3 _velocity;
     private Vector3 _cameraRootLocalOffset;
     private float _smoothedRootY;
     private float _rootVerticalVelocity;
+    private float _previousDesiredRootY;
+    private float _previousDesiredRootStepY;
 
     // 权威状态：与 Transform 的父子拖拽解耦，
     // 每帧由这里计算并硬写入 CameraTarget / CameraRoot，
@@ -79,6 +84,7 @@ public sealed class LockOnCameraRig : MonoBehaviour
         _lockOnCamera.Priority = _unlockedPriority;
         _cameraRootLocalOffset = _cameraRoot.localPosition;
         _smoothedRootY = _cameraRoot.position.y;
+        _previousDesiredRootY = _smoothedRootY;
         _smoothedPosition = _cameraTarget.position;
         _rootRotation = _cameraRoot.rotation;
     }
@@ -104,7 +110,16 @@ public sealed class LockOnCameraRig : MonoBehaviour
             ? _cameraRoot.parent.TransformPoint(_cameraRootLocalOffset)
             : _cameraRootLocalOffset;
 
-        if (Mathf.Abs(desired.y - _smoothedRootY) > _rootVerticalSnapDistance)
+        float targetHeightStep = desired.y - _previousDesiredRootY;
+        // 持续下落的单帧位移会逐渐增大；只把突然改变的位移视为传送。
+        bool suddenHeightJump =
+            Mathf.Abs(targetHeightStep) > _rootVerticalSnapDistance &&
+            Mathf.Abs(targetHeightStep - _previousDesiredRootStepY) >
+            _rootVerticalSnapDistance;
+        _previousDesiredRootY = desired.y;
+        _previousDesiredRootStepY = targetHeightStep;
+
+        if (suddenHeightJump)
         {
             _smoothedRootY = desired.y;
             _rootVerticalVelocity = 0f;
@@ -116,6 +131,12 @@ public sealed class LockOnCameraRig : MonoBehaviour
                 desired.y,
                 ref _rootVerticalVelocity,
                 _rootVerticalSmoothTime
+            );
+
+            _smoothedRootY = Mathf.Clamp(
+                _smoothedRootY,
+                desired.y - _rootVerticalMaxLag,
+                desired.y + _rootVerticalMaxLag
             );
         }
 
