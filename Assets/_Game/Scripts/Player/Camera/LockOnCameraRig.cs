@@ -6,7 +6,8 @@ using UnityEngine;
 /// 1. 根据 PlayerTargeting 是否锁定，切换锁定虚拟相机的优先级
 ///    （锁定 15 / 未锁定 5），由 CinemachineBrain 负责两个相机之间的平滑混合，
 ///    不进行任何手动相机旋转。
-/// 2. 每帧用 SmoothDamp 把 CameraTarget 平滑到锁定目标的 LockPoint；
+/// 2. CameraRoot 水平位置跟随玩家，世界 Y 轴平滑跟随台阶高度；
+///    每帧用 SmoothDamp 把 CameraTarget 平滑到锁定目标的 LockPoint；
 ///    未锁定时平滑回到 CameraRoot。锁定相机始终 LookAt CameraTarget。
 ///
 /// 说明：CameraRoot / CameraTarget 是玩家子对象，玩家自身的移动与转身会
@@ -41,7 +42,16 @@ public sealed class LockOnCameraRig : MonoBehaviour
     [Tooltip("CameraRoot 的转向速度：锁定期间锚点平滑转向目标，确保锁定相机始终位于玩家背对目标一侧；数值越小镜头越惰性（横移时镜头几乎不转）。")]
     [SerializeField, Min(0.01f)] private float _rootTurnSharpness = 2.5f;
 
+    [Tooltip("CameraRoot 世界 Y 轴跟随玩家高度的平滑时间（秒）。")]
+    [SerializeField, Min(0.01f)] private float _rootVerticalSmoothTime = 0.15f;
+
+    [Tooltip("目标高度与当前平滑高度相差超过此值时，立即同步，避免传送后相机缓慢追赶。")]
+    [SerializeField, Min(0f)] private float _rootVerticalSnapDistance = 2f;
+
     private Vector3 _velocity;
+    private Vector3 _cameraRootLocalOffset;
+    private float _smoothedRootY;
+    private float _rootVerticalVelocity;
 
     // 权威状态：与 Transform 的父子拖拽解耦，
     // 每帧由这里计算并硬写入 CameraTarget / CameraRoot，
@@ -67,6 +77,8 @@ public sealed class LockOnCameraRig : MonoBehaviour
         }
 
         _lockOnCamera.Priority = _unlockedPriority;
+        _cameraRootLocalOffset = _cameraRoot.localPosition;
+        _smoothedRootY = _cameraRoot.position.y;
         _smoothedPosition = _cameraTarget.position;
         _rootRotation = _cameraRoot.rotation;
     }
@@ -80,8 +92,34 @@ public sealed class LockOnCameraRig : MonoBehaviour
         _lockOnCamera.Priority =
             locked ? _lockedPriority : _unlockedPriority;
 
+        UpdateCameraRootPosition();
         UpdateCameraRootRotation(locked);
         UpdateCameraTarget(locked);
+    }
+
+    /// <summary>水平位置立即跟随玩家，仅平滑 CameraRoot 的世界高度。</summary>
+    private void UpdateCameraRootPosition()
+    {
+        Vector3 desired = _cameraRoot.parent != null
+            ? _cameraRoot.parent.TransformPoint(_cameraRootLocalOffset)
+            : _cameraRootLocalOffset;
+
+        if (Mathf.Abs(desired.y - _smoothedRootY) > _rootVerticalSnapDistance)
+        {
+            _smoothedRootY = desired.y;
+            _rootVerticalVelocity = 0f;
+        }
+        else
+        {
+            _smoothedRootY = Mathf.SmoothDamp(
+                _smoothedRootY,
+                desired.y,
+                ref _rootVerticalVelocity,
+                _rootVerticalSmoothTime
+            );
+        }
+
+        _cameraRoot.position = new Vector3(desired.x, _smoothedRootY, desired.z);
     }
 
     /// <summary>

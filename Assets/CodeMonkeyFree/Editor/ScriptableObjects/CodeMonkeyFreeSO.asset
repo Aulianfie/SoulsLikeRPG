@@ -14,11 +14,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   currentVersion: 1.01
   subtype: kitchenchaos
-  lastShownTimestamp: 1790059499
+  lastShownTimestamp: 1790146900
   lastUpdateResponse:
     version: 1.01
     versionUrl: https://unitycodemonkey.com
-  checkedLastUpdateTimestamp: 1790059499
+  checkedLastUpdateTimestamp: 1790146900
   lastQOTDResponse:
     questionId: 345
     questionText: How should you store the health of each unit in your game?
@@ -27,7 +27,7 @@ MonoBehaviour:
     answerC: public static int health;
     answerD: private int h;
     answerE: 
-  lastQotdTimestamp: 1790059499
+  lastQotdTimestamp: 1790146900
   lastDynamicHeaderResponse:
     topImageUrl: https://codemonkeyexternal.blob.core.windows.net/external/Misc/codeMonkeyToolkit50Off.png
     topText: My Toolkit is 50% OFF! 50+ Tools and Elements to help you make games
@@ -36,11 +36,11 @@ MonoBehaviour:
     bottomText: Escape Tutorial Hell and level up your skills, try my Practice Lab
       for FREE!
     bottomLink: practicelab
-  lastDynamicHeaderTimestamp: 1790059499
+  lastDynamicHeaderTimestamp: 1790146900
   websiteLatestMessage:
     text: <a href="https://cmonkey.co/freecourses">Check out all my FREE courses!
       Click here!</a>
-  websiteLatestMessageTimestamp: 1790059499
+  websiteLatestMessageTimestamp: 1790146900
   websiteLatestVideos:
     videos:
     - youTubeId: _gsL9MTNIA0
@@ -51,4 +51,4 @@ MonoBehaviour:
       title: Get 70% OFF AWESOME Assets this Autumn!
     - youTubeId: Wp9I5WhT2OE
       title: Every Game you make should make your NEXT Game Easier!
-  websiteLatestVideosTimestamp: 1790059499
+  websiteLatestVideosTimestamp: 1790146900
