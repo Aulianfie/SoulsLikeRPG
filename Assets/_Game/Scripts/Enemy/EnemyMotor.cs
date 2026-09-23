@@ -11,6 +11,7 @@ public sealed class EnemyMotor : MonoBehaviour
     private float _rotationSharpness = 12f;
 
     private NavMeshAgent _agent;
+    private float _defaultStoppingDistance;
     private bool _hasDestination;
 
     public bool IsOnNavMesh => _agent != null && _agent.enabled && _agent.isOnNavMesh;
@@ -20,6 +21,7 @@ public sealed class EnemyMotor : MonoBehaviour
     private void Awake()
     {
         _agent = GetComponent<NavMeshAgent>();
+        _defaultStoppingDistance = _agent.stoppingDistance;
         _agent.updateRotation = false;
     }
 
@@ -37,9 +39,15 @@ public sealed class EnemyMotor : MonoBehaviour
 
     public bool MoveTo(Vector3 position)
     {
+        return MoveTo(position, _defaultStoppingDistance);
+    }
+
+    public bool MoveTo(Vector3 position, float stoppingDistance)
+    {
         if (!IsOnNavMesh)
             return false;
 
+        _agent.stoppingDistance = Mathf.Max(0f, stoppingDistance);
         _agent.isStopped = false;
         if (!_agent.SetDestination(position))
         {

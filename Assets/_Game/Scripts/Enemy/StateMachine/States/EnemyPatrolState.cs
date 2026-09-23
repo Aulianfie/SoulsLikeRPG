@@ -3,6 +3,7 @@ using UnityEngine;
 public sealed class EnemyPatrolState : EnemyState
 {
     private const float RetryDelay = 1f;
+    private const float PatrolStoppingDistance = 0.15f;
 
     private float _waitRemaining;
     private bool _hasDestination;
@@ -70,7 +71,7 @@ public sealed class EnemyPatrolState : EnemyState
 
         if (motor.IsOnNavMesh &&
             territory.TryGetPatrolPoint(StateMachine.transform.position, motor.AreaMask, out Vector3 point) &&
-            motor.MoveTo(point))
+            motor.MoveTo(point, PatrolStoppingDistance))
         {
             _hasDestination = true;
             StateMachine.EnemyAnimator.PlayChase();

@@ -119,8 +119,8 @@ public sealed class PlayerTargeting : MonoBehaviour
     }
 
     /// <summary>
-    /// 切换到会话中下一个未访问且仍然有效的目标；
-    /// 找不到（全部访问完 / 剩余目标都已失效）时解锁并清空会话。
+    /// 切换到会话中下一个未访问且当前可见的有效目标；
+    /// 找不到时解锁并清空会话。
     /// </summary>
     private void AdvanceToNextTarget()
     {
@@ -134,7 +134,7 @@ public sealed class PlayerTargeting : MonoBehaviour
             if (_visitedTargets.Contains(target))
                 continue;
 
-            if (!IsTargetValid(target))
+            if (!IsTargetValid(target) || !IsTargetVisible(target, out _))
                 continue;
 
             next = target;
