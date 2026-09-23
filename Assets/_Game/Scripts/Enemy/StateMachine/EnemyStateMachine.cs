@@ -9,6 +9,7 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyAnimator))]
 [RequireComponent(typeof(EnemyMotor))]
 [RequireComponent(typeof(EnemyCombat))]
+[RequireComponent(typeof(EnemyTerritory))]
 public sealed class EnemyStateMachine : MonoBehaviour
 {
     private const float RangeTolerance = 0.02f;
@@ -33,6 +34,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
     public EnemyAnimator EnemyAnimator { get; private set; }
     public EnemyMotor Motor { get; private set; }
     public EnemyCombat Combat { get; private set; }
+    public EnemyTerritory Territory { get; private set; }
     public Transform Target { get; private set; }
     public float AttackRange => _attackRange;
     
@@ -43,6 +45,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
     /// </summary>
     public EnemyState CurrentState { get; private set; }
     public EnemyIdleState IdleState { get; private set; }
+    public EnemyPatrolState PatrolState { get; private set; }
     public EnemyChaseState ChaseState { get; private set; }
     public EnemyAttackState AttackState { get; private set; }
     public EnemyHurtState HurtState { get; private set; }
@@ -54,8 +57,10 @@ public sealed class EnemyStateMachine : MonoBehaviour
         EnemyAnimator = GetComponent<EnemyAnimator>();
         Motor = GetComponent<EnemyMotor>();
         Combat = GetComponent<EnemyCombat>();
+        Territory = GetComponent<EnemyTerritory>();
 
         IdleState = new EnemyIdleState(this);
+        PatrolState = new EnemyPatrolState(this);
         ChaseState = new EnemyChaseState(this);
         AttackState = new EnemyAttackState(this);
         HurtState = new EnemyHurtState(this);
@@ -65,7 +70,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
     private void OnEnable()
     {
         ResolveTarget();
-        ChangeState(IdleState);
+        ChangeState(PatrolState);
     }
 
     private void Update()
@@ -95,7 +100,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
     {
         if (!HasValidTarget() || DistanceToTarget > _detectionRange)
         {
-            ChangeState(IdleState);
+            ChangeState(PatrolState);
             return;
         }
 

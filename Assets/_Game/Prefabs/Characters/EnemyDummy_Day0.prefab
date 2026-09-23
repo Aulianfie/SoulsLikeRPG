@@ -438,9 +438,12 @@ GameObject:
   - component: {fileID: 5102995507527938740}
   - component: {fileID: 132279562396598228}
   - component: {fileID: 2969298692096069895}
+  - component: {fileID: 7563199474010236113}
+  - component: {fileID: 6173142479806162802}
   - component: {fileID: 7679938156318187448}
   - component: {fileID: 584471811156429486}
   - component: {fileID: 7849516553911343290}
+  - component: {fileID: 8306502670675486314}
   m_Layer: 3
   m_Name: EnemyDummy_Day0
   m_TagString: Untagged
@@ -528,7 +531,7 @@ CharacterController:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.35
@@ -537,6 +540,51 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 1, z: 0}
+--- !u!136 &7563199474010236113
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8082192399273176202}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.35
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 1, z: 0}
+--- !u!195 &6173142479806162802
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8082192399273176202}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.35
+  m_Speed: 2.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 360
+  m_StoppingDistance: 0.8
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 0
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!114 &7679938156318187448
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -549,10 +597,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ec6f89e45310c9469cf971081e70469, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _moveSpeed: 2.5
   _rotationSharpness: 12
-  _gravity: -25
-  _groundStickForce: -2
 --- !u!114 &584471811156429486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,6 +630,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _lockPoint: {fileID: 7687286597865508989}
+--- !u!114 &8306502670675486314
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8082192399273176202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2daae44af584e8ea78e3236f135423a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier:
+  _territoryCenterOverride: {fileID: 0}
+  _patrolRadius: 5
+  _detectionRadius: 8
+  _leashRadius: 12
 --- !u!1001 &7275019754705713998
 PrefabInstance:
   m_ObjectHideFlags: 0

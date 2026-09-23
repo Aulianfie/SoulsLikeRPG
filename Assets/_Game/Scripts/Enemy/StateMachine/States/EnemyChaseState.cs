@@ -1,5 +1,8 @@
 public sealed class EnemyChaseState : EnemyState
 {
+    private const float RepathInterval = 0.2f;
+    private float _nextRepathTime;
+
     public EnemyChaseState(EnemyStateMachine stateMachine)
         : base(stateMachine)
     {
@@ -7,6 +10,7 @@ public sealed class EnemyChaseState : EnemyState
 
     public override void Enter()
     {
+        _nextRepathTime = 0f;
         StateMachine.EnemyAnimator.PlayChase();
     }
 
@@ -14,7 +18,7 @@ public sealed class EnemyChaseState : EnemyState
     {
         if (!StateMachine.HasTargetInDetectionRange())
         {
-            StateMachine.ChangeState(StateMachine.IdleState);
+            StateMachine.ChangeState(StateMachine.PatrolState);
             return;
         }
 
@@ -24,10 +28,15 @@ public sealed class EnemyChaseState : EnemyState
             return;
         }
 
-        StateMachine.Motor.TickChase(
-            StateMachine.Target.position,
-            StateMachine.AttackRange,
-            deltaTime
-        );
+        if (UnityEngine.Time.time >= _nextRepathTime)
+        {
+            _nextRepathTime = UnityEngine.Time.time + RepathInterval;
+            StateMachine.Motor.MoveTo(StateMachine.Target.position);
+        }
+    }
+
+    public override void Exit()
+    {
+        StateMachine.Motor.Stop();
     }
 }

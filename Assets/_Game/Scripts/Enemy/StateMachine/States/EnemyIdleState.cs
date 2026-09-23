@@ -13,6 +13,12 @@ public sealed class EnemyIdleState : EnemyState
 
     public override void Tick(float deltaTime)
     {
+        if (!StateMachine.HasTargetInDetectionRange())
+        {
+            StateMachine.ChangeState(StateMachine.PatrolState);
+            return;
+        }
+
         if (StateMachine.HasTargetInAttackRange())
         {
             StateMachine.Motor.FaceTarget(

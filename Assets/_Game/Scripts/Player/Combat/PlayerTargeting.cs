@@ -5,8 +5,11 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputReader))]
 public sealed class PlayerTargeting : MonoBehaviour
 {
+    private const float OcclusionCheckInterval = 1f;
+
     [SerializeField, Min(0.1f)] private float _lockRange = 18f;
     [SerializeField] private LayerMask _targetLayers = 1 << 3;
+    [SerializeField] private LayerMask _occlusionMask = 1 << 0;
     [SerializeField] private Camera _camera;
     [SerializeField] private bool _logTargetChanges = true;
 
@@ -19,6 +22,7 @@ public sealed class PlayerTargeting : MonoBehaviour
     private readonly List<Targetable> _visitedTargets = new List<Targetable>();
 
     private PlayerInputReader _inputReader;
+    private float _nextOcclusionCheckTime;
 
     public Targetable CurrentTarget { get; private set; }
     public Transform CurrentLockPoint =>
@@ -45,13 +49,24 @@ public sealed class PlayerTargeting : MonoBehaviour
 
     private void Update()
     {
-        // 当前目标失效（死亡 / 禁用 / 超出 LockRange）：
+        // 当前目标失效或离开屏幕时立即结束会话。
         // 直接解除锁定并结束本轮会话，等待下次中键重新建立。
         if (!ReferenceEquals(CurrentTarget, null) &&
-            !IsTargetValid(CurrentTarget))
+            (!IsTargetValid(CurrentTarget) ||
+             !IsTargetOnScreen(CurrentTarget, out _)))
         {
             EndSession();
             return;
+        }
+
+        if (CurrentTarget != null && Time.time >= _nextOcclusionCheckTime)
+        {
+            _nextOcclusionCheckTime = Time.time + OcclusionCheckInterval;
+            if (!HasLineOfSight(CurrentTarget))
+            {
+                EndSession();
+                return;
+            }
         }
 
         if (_inputReader.ConsumeLockOn())
@@ -139,6 +154,7 @@ public sealed class PlayerTargeting : MonoBehaviour
     private void LockTarget(Targetable target)
     {
         SetTarget(target);
+        _nextOcclusionCheckTime = Time.time + OcclusionCheckInterval;
 
         if (!_visitedTargets.Contains(target))
             _visitedTargets.Add(target);
@@ -180,11 +196,7 @@ public sealed class PlayerTargeting : MonoBehaviour
             if (alreadyAdded)
                 continue;
 
-            Vector3 viewport = _camera.WorldToViewportPoint(
-                target.LockPoint.position);
-            if (viewport.z <= 0f ||
-                viewport.x < 0f || viewport.x > 1f ||
-                viewport.y < 0f || viewport.y > 1f)
+            if (!IsTargetVisible(target, out Vector3 viewport))
                 continue;
 
             float x = viewport.x - 0.5f;
@@ -203,6 +215,42 @@ public sealed class PlayerTargeting : MonoBehaviour
             target.IsAvailable &&
             (target.LockPoint.position - transform.position).sqrMagnitude <=
             _lockRange * _lockRange;
+    }
+
+    private bool IsTargetVisible(Targetable target, out Vector3 viewport)
+    {
+        return IsTargetOnScreen(target, out viewport) && HasLineOfSight(target);
+    }
+
+    private bool IsTargetOnScreen(Targetable target, out Vector3 viewport)
+    {
+        viewport = _camera.WorldToViewportPoint(target.LockPoint.position);
+        return viewport.z > 0f &&
+            viewport.x >= 0f && viewport.x <= 1f &&
+            viewport.y >= 0f && viewport.y <= 1f;
+    }
+
+    private bool HasLineOfSight(Targetable target)
+    {
+        Vector3 origin = _camera.transform.position;
+        Vector3 direction = target.LockPoint.position - origin;
+        RaycastHit[] hits = Physics.RaycastAll(
+            origin,
+            direction,
+            direction.magnitude,
+            _occlusionMask,
+            QueryTriggerInteraction.Ignore);
+
+        foreach (RaycastHit hit in hits)
+        {
+            if (hit.collider.transform.IsChildOf(transform) ||
+                hit.collider.GetComponentInParent<Targetable>() == target)
+                continue;
+
+            return false;
+        }
+
+        return true;
     }
 
     private void SetTarget(Targetable target)

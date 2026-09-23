@@ -1,101 +1,105 @@
 using UnityEngine;
+using UnityEngine.AI;
 
 [DisallowMultipleComponent]
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(NavMeshAgent))]
 public sealed class EnemyMotor : MonoBehaviour
 {
-    [SerializeField, Min(0f)]
-    private float _moveSpeed = 2.5f;
+    private const float ArrivalTolerance = 0.15f;
 
     [SerializeField, Min(0f)]
     private float _rotationSharpness = 12f;
 
-    [SerializeField]
-    private float _gravity = -25f;
+    private NavMeshAgent _agent;
+    private bool _hasDestination;
 
-    [SerializeField]
-    private float _groundStickForce = -2f;
-
-    private CharacterController _characterController;
-    private float _verticalVelocity;
+    public bool IsOnNavMesh => _agent != null && _agent.enabled && _agent.isOnNavMesh;
+    public bool IsPathPending => IsOnNavMesh && _agent.pathPending;
+    public int AreaMask => _agent.areaMask;
 
     private void Awake()
     {
-        _characterController = GetComponent<CharacterController>();
+        _agent = GetComponent<NavMeshAgent>();
+        _agent.updateRotation = false;
     }
 
-    public void TickChase(
-        Vector3 targetPosition,
-        float stopDistance,
-        float deltaTime
-    )
+    private void Start()
     {
-        Vector3 offset = targetPosition - transform.position;
-        offset.y = 0f;
+        if (!IsOnNavMesh)
+            Debug.LogWarning("EnemyMotor 未处于 NavMesh 上，请烘焙场景并检查敌人出生点。", this);
+    }
 
-        float distance = offset.magnitude;
-        Vector3 direction = distance > 0.0001f
-            ? offset / distance
-            : Vector3.zero;
+    private void LateUpdate()
+    {
+        if (IsOnNavMesh && !_agent.isStopped)
+            FaceDirection(_agent.desiredVelocity, Time.deltaTime);
+    }
 
-        FaceDirection(direction, deltaTime);
+    public bool MoveTo(Vector3 position)
+    {
+        if (!IsOnNavMesh)
+            return false;
 
-        float allowedDistance = Mathf.Max(0f, distance - stopDistance);
-        float moveDistance = Mathf.Min(
-            _moveSpeed * deltaTime,
-            allowedDistance
-        );
+        _agent.isStopped = false;
+        if (!_agent.SetDestination(position))
+        {
+            Stop();
+            return false;
+        }
 
-        Move(direction * moveDistance, deltaTime);
+        _hasDestination = true;
+        return true;
+    }
+
+    public void Stop()
+    {
+        _hasDestination = false;
+
+        if (!IsOnNavMesh)
+            return;
+
+        _agent.isStopped = true;
+        _agent.ResetPath();
+    }
+
+    public bool HasReachedDestination()
+    {
+        return
+            _hasDestination &&
+            IsOnNavMesh &&
+            !_agent.pathPending &&
+            _agent.pathStatus == NavMeshPathStatus.PathComplete &&
+            _agent.remainingDistance <= _agent.stoppingDistance + ArrivalTolerance;
+    }
+
+    public bool HasValidPath()
+    {
+        return
+            IsOnNavMesh &&
+            _agent.hasPath &&
+            _agent.pathStatus == NavMeshPathStatus.PathComplete;
     }
 
     public void FaceTarget(Vector3 targetPosition, float deltaTime)
     {
         Vector3 direction = targetPosition - transform.position;
         direction.y = 0f;
-        FaceDirection(direction.normalized, deltaTime);
-    }
-
-    public void Stop()
-    {
-        // CharacterController 没有持续的水平速度，状态切换时无需额外制动。
+        FaceDirection(direction, deltaTime);
     }
 
     private void FaceDirection(Vector3 direction, float deltaTime)
     {
+        direction.y = 0f;
         if (direction.sqrMagnitude < 0.0001f)
             return;
 
-        Quaternion targetRotation = Quaternion.LookRotation(
-            direction,
-            Vector3.up
-        );
-
-        float rotationAmount = 1f - Mathf.Exp(
-            -_rotationSharpness * deltaTime
-        );
-
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            targetRotation,
-            rotationAmount
-        );
-    }
-
-    private void Move(Vector3 horizontalDisplacement, float deltaTime)
-    {
-        if (_characterController.isGrounded && _verticalVelocity < 0f)
-            _verticalVelocity = _groundStickForce;
-        else
-            _verticalVelocity += _gravity * deltaTime;
-
-        Vector3 displacement = horizontalDisplacement;
-        displacement.y = _verticalVelocity * deltaTime;
-        _characterController.Move(displacement);
+        Quaternion targetRotation = Quaternion.LookRotation(direction, Vector3.up);
+        float rotationAmount = 1f - Mathf.Exp(-_rotationSharpness * deltaTime);
+        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationAmount);
     }
 
     private void OnDisable()
     {
-        _verticalVelocity = 0f;
+        Stop();
     }
 }
