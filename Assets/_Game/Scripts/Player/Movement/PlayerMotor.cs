@@ -3,6 +3,9 @@ using UnityEngine;
 [RequireComponent(typeof(CharacterController))]
 public sealed class PlayerMotor : MonoBehaviour
 {
+    private const float FallRecognitionTime = 0.08f;
+    private const float FallDistanceMargin = 0.05f;
+
     [SerializeField] private PlayerMovementConfig _config;
 
     private CharacterController _characterController;
@@ -11,17 +14,39 @@ public sealed class PlayerMotor : MonoBehaviour
 
     private Vector3 _horizontalVelocity; // 负责地面上的前后左右移动
     private float _verticalVelocity; // 负责重力和贴地
+    private float _timeWithoutGround;
+    private float _lastGroundedY;
+    private bool _jumpStarted;
 
     public float HorizontalSpeed => _horizontalVelocity.magnitude;
     public float VerticalVelocity => _verticalVelocity;
     public bool IsGrounded =>
         _characterController != null && _characterController.isGrounded;
+    public bool ShouldEnterAirborne
+    {
+        get
+        {
+            if (_jumpStarted)
+                return true;
+
+            if (IsGrounded || _characterController == null)
+                return false;
+
+            // 下台阶可能短暂离地；超过可跨越的台阶高度后才视为坠落。
+            float fallDistance = _characterController.stepOffset +
+                _characterController.skinWidth + FallDistanceMargin;
+            return _timeWithoutGround >= FallRecognitionTime &&
+                _verticalVelocity < 0f &&
+                _lastGroundedY - transform.position.y > fallDistance;
+        }
+    }
     public float DodgeDuration =>
         _config == null ? 0f : _config.DodgeDuration;
 
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
+        _lastGroundedY = transform.position.y;
 
         if (_config == null)
         {
@@ -46,6 +71,14 @@ public sealed class PlayerMotor : MonoBehaviour
         _cameraTransform = mainCamera.transform;
         _isInitialized = true;
     }
+
+    private void OnEnable()
+    {
+        _timeWithoutGround = 0f;
+        _lastGroundedY = transform.position.y;
+        _jumpStarted = false;
+    }
+
     /// <summary>
     /// 把 Motor内部的Update换成了TickLocomotion方法，方便在状态机中调用
     /// 本质上就是逐帧检查移动输入，并根据输入计算角色的移动方向、速度和旋转，然后应用这些变化到角色的Transform上。
@@ -86,6 +119,7 @@ public sealed class PlayerMotor : MonoBehaviour
         _verticalVelocity = Mathf.Sqrt(
             _config.JumpHeight * -2f * _config.Gravity
         );
+        _jumpStarted = true;
     }
 
     public void StopHorizontalMovement()
@@ -307,15 +341,57 @@ public sealed class PlayerMotor : MonoBehaviour
 
         Vector3 finalVelocity = _horizontalVelocity;
         finalVelocity.y = _verticalVelocity;
+        AdjustForStepDown(ref finalVelocity, deltaTime);
 
         _characterController.Move(
             finalVelocity * deltaTime
         );
+
+        if (IsGrounded)
+        {
+            _timeWithoutGround = 0f;
+            _lastGroundedY = transform.position.y;
+            if (_verticalVelocity <= 0f)
+                _jumpStarted = false;
+        }
+        else
+        {
+            _timeWithoutGround += deltaTime;
+        }
+    }
+
+    private void AdjustForStepDown(ref Vector3 velocity, float deltaTime)
+    {
+        if (_jumpStarted || ShouldEnterAirborne || velocity.y > 0f || deltaTime <= 0f)
+            return;
+
+        const float rayLift = 0.05f;
+        Vector3 capsuleBottom = transform.TransformPoint(_characterController.center) -
+            Vector3.up * (_characterController.height * 0.5f);
+        Vector3 rayOrigin = capsuleBottom + Vector3.up * rayLift;
+        float rayDistance = rayLift + _characterController.stepOffset +
+            _characterController.skinWidth + FallDistanceMargin;
+
+        if (!Physics.Raycast(rayOrigin, Vector3.down, out RaycastHit hit,
+                rayDistance, Physics.DefaultRaycastLayers,
+                QueryTriggerInteraction.Ignore) ||
+            hit.transform.IsChildOf(transform) ||
+            Vector3.Angle(hit.normal, Vector3.up) > _characterController.slopeLimit)
+        {
+            return;
+        }
+
+        float groundGap = Mathf.Max(0f, hit.distance - rayLift);
+        if (groundGap > 0f)
+            velocity.y = Mathf.Min(velocity.y, -(groundGap + 0.01f) / deltaTime);
     }
 
     private void OnDisable()
     {
         _horizontalVelocity = Vector3.zero;
         _verticalVelocity = 0f;
+        _timeWithoutGround = 0f;
+        _lastGroundedY = transform.position.y;
+        _jumpStarted = false;
     }
 }

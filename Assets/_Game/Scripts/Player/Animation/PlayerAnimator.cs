@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[DefaultExecutionOrder(50)]
 [RequireComponent(typeof(PlayerMotor))]
 public class PlayerAnimator : MonoBehaviour
 {
@@ -42,7 +43,7 @@ public class PlayerAnimator : MonoBehaviour
             Time.deltaTime
         );
 
-        _animator.SetBool(GroundedHash, _motor.IsGrounded);
+        _animator.SetBool(GroundedHash, !_motor.ShouldEnterAirborne);
         _animator.SetFloat(VerticalSpeedHash, _motor.VerticalVelocity);
     }
 

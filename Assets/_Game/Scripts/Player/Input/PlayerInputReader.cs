@@ -19,10 +19,12 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _lightAttackAction;
     private InputAction _dodgeAction;
     private InputAction _lockOnAction;
+    private InputAction _interactAction;
     private bool _jumpRequested;
     private bool _lightAttackRequested;
     private bool _dodgeRequested;
     private bool _lockOnRequested;
+    private bool _interactRequested;
     private float _lightAttackExpireTime;
     private float _dodgeExpireTime;
 
@@ -57,6 +59,7 @@ public class PlayerInputReader : MonoBehaviour
         );
         _dodgeAction = _gameplayMap.FindAction("Dodge", true);
         _lockOnAction = _gameplayMap.FindAction("LockOn", true);
+        _interactAction = _gameplayMap.FindAction("Interact", true);
     }
 
     private void OnEnable()
@@ -76,6 +79,7 @@ public class PlayerInputReader : MonoBehaviour
         _lightAttackAction.performed += OnLightAttack;
         _dodgeAction.performed += OnDodge;
         _lockOnAction.performed += OnLockOn;
+        _interactAction.performed += OnInteract;
 
         _gameplayMap.Enable();
     }
@@ -112,8 +116,12 @@ public class PlayerInputReader : MonoBehaviour
         if (_lockOnAction != null)
             _lockOnAction.performed -= OnLockOn;
 
+        if (_interactAction != null)
+            _interactAction.performed -= OnInteract;
+
         _jumpRequested = false;
         _lockOnRequested = false;
+        _interactRequested = false;
         ClearAllBuffers();
 
         _gameplayMap?.Disable();
@@ -157,6 +165,18 @@ public class PlayerInputReader : MonoBehaviour
     private void OnLockOn(InputAction.CallbackContext context)
     {
         _lockOnRequested = true;
+    }
+
+    private void OnInteract(InputAction.CallbackContext context)
+    {
+        _interactRequested = true;
+    }
+
+    public bool ConsumeInteract()
+    {
+        bool requested = _interactRequested;
+        _interactRequested = false;
+        return requested;
     }
 
     public bool ConsumeJump()

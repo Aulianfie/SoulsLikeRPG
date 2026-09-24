@@ -56,7 +56,7 @@ public sealed class PlayerLocomotionState : PlayerState
             deltaTime
         );
 
-        if (!StateMachine.Motor.IsGrounded)
+        if (StateMachine.Motor.ShouldEnterAirborne)
         {
             StateMachine.ChangeState(StateMachine.AirborneState);
         }

@@ -184,7 +184,7 @@ BlendTree:
     m_DirectBlendParameter: MoveSpeed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: -8349492526526354690, guid: ecbf38a150fa64d4389fdd389038742d,
+    m_Motion: {fileID: -390927730355987687, guid: 7f4b3ea5940ea9a448707d0e32df77a4,
       type: 3}
     m_Threshold: 2
     m_Position: {x: 0, y: 0}
@@ -193,7 +193,16 @@ BlendTree:
     m_DirectBlendParameter: MoveSpeed
     m_Mirror: 0
   - serializedVersion: 2
-    m_Motion: {fileID: -9094835232657333338, guid: ecbf38a150fa64d4389fdd389038742d,
+    m_Motion: {fileID: 8952007183208305176, guid: bf6f86e23e0da9045a554234a0421659,
+      type: 3}
+    m_Threshold: 4
+    m_Position: {x: 0, y: 0}
+    m_TimeScale: 1
+    m_CycleOffset: 0
+    m_DirectBlendParameter: MoveSpeed
+    m_Mirror: 0
+  - serializedVersion: 2
+    m_Motion: {fileID: -8368967610579874062, guid: 105e006fc9ab0a248918cbe9cf4b2c29,
       type: 3}
     m_Threshold: 6.5
     m_Position: {x: 0, y: 0}
@@ -284,7 +293,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Dodge
-  m_Speed: 1
+  m_Speed: 1.7
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
