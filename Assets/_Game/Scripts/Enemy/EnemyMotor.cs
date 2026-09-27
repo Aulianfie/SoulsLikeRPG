@@ -69,6 +69,32 @@ public sealed class EnemyMotor : MonoBehaviour
         _agent.isStopped = true;
         _agent.ResetPath();
     }
+    /// <summary>
+    /// 传送敌人到指定位置和朝向，并确保敌人仍然处于 NavMesh 上。
+    /// 如果传送后敌人不在 NavMesh 上，会尝试通过禁用 NavMeshAgent 并直接设置 Transform 来修复位置，但会发出警告。
+    /// </summary>
+    /// <param name="position"></param>
+    /// <param name="rotation"></param>
+    /// <returns></returns>
+    public bool Teleport(Vector3 position, Quaternion rotation)
+    {
+        Stop();
+        _agent.stoppingDistance = _defaultStoppingDistance;
+
+        if (!IsOnNavMesh || !_agent.Warp(position))
+        {
+            bool wasEnabled = _agent.enabled;
+            _agent.enabled = false;
+            transform.SetPositionAndRotation(position, rotation);
+            _agent.enabled = wasEnabled;
+            Debug.LogWarning("EnemyMotor 传送后未处于 NavMesh 上，敌人暂时无法巡逻。", this);
+            return false;
+        }
+
+        transform.rotation = rotation;
+        _agent.velocity = Vector3.zero;
+        return true;
+    }
 
     public bool HasReachedDestination()
     {

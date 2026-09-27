@@ -245,6 +245,12 @@ public sealed class PlayerCombat : MonoBehaviour
         _recoveryTimer = 0f;
     }
 
+    public void ResetForRespawn()
+    {
+        CloseHitWindow();
+        ResetCombo();
+    }
+
     public void TickLightAttack()
     {
         AttackData data = CurrentAttack;

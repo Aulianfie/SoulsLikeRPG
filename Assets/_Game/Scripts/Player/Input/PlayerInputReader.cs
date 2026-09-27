@@ -238,4 +238,15 @@ public class PlayerInputReader : MonoBehaviour
         ClearLightAttackBuffer();
         ClearDodgeBuffer();
     }
+
+    public void ClearPendingActions()
+    {
+        ClearAllBuffers();
+        _jumpRequested = false;
+        _lockOnRequested = false;
+        _interactRequested = false;
+        MoveInput = Vector2.zero;
+        LookInput = Vector2.zero;
+        SprintInput = false;
+    }
 }

@@ -127,6 +127,20 @@ public sealed class PlayerMotor : MonoBehaviour
         _horizontalVelocity = Vector3.zero;
     }
 
+    public void Teleport(Vector3 position, Quaternion rotation)
+    {
+        bool wasEnabled = _characterController.enabled;
+        _characterController.enabled = false;
+        transform.SetPositionAndRotation(position, rotation);
+        _characterController.enabled = wasEnabled;
+
+        _horizontalVelocity = Vector3.zero;
+        _verticalVelocity = 0f;
+        _timeWithoutGround = 0f;
+        _lastGroundedY = position.y;
+        _jumpStarted = false;
+    }
+
     public Vector3 GetDodgeDirection(Vector2 moveInput)
     {
         if (!_isInitialized)

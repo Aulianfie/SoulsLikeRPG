@@ -109,6 +109,26 @@ public sealed class PlayerStateMachine : MonoBehaviour
         ChangeState(Health.IsDead ? DeadState : HurtState);
     }
 
+    public void Respawn()
+    {
+        if (Health == null || Health.IsDead)
+            return;
+
+        string previousStateName = CurrentStateName;
+        CurrentState?.Exit();
+        CurrentState = null;
+        InputReader.ClearPendingActions();
+        Combat.ResetForRespawn();
+        Targeting.ClearTarget();
+        Motor.StopHorizontalMovement();
+        PlayerAnimator.PlayLocomotion(0f);
+        CurrentState = LocomotionState;
+        CurrentState.Enter();
+
+        if (_logStateChanges)
+            Debug.Log($"Player State: {previousStateName} -> {CurrentStateName}", this);
+    }
+
     private void EnterInitialState()
     {
         ChangeState(Health != null && Health.IsDead

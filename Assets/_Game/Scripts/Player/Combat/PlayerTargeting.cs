@@ -75,8 +75,14 @@ public sealed class PlayerTargeting : MonoBehaviour
 
     private void OnDisable()
     {
+        ClearTarget();
+    }
+
+    public void ClearTarget()
+    {
         EndSession();
         _candidates.Clear();
+        _nextOcclusionCheckTime = 0f;
     }
 
     /// <summary>

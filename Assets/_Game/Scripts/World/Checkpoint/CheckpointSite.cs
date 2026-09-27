@@ -8,6 +8,7 @@ public sealed class CheckpointSite : MonoBehaviour, IInteractable
     [SerializeField] private string _interactionText = "[E] 在赐福处休息";
 
     private bool _isActivated;
+    private CheckpointManager _manager;
 
     public string CheckpointId => _checkpointId;
     public Transform RespawnPoint => _respawnPoint;
@@ -21,7 +22,22 @@ public sealed class CheckpointSite : MonoBehaviour, IInteractable
         if (!CanInteract)
             return;
 
+        if (_manager == null)
+            _manager = FindObjectOfType<CheckpointManager>();
+
+        if (_manager == null)
+        {
+            Debug.LogWarning("CheckpointManager was not found in this scene.", this);
+            return;
+        }
+
+        bool wasActivated = _isActivated;
+        if (_manager.ActivateCheckpoint(this))
+            Debug.Log(wasActivated ? "在赐福处休息" : "赐福已发现", this);
+    }
+
+    internal void MarkActivated()
+    {
         _isActivated = true;
-        Debug.Log($"Checkpoint activated: {_checkpointId}", this);
     }
 }

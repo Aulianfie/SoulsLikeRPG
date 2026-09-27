@@ -56,6 +56,7 @@ GameObject:
   - component: {fileID: 8877342840912275316}
   - component: {fileID: 2052648185091293393}
   - component: {fileID: 3867592720262854993}
+  - component: {fileID: 522079245332728037}
   m_Layer: 0
   m_Name: Player_Day1
   m_TagString: Player
@@ -287,6 +288,9 @@ MonoBehaviour:
   _targetLayers:
     serializedVersion: 2
     m_Bits: 8
+  _occlusionMask:
+    serializedVersion: 2
+    m_Bits: 1
   _camera: {fileID: 0}
   _logTargetChanges: 1
 --- !u!114 &8877342840912275316
@@ -299,16 +303,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1e3fdca004f2d45fe8abbed571a8abd5, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   m_OverrideArea: 0
   m_Area: 0
   m_OverrideGenerateLinks: 0
   m_GenerateLinks: 0
   m_IgnoreFromBuild: 1
   m_ApplyToChildren: 1
-  m_AffectedAgents:
-  - -1
+  m_AffectedAgents: ffffffff
 --- !u!114 &2052648185091293393
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -319,8 +322,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 101b9d14911adde4d8a83121385793ac, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   _movementConfig: {fileID: 11400000, guid: a1c63671154a7c3488a1c3834a11ada7, type: 2}
   _maxPitchCorrection: 25
 --- !u!114 &3867592720262854993
@@ -333,11 +336,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d30d744232df474419a34de20613ba0b, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   _verticalSmoothTime: 0.08
   _maxVerticalLag: 0.12
   _snapHeightChange: 1
+--- !u!114 &522079245332728037
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4208464230741577774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b845485928039ba45871111bb9d182eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _promptUI: {fileID: 0}
 --- !u!1 &6224024120811738658
 GameObject:
   m_ObjectHideFlags: 0

@@ -6,10 +6,12 @@ using UnityEngine;
 public sealed class PlayerInteractor : MonoBehaviour
 {
     [SerializeField] private InteractionPromptUI _promptUI;
+    [SerializeField, Min(0.1f)] private float _maxInteractionDistance = 3.5f;
 
     private readonly List<MonoBehaviour> _nearby = new List<MonoBehaviour>();
     private PlayerInputReader _inputReader;
-    private IInteractable _currentTarget;
+    private IInteractable _shownTarget;
+    private string _shownText;
 
     private void Awake()
     {
@@ -35,6 +37,11 @@ public sealed class PlayerInteractor : MonoBehaviour
                 continue;
 
             float sqrDistance = (behaviour.transform.position - transform.position).sqrMagnitude;
+            if (sqrDistance > _maxInteractionDistance * _maxInteractionDistance)
+            {
+                _nearby.RemoveAt(i);
+                continue;
+            }
             if (sqrDistance < closestSqrDistance)
             {
                 closest = interactable;
@@ -42,13 +49,16 @@ public sealed class PlayerInteractor : MonoBehaviour
             }
         }
 
-        _currentTarget = closest;
-        if (_promptUI != null)
+        string promptText = closest != null ? closest.InteractionText : null;
+        if (_promptUI != null && (closest != _shownTarget || promptText != _shownText))
         {
             if (closest == null)
                 _promptUI.Hide();
             else
-                _promptUI.Show(closest.InteractionText);
+                _promptUI.Show(promptText);
+
+            _shownTarget = closest;
+            _shownText = promptText;
         }
 
         if (_inputReader.ConsumeInteract() && closest != null && closest.CanInteract)
@@ -81,7 +91,8 @@ public sealed class PlayerInteractor : MonoBehaviour
     private void OnDisable()
     {
         _nearby.Clear();
-        _currentTarget = null;
+        _shownTarget = null;
+        _shownText = null;
         if (_promptUI != null)
             _promptUI.Hide();
     }

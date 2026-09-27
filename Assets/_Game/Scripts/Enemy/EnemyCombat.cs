@@ -96,6 +96,12 @@ public sealed class EnemyCombat : MonoBehaviour
         EndAttack(_attackInProgress);
     }
 
+    public void ResetForCheckpoint()
+    {
+        EndAttack(false);
+        _nextAttackTime = 0f;
+    }
+
     private void EndAttack(bool startCooldown)
     {
         _weaponHitbox?.EndAttack();

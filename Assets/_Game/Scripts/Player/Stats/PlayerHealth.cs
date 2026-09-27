@@ -61,6 +61,25 @@ public sealed class PlayerHealth : MonoBehaviour, IDamageable
         HealthChanged?.Invoke(_currentHealth, MaxHealth);
     }
 
+    public void RestoreFull()
+    {
+        if (IsDead || _config == null)
+            return;
+
+        _currentHealth = MaxHealth;
+        HealthChanged?.Invoke(_currentHealth, MaxHealth);
+    }
+
+    public void ReviveFull()
+    {
+        if (_config == null)
+            return;
+
+        _isInvincible = false;
+        _currentHealth = MaxHealth;
+        HealthChanged?.Invoke(_currentHealth, MaxHealth);
+    }
+
     public void Die()
     {
         if (IsDead)

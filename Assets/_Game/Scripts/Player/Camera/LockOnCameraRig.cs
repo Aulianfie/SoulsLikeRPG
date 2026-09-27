@@ -89,12 +89,13 @@ public sealed class LockOnCameraRig : MonoBehaviour
         _rootRotation = _cameraRoot.rotation;
     }
 
+    
     private void LateUpdate()
     {
         bool locked =
             _targeting.CurrentTarget != null &&
             _targeting.CurrentTarget.LockPoint != null;
-
+        // 锁定与否切换虚拟相机的优先级，由 CinemachineBrain 负责平滑混合
         _lockOnCamera.Priority =
             locked ? _lockedPriority : _unlockedPriority;
 
@@ -119,12 +120,13 @@ public sealed class LockOnCameraRig : MonoBehaviour
         _previousDesiredRootY = desired.y;
         _previousDesiredRootStepY = targetHeightStep;
 
+        // 传送时立即同步高度，避免 CameraRoot 被拉扯到空中或地面以下。
         if (suddenHeightJump)
         {
             _smoothedRootY = desired.y;
             _rootVerticalVelocity = 0f;
         }
-        else
+        else // 平滑跟随台阶高度
         {
             _smoothedRootY = Mathf.SmoothDamp(
                 _smoothedRootY,

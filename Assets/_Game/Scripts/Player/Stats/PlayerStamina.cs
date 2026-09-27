@@ -95,4 +95,15 @@ public sealed class PlayerStamina : MonoBehaviour
             enabled = false;
         }
     }
+
+    public void RestoreFull()
+    {
+        if (_config == null)
+            return;
+
+        _currentStamina = MaxStamina;
+        _regenResumeTime = 0f;
+        enabled = false;
+        StaminaChanged?.Invoke(_currentStamina, MaxStamina);
+    }
 }

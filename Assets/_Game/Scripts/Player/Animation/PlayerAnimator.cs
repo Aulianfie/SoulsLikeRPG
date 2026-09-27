@@ -226,6 +226,17 @@ public class PlayerAnimator : MonoBehaviour
         );
     }
 
+    public bool IsDeathFinished()
+    {
+        if (_animator == null || _animator.IsInTransition(BaseLayerIndex))
+            return false;
+
+        AnimatorStateInfo stateInfo =
+            _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+        return stateInfo.fullPathHash == DeadStateHash &&
+            stateInfo.normalizedTime >= 0.95f;
+    }
+
     /// <summary>
     /// 角色或脚本被关闭后，将动画速度恢复为零，避免重新启用时保留 Run 参数
     /// </summary>

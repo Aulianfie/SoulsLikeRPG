@@ -26,6 +26,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
     private bool _hasEngagedTarget;
     // 返回途中受击后，Hurt 结束仍应继续返回。
     private bool _isReturningHome;
+    private Quaternion _homeRotation;
 
     [Header("Debug")]
     [SerializeField]
@@ -61,6 +62,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
         Motor = GetComponent<EnemyMotor>();
         Combat = GetComponent<EnemyCombat>();
         Territory = GetComponent<EnemyTerritory>();
+        _homeRotation = transform.rotation;
 
         IdleState = new EnemyIdleState(this);
         PatrolState = new EnemyPatrolState(this);
@@ -219,6 +221,33 @@ public sealed class EnemyStateMachine : MonoBehaviour
                 this
             );
         }
+    }
+    /// <summary>
+    /// 重置敌人的状态机和属性，以便在玩家复活或重新加载检查点时恢复敌人。
+    /// 该方法会退出当前状态，重置战斗和移动组件，并将敌人传送回领地的初始位置和朝向。
+    /// </summary>
+    public void ResetForCheckpoint()
+    {
+        if (!isActiveAndEnabled)
+            return;
+
+        string previousStateName = CurrentStateName;
+        CurrentState?.Exit();
+        CurrentState = null;
+        Combat.ResetForCheckpoint();
+        Motor.Stop();
+        EnemyAnimator.SetSpeed(1f);
+        _hasEngagedTarget = false;
+        _isReturningHome = false;
+
+        Motor.Teleport(Territory.HomePosition, _homeRotation);
+
+        Health.RestoreFull();
+        CurrentState = PatrolState;
+        CurrentState.Enter();
+
+        if (_logStateChanges)
+            Debug.Log($"Enemy State: {previousStateName} -> {CurrentStateName}", this);
     }
 
     public bool HasValidTarget()

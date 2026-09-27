@@ -51,4 +51,10 @@ public sealed class EnemyHealth : MonoBehaviour, IDamageable
             this
         );
     }
+
+    public void RestoreFull()
+    {
+        _currentHealth = _maxHealth;
+        HealthChanged?.Invoke(_currentHealth, _maxHealth);
+    }
 }
