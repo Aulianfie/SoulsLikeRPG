@@ -1,0 +1,198 @@
+using Cinemachine;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
+
+[DisallowMultipleComponent]
+[RequireComponent(typeof(CanvasGroup))]
+public sealed class ProgressionPresenter : MonoBehaviour
+{
+    [SerializeField] private GraceMenuUI _graceMenu;
+    [SerializeField] private LevelUpPanel _levelUpPanel;
+    [SerializeField] private CheckpointManager _checkpointManager;
+    [SerializeField] private PlayerProgression _progression;
+    [SerializeField] private SoulWallet _wallet;
+    [SerializeField] private PlayerInputReader _inputReader;
+    [SerializeField] private PlayerHealth _health;
+    [SerializeField] private CinemachineFreeLook _freeLookCamera;
+
+    private CanvasGroup _canvasGroup;
+    private InputAction _cancelAction;
+    private StatType _selectedStat = StatType.Vigor;
+    private float _previousTimeScale;
+    private CursorLockMode _previousCursorLock;
+    private bool _previousCursorVisible;
+    private bool _previousInputEnabled;
+    private GameObject _previousSelection;
+    private string _previousXAxis;
+    private string _previousYAxis;
+
+    public bool IsOpen { get; private set; }
+    public StatType SelectedStat => _selectedStat;
+
+    private void Awake()
+    {
+        _canvasGroup = GetComponent<CanvasGroup>();
+        _cancelAction = new InputAction("CloseGrace", InputActionType.Button);
+        _cancelAction.AddBinding("<Keyboard>/escape");
+        _cancelAction.AddBinding("<Gamepad>/buttonEast");
+        SetOverlayVisible(false);
+        _graceMenu.Hide();
+        _levelUpPanel.Hide();
+    }
+
+    private void OnEnable()
+    {
+        _checkpointManager.CheckpointActivated += HandleCheckpointActivated;
+        _progression.ProgressionChanged += Refresh;
+        _wallet.SoulsChanged += HandleSoulsChanged;
+        _health.Died += CloseMenu;
+        _graceMenu.LevelUpRequested += OpenLevelUp;
+        _graceMenu.CloseRequested += CloseMenu;
+        _levelUpPanel.StatSelected += SelectStat;
+        _levelUpPanel.ConfirmRequested += ConfirmUpgrade;
+        _levelUpPanel.CloseRequested += BackToGrace;
+        _cancelAction.performed += HandleCancel;
+    }
+
+    private void OnDisable()
+    {
+        CloseMenu();
+        _checkpointManager.CheckpointActivated -= HandleCheckpointActivated;
+        _progression.ProgressionChanged -= Refresh;
+        _wallet.SoulsChanged -= HandleSoulsChanged;
+        _health.Died -= CloseMenu;
+        _graceMenu.LevelUpRequested -= OpenLevelUp;
+        _graceMenu.CloseRequested -= CloseMenu;
+        _levelUpPanel.StatSelected -= SelectStat;
+        _levelUpPanel.ConfirmRequested -= ConfirmUpgrade;
+        _levelUpPanel.CloseRequested -= BackToGrace;
+        _cancelAction.performed -= HandleCancel;
+    }
+
+    private void OnDestroy() => _cancelAction?.Dispose();
+
+    private void HandleCheckpointActivated(CheckpointSite checkpoint)
+    {
+        if (!isActiveAndEnabled || _health.IsDead)
+            return;
+
+        if (!IsOpen)
+        {
+            _previousTimeScale = Time.timeScale;
+            _previousCursorLock = Cursor.lockState;
+            _previousCursorVisible = Cursor.visible;
+            _previousInputEnabled = _inputReader.enabled;
+            _previousSelection = EventSystem.current != null
+                ? EventSystem.current.currentSelectedGameObject : null;
+            _inputReader.ClearPendingActions();
+            _inputReader.enabled = false;
+            if (_freeLookCamera != null)
+            {
+                _previousXAxis = _freeLookCamera.m_XAxis.m_InputAxisName;
+                _previousYAxis = _freeLookCamera.m_YAxis.m_InputAxisName;
+                _freeLookCamera.m_XAxis.m_InputAxisName = "";
+                _freeLookCamera.m_YAxis.m_InputAxisName = "";
+                _freeLookCamera.m_XAxis.m_InputAxisValue = 0f;
+                _freeLookCamera.m_YAxis.m_InputAxisValue = 0f;
+            }
+            Time.timeScale = 0f;
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            IsOpen = true;
+            _cancelAction.Enable();
+        }
+        SetOverlayVisible(true);
+        BackToGrace();
+    }
+
+    public void OpenLevelUp()
+    {
+        if (!IsOpen)
+            return;
+        _graceMenu.Hide();
+        _levelUpPanel.Show(_selectedStat);
+        Refresh();
+    }
+
+    public void SelectStat(StatType stat)
+    {
+        if (!IsOpen || !_levelUpPanel.IsVisible ||
+            (stat != StatType.Vigor && stat != StatType.Endurance && stat != StatType.Strength))
+            return;
+        _selectedStat = stat;
+        Refresh();
+    }
+
+    public void ConfirmUpgrade()
+    {
+        if (!IsOpen || !_levelUpPanel.IsVisible)
+            return;
+        _progression.TryUpgrade(_selectedStat);
+        Refresh();
+    }
+
+    public void BackToGrace()
+    {
+        if (!IsOpen)
+            return;
+        _levelUpPanel.Hide();
+        _graceMenu.Show();
+    }
+
+    public void CloseMenu()
+    {
+        if (!IsOpen)
+            return;
+        IsOpen = false;
+        _cancelAction.Disable();
+        _graceMenu.Hide();
+        _levelUpPanel.Hide();
+        SetOverlayVisible(false);
+        Time.timeScale = _previousTimeScale;
+        Cursor.lockState = _previousCursorLock;
+        Cursor.visible = _previousCursorVisible;
+        _inputReader.ClearPendingActions();
+        _inputReader.enabled = _previousInputEnabled;
+        if (_freeLookCamera != null)
+        {
+            _freeLookCamera.m_XAxis.m_InputAxisName = _previousXAxis;
+            _freeLookCamera.m_YAxis.m_InputAxisName = _previousYAxis;
+        }
+        if (EventSystem.current != null)
+            EventSystem.current.SetSelectedGameObject(_previousSelection);
+    }
+
+    private void SetOverlayVisible(bool visible)
+    {
+        _canvasGroup.alpha = visible ? 1f : 0f;
+        _canvasGroup.interactable = visible;
+        _canvasGroup.blocksRaycasts = visible;
+    }
+
+    private void Refresh()
+    {
+        if (!IsOpen || !_levelUpPanel.IsVisible)
+            return;
+        bool canUpgrade = _progression.CanUpgrade(_selectedStat);
+        string status = canUpgrade ? "Select an attribute and confirm." :
+            _wallet.CanAfford(_progression.UpgradeCost) ? "Cannot upgrade this attribute." :
+            "Not enough Soul.";
+        _levelUpPanel.SetSummary(_wallet.CurrentSouls, _progression.Level,
+            _progression.UpgradeCost, canUpgrade, status);
+        for (int i = 0; i < 3; i++)
+        {
+            StatType stat = (StatType)i;
+            _levelUpPanel.SetStatPreview(stat, _progression.GetUpgradePreview(stat), stat == _selectedStat);
+        }
+    }
+
+    private void HandleSoulsChanged(int souls) => Refresh();
+    private void HandleCancel(InputAction.CallbackContext context)
+    {
+        if (_levelUpPanel.IsVisible)
+            BackToGrace();
+        else
+            CloseMenu();
+    }
+}

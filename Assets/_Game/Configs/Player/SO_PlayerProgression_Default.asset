@@ -17,3 +17,30 @@ MonoBehaviour:
   _baseStamina: 100
   _staminaPerEndurance: 8
   _damagePerStrength: 0.05
+  _baseUpgradeCost: 100
+  _upgradeCostPerLevel: 50
+  _useUpgradeCostCurve: 1
+  _upgradeCostCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 1
+      value: 150
+      inSlope: 0
+      outSlope: 28.850142
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 100
+      value: 3006.164
+      inSlope: 28.850142
+      outSlope: 50
+      tangentMode: 69
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4

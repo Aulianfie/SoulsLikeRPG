@@ -119,10 +119,7 @@ public class PlayerInputReader : MonoBehaviour
         if (_interactAction != null)
             _interactAction.performed -= OnInteract;
 
-        _jumpRequested = false;
-        _lockOnRequested = false;
-        _interactRequested = false;
-        ClearAllBuffers();
+        ClearPendingActions();
 
         _gameplayMap?.Disable();
     }

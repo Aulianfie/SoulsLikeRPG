@@ -23,6 +23,15 @@ public sealed class PlayerInteractor : MonoBehaviour
 
     private void Update()
     {
+        if (!_inputReader.isActiveAndEnabled)
+        {
+            if (_shownTarget != null)
+                _promptUI?.Hide();
+            _shownTarget = null;
+            _shownText = null;
+            return;
+        }
+
         IInteractable closest = null;
         float closestSqrDistance = float.MaxValue;
 

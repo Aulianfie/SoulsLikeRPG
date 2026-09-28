@@ -12,6 +12,8 @@ public sealed class CheckpointManager : MonoBehaviour
         new Dictionary<string, CheckpointSite>(StringComparer.Ordinal);
     private EnemyStateMachine[] _enemies;
 
+    public event Action<CheckpointSite> CheckpointActivated;
+
     public CheckpointSite CurrentCheckpoint { get; private set; }
     public Transform CurrentRespawnPoint => CurrentCheckpoint != null
         ? CurrentCheckpoint.RespawnPoint
@@ -62,6 +64,7 @@ public sealed class CheckpointManager : MonoBehaviour
         _playerStamina.RestoreFull();
         SaveService.Save(new GameSaveData(gameObject.scene.name, checkpoint.CheckpointId));
         ResetWorld();
+        CheckpointActivated?.Invoke(checkpoint);
         return true;
     }
 
