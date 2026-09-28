@@ -444,6 +444,7 @@ GameObject:
   - component: {fileID: 584471811156429486}
   - component: {fileID: 7849516553911343290}
   - component: {fileID: 8306502670675486314}
+  - component: {fileID: 4908752663462865618}
   m_Layer: 3
   m_Name: EnemyDummy_Day0
   m_TagString: Untagged
@@ -639,12 +640,26 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e2daae44af584e8ea78e3236f135423a, type: 3}
-  m_Name:
-  m_EditorClassIdentifier:
+  m_Name: 
+  m_EditorClassIdentifier: 
   _territoryCenterOverride: {fileID: 0}
   _patrolRadius: 5
   _detectionRadius: 8
   _leashRadius: 12
+--- !u!114 &4908752663462865618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8082192399273176202}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4f7c4ada03e33fc45b125238b943b573, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _soulReward: 100
+  _wallet: {fileID: 0}
 --- !u!1001 &7275019754705713998
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ public sealed class PlayerHealth : MonoBehaviour, IDamageable
     [SerializeField] private PlayerStatsConfig _config;
 
     private int _currentHealth;
+    private int _maxHealthOverride;
     private bool _isInvincible;
     private PlayerStateMachine _stateMachine;
 
@@ -14,7 +15,8 @@ public sealed class PlayerHealth : MonoBehaviour, IDamageable
     public event Action Died;
 
     public int CurrentHealth => _currentHealth;
-    public int MaxHealth => _config != null ? _config.MaxHealth : 0;
+    public int MaxHealth => _maxHealthOverride > 0 ? _maxHealthOverride :
+        _config != null ? _config.MaxHealth : 0;
     public bool IsDead => _currentHealth <= 0;
     public bool IsInvincible => _isInvincible;
 
@@ -58,6 +60,18 @@ public sealed class PlayerHealth : MonoBehaviour, IDamageable
             return;
 
         _currentHealth = nextHealth;
+        HealthChanged?.Invoke(_currentHealth, MaxHealth);
+    }
+
+    public void SetMaxHealth(int maxHealth)
+    {
+        int previousMax = MaxHealth;
+        _maxHealthOverride = Mathf.Max(1, maxHealth);
+        // 保留已损失的 HP；改变成长属性不能让死亡玩家复活。
+        if (!IsDead)
+            _currentHealth = (int)Math.Max(1L, Math.Min(MaxHealth,
+                (long)_currentHealth + MaxHealth - previousMax));
+
         HealthChanged?.Invoke(_currentHealth, MaxHealth);
     }
 

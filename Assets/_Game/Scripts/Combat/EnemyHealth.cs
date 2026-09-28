@@ -11,6 +11,8 @@ public sealed class EnemyHealth : MonoBehaviour, IDamageable
     private EnemyStateMachine _stateMachine;
 
     public event Action<int, int> HealthChanged;
+    public event Action Died;
+    public event Action Revived;
 
     public int CurrentHealth => _currentHealth;
     public int MaxHealth => _maxHealth;
@@ -32,6 +34,7 @@ public sealed class EnemyHealth : MonoBehaviour, IDamageable
     {
         _currentHealth = _maxHealth;
         HealthChanged?.Invoke(_currentHealth, _maxHealth);
+        Revived?.Invoke();
     }
 
     public void TakeDamage(DamageInfo damageInfo)
@@ -44,6 +47,8 @@ public sealed class EnemyHealth : MonoBehaviour, IDamageable
             _currentHealth - damageInfo.Damage
         );
         HealthChanged?.Invoke(_currentHealth, _maxHealth);
+        if (_currentHealth == 0)
+            Died?.Invoke();
         _stateMachine?.HandleDamageTaken();
 
         Debug.Log(
@@ -54,7 +59,10 @@ public sealed class EnemyHealth : MonoBehaviour, IDamageable
 
     public void RestoreFull()
     {
+        bool wasDead = _currentHealth <= 0;
         _currentHealth = _maxHealth;
         HealthChanged?.Invoke(_currentHealth, _maxHealth);
+        if (wasDead)
+            Revived?.Invoke();
     }
 }

@@ -24,6 +24,7 @@ public sealed class PlayerCombat : MonoBehaviour
     private AttackCombo _attackCombo;
 
     private PlayerAnimator _playerAnimator;
+    private PlayerProgression _progression;
     private bool _hitboxActive;
     private float _recoveryTimer;
 
@@ -158,6 +159,7 @@ public sealed class PlayerCombat : MonoBehaviour
     private void Awake()
     {
         _playerAnimator = GetComponent<PlayerAnimator>();
+        _progression = GetComponent<PlayerProgression>();
 
         if (_weaponHitbox == null)
         {
@@ -362,7 +364,10 @@ public sealed class PlayerCombat : MonoBehaviour
 
         if (shouldBeActive && !_hitboxActive)
         {
-            _weaponHitbox.BeginAttack(data.Damage);
+            int damage = _progression != null
+                ? _progression.CalculateAttackDamage(data.Damage)
+                : data.Damage;
+            _weaponHitbox.BeginAttack(damage);
             _hitboxActive = true;
         }
         else if (!shouldBeActive && _hitboxActive)

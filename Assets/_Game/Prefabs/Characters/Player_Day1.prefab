@@ -57,6 +57,8 @@ GameObject:
   - component: {fileID: 2052648185091293393}
   - component: {fileID: 3867592720262854993}
   - component: {fileID: 522079245332728037}
+  - component: {fileID: 6104041691171991403}
+  - component: {fileID: 2828337751190772008}
   m_Layer: 0
   m_Name: Player_Day1
   m_TagString: Player
@@ -354,6 +356,37 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _promptUI: {fileID: 0}
+  _maxInteractionDistance: 3.5
+--- !u!114 &6104041691171991403
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4208464230741577774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eee6a6dec6a5c324ba5efcddc1c7b855, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _currentSouls: 0
+--- !u!114 &2828337751190772008
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4208464230741577774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b50b65c19d5572842a5befa518649f04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _config: {fileID: 11400000, guid: d6a49033aa3d2b741ac923331ba86806, type: 2}
+  _level: 1
+  _vigor: 1
+  _endurance: 1
+  _strength: 1
 --- !u!1 &6224024120811738658
 GameObject:
   m_ObjectHideFlags: 0

@@ -7,12 +7,14 @@ public sealed class PlayerStamina : MonoBehaviour
     [SerializeField] private PlayerStatsConfig _config;
 
     private float _currentStamina;
+    private float _maxStaminaOverride;
     private float _regenResumeTime;
 
     public event Action<float, float> StaminaChanged;
 
     public float CurrentStamina => _currentStamina;
-    public float MaxStamina => _config != null ? _config.MaxStamina : 0f;
+    public float MaxStamina => _maxStaminaOverride > 0f ? _maxStaminaOverride :
+        _config != null ? _config.MaxStamina : 0f;
     public float AttackCost => _config != null ? _config.AttackStaminaCost : 0f;
     public float DodgeCost => _config != null ? _config.DodgeStaminaCost : 0f;
 
@@ -104,6 +106,16 @@ public sealed class PlayerStamina : MonoBehaviour
         _currentStamina = MaxStamina;
         _regenResumeTime = 0f;
         enabled = false;
+        StaminaChanged?.Invoke(_currentStamina, MaxStamina);
+    }
+
+    public void SetMaxStamina(float maxStamina)
+    {
+        float previousMax = MaxStamina;
+        _maxStaminaOverride = Mathf.Max(0.01f, maxStamina);
+        _currentStamina = Mathf.Clamp(_currentStamina + MaxStamina - previousMax,
+            0f, MaxStamina);
+        enabled = _config != null && _currentStamina < MaxStamina;
         StaminaChanged?.Invoke(_currentStamina, MaxStamina);
     }
 }
