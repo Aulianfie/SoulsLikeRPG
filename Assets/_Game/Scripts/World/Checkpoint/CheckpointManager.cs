@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 [DisallowMultipleComponent]
@@ -11,6 +12,12 @@ public sealed class CheckpointManager : MonoBehaviour
     private readonly Dictionary<string, CheckpointSite> _checkpoints =
         new Dictionary<string, CheckpointSite>(StringComparer.Ordinal);
     private EnemyStateMachine[] _enemies;
+    private SoulWallet _wallet;
+    private PlayerProgression _progression;
+    private GameSaveData _loadedSave;
+    private bool _initialized;
+    private bool _canSave;
+    private bool _savePending;
 
     public event Action<CheckpointSite> CheckpointActivated;
 
@@ -21,6 +28,11 @@ public sealed class CheckpointManager : MonoBehaviour
 
     private void Awake()
     {
+        if (_playerHealth != null)
+        {
+            _wallet = _playerHealth.GetComponent<SoulWallet>();
+            _progression = _playerHealth.GetComponent<PlayerProgression>();
+        }
         EnemyStateMachine[] allEnemies = FindObjectsOfType<EnemyStateMachine>(true);
         var sceneEnemies = new List<EnemyStateMachine>(allEnemies.Length);
         foreach (EnemyStateMachine enemy in allEnemies)
@@ -45,9 +57,80 @@ public sealed class CheckpointManager : MonoBehaviour
 
     private void RestoreCheckpointFromSave()
     {
-        GameSaveData data = SaveService.Load();
-        if (data != null && data.sceneName == gameObject.scene.name)
-            TryRestoreCheckpoint(data.checkpointId);
+        _loadedSave = SaveService.Load();
+        // 无法读取的文件保留原样，避免自动保存覆盖损坏或更高版本的存档。
+        _canSave = _loadedSave != null || !File.Exists(SaveService.SaveFilePath);
+        if (_loadedSave != null && _loadedSave.sceneName == gameObject.scene.name)
+            TryRestoreCheckpoint(_loadedSave.checkpointId);
+    }
+
+    private void OnEnable()
+    {
+        if (_wallet != null)
+            _wallet.SoulsChanged += HandleSoulsChanged;
+        if (_progression != null)
+            _progression.ProgressionChanged += MarkSavePending;
+    }
+
+    private void Start()
+    {
+        // 所有玩家组件的 Awake 已结束，加载后由成长配置重新计算派生属性。
+        if (_loadedSave != null && _loadedSave.sceneName == gameObject.scene.name)
+        {
+            if (_wallet != null)
+                _wallet.SetSouls(_loadedSave.souls);
+            if (_progression != null)
+                _progression.SetProgression(_loadedSave.level, _loadedSave.vigor,
+                    _loadedSave.endurance, _loadedSave.strength);
+        }
+        _initialized = true;
+        _savePending = true;
+        _loadedSave = null;
+    }
+
+    private void LateUpdate()
+    {
+        // 扣魂事件早于属性递增；同一帧结束后只写一次完整快照。
+        if (_savePending)
+            SaveCurrentProgression();
+    }
+
+    public bool SaveCurrentProgression()
+    {
+        if (!_initialized || !_canSave || _wallet == null || _progression == null)
+            return false;
+        var data = new GameSaveData(gameObject.scene.name,
+            CurrentCheckpoint != null ? CurrentCheckpoint.CheckpointId : "")
+        {
+            souls = _wallet.CurrentSouls,
+            level = _progression.Level,
+            vigor = _progression.Vigor,
+            endurance = _progression.Endurance,
+            strength = _progression.Strength
+        };
+        _savePending = false;
+        return SaveService.Save(data);
+    }
+
+    private void HandleSoulsChanged(int souls) => MarkSavePending();
+    private void MarkSavePending() => _savePending = true;
+
+    private void OnApplicationPause(bool paused)
+    {
+        if (paused)
+            SaveCurrentProgression();
+    }
+
+    private void OnApplicationQuit() => SaveCurrentProgression();
+
+    private void OnDisable()
+    {
+        if (_savePending)
+            SaveCurrentProgression();
+        if (_wallet != null)
+            _wallet.SoulsChanged -= HandleSoulsChanged;
+        if (_progression != null)
+            _progression.ProgressionChanged -= MarkSavePending;
     }
 
     public bool ActivateCheckpoint(CheckpointSite checkpoint)
@@ -62,7 +145,7 @@ public sealed class CheckpointManager : MonoBehaviour
         checkpoint.MarkActivated();
         _playerHealth.RestoreFull();
         _playerStamina.RestoreFull();
-        SaveService.Save(new GameSaveData(gameObject.scene.name, checkpoint.CheckpointId));
+        SaveCurrentProgression();
         ResetWorld();
         CheckpointActivated?.Invoke(checkpoint);
         return true;

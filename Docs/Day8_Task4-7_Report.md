@@ -42,4 +42,4 @@
 - 已检查 1920×1080 菜单截图：`Logs/Day8_GraceMenu_Preview.png`、`Logs/Day8_LevelUp_Preview.png`。
 - 尚未运行独立 Player Build、实体手柄或多分辨率布局验证。
 
-本次范围为 Task4–7。Soul 与成长属性的存档接入属于 Task8，SoulDrop 属于 Task9，尚未实现。
+本记录范围为 Task4–7。后续 Task8 存档接入与 Task9 SoulDrop 占位已实现，见 [Day8_Task8-9_Report.md](Day8_Task8-9_Report.md)。
