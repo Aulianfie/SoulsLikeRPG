@@ -41,6 +41,14 @@ public sealed class RespawnController : MonoBehaviour
 
         _player.Health.Died -= OnPlayerDied;
         _player.Health.Died += OnPlayerDied;
+        SpawnFromLoadedCheckpoint();
+    }
+
+    private void SpawnFromLoadedCheckpoint()
+    {
+        Transform spawn = _checkpointManager.CurrentRespawnPoint;
+        if (spawn != null)
+            _player.Motor.Teleport(spawn.position, spawn.rotation);
     }
 
     private void OnDisable()

@@ -37,9 +37,11 @@ public sealed class CheckpointManager : MonoBehaviour
             if (!_checkpoints.TryAdd(checkpoint.CheckpointId, checkpoint))
                 Debug.LogWarning($"Duplicate checkpoint ID: {checkpoint.CheckpointId}", checkpoint);
         }
+
+        RestoreCheckpointFromSave();
     }
 
-    private void Start()
+    private void RestoreCheckpointFromSave()
     {
         GameSaveData data = SaveService.Load();
         if (data != null && data.sceneName == gameObject.scene.name)
@@ -76,7 +78,8 @@ public sealed class CheckpointManager : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(checkpointId) ||
             !_checkpoints.TryGetValue(checkpointId, out CheckpointSite checkpoint) ||
-            !checkpoint.CanInteract)
+            !checkpoint.enabled || !checkpoint.gameObject.activeInHierarchy ||
+            checkpoint.RespawnPoint == null)
             return false;
 
         CurrentCheckpoint = checkpoint;
