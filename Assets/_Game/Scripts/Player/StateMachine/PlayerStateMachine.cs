@@ -30,6 +30,8 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerHurtState HurtState { get; private set; }
     public PlayerDeadState DeadState { get; private set; }
 
+    public PlayerInteractState InteractState { get; private set; }
+
     private bool _hasStarted;
 
     private void Awake()
@@ -47,6 +49,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         DodgeState = new PlayerDodgeState(this);
         HurtState = new PlayerHurtState(this);
         DeadState = new PlayerDeadState(this);
+        InteractState = new PlayerInteractState(this);
     }
 
     private void OnEnable()
@@ -107,6 +110,37 @@ public sealed class PlayerStateMachine : MonoBehaviour
             return;
 
         ChangeState(Health.IsDead ? DeadState : HurtState);
+    }
+
+    public bool TryBeginInteraction(
+        IInteractable target,
+        float maxDistance
+    )
+    {
+        // 只允许存活、站在地面且处于移动状态的玩家开始交互。
+        if (Health.IsDead ||
+            CurrentState != LocomotionState ||
+            !Motor.IsGrounded)
+            return false;
+
+        MonoBehaviour behaviour = target as MonoBehaviour;
+
+        if (behaviour == null ||
+            !behaviour.isActiveAndEnabled ||
+            !target.CanInteract)
+            return false;
+
+        float sqrDistance =
+            (behaviour.transform.position -
+            transform.position).sqrMagnitude;
+
+        if (sqrDistance > maxDistance * maxDistance)
+            return false;
+
+        // 先保存目标，再进入交互状态。
+        InteractState.SetTarget(behaviour, maxDistance);
+        ChangeState(InteractState);
+        return CurrentState == InteractState;
     }
 
     public void Respawn()

@@ -19,6 +19,8 @@ public class PlayerAnimator : MonoBehaviour
     private static readonly int DeadStateHash =
         Animator.StringToHash("Base Layer.Dead");
 
+    private static readonly int InteractStateHash = Animator.StringToHash("Base Layer.Interact");
+
     private const int BaseLayerIndex = 0;
 
     private PlayerMotor _motor;
@@ -166,6 +168,30 @@ public class PlayerAnimator : MonoBehaviour
             transitionDuration,
             BaseLayerIndex
         );
+    }
+
+    public void PlayInteract(float transitionDuration)
+    {
+        _animator.CrossFadeInFixedTime(
+            InteractStateHash,
+            transitionDuration,
+            BaseLayerIndex,
+            0f
+        );
+    }
+
+    public bool IsInteractFinished(float completionNormalizedTime)
+    {
+        // 还在切换动画时，不能认为交互完成。
+        if (_animator == null ||
+            _animator.IsInTransition(BaseLayerIndex))
+            return false;
+
+        AnimatorStateInfo stateInfo =
+            _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+
+        return stateInfo.fullPathHash == InteractStateHash &&
+            stateInfo.normalizedTime >= completionNormalizedTime;
     }
 
     public bool IsDodgeFinished(float completionNormalizedTime)

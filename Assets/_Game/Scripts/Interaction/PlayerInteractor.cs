@@ -13,9 +13,12 @@ public sealed class PlayerInteractor : MonoBehaviour
     private IInteractable _shownTarget;
     private string _shownText;
 
+    private PlayerStateMachine _stateMachine;
+
     private void Awake()
     {
         _inputReader = GetComponent<PlayerInputReader>();
+        _stateMachine = GetComponent<PlayerStateMachine>();
     }
 
     private void Update()
@@ -61,8 +64,14 @@ public sealed class PlayerInteractor : MonoBehaviour
             _shownText = promptText;
         }
 
-        if (_inputReader.ConsumeInteract() && closest != null && closest.CanInteract)
-            closest.Interact();
+        if (_inputReader.ConsumeInteract() && closest != null)
+        {
+            // 申请播放交互动作，实际效果由 InteractState 在动作完成后执行。
+            _stateMachine.TryBeginInteraction(
+                closest,
+                _maxInteractionDistance
+            );
+        }
     }
 
     private void OnTriggerEnter(Collider other)
