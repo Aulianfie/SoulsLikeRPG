@@ -127,6 +127,8 @@ public static class LostSoulModelSetup
 
     private static void PlacePreview()
     {
+        if (Object.FindObjectOfType<PlayerSoulDrop>() != null)
+            return; // 已接入死亡掉魂时，由运行时生成实例。
         GameObject instance = GameObject.Find(PreviewName);
         if (instance != null)
             return;

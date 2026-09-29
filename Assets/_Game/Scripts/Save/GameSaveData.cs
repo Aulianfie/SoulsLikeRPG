@@ -1,9 +1,10 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public sealed class GameSaveData
 {
-    public const int CurrentVersion = 2;
+    public const int CurrentVersion = 3;
 
     public int version;
     public string sceneName;
@@ -13,6 +14,9 @@ public sealed class GameSaveData
     public int vigor = 1;
     public int endurance = 1;
     public int strength = 1;
+    public bool hasSoulDrop;
+    public int droppedSouls;
+    public Vector3 soulDropPosition;
 
     public GameSaveData(string sceneName, string checkpointId)
     {

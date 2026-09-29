@@ -20,6 +20,8 @@ public sealed class PlayerInteractState : PlayerState
     {
         ClearActionInput();
         StateMachine.Motor.StopHorizontalMovement();
+        if (_target != null)
+            StateMachine.Motor.FacePosition(_target.transform.position);
         StateMachine.PlayerAnimator.PlayInteract(0.08f);
     }
 

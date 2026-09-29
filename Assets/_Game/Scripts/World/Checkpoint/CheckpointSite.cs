@@ -16,6 +16,7 @@ public sealed class CheckpointSite : MonoBehaviour, IInteractable
     public bool CanInteract => isActiveAndEnabled &&
         !string.IsNullOrWhiteSpace(_checkpointId) && _respawnPoint != null;
     public string InteractionText => _interactionText;
+    public bool RequiresInteractionAnimation => true;
 
     public void Interact()
     {

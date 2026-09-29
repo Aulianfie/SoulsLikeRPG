@@ -15,7 +15,7 @@ public sealed class PlayerMotor : MonoBehaviour
     private Vector3 _horizontalVelocity; // 负责地面上的前后左右移动
     private float _verticalVelocity; // 负责重力和贴地
     private float _timeWithoutGround;
-    private float _lastGroundedY;
+    public Vector3 LastGroundedPosition { get; private set; }
     private bool _jumpStarted;
 
     public float HorizontalSpeed => _horizontalVelocity.magnitude;
@@ -37,7 +37,7 @@ public sealed class PlayerMotor : MonoBehaviour
                 _characterController.skinWidth + FallDistanceMargin;
             return _timeWithoutGround >= FallRecognitionTime &&
                 _verticalVelocity < 0f &&
-                _lastGroundedY - transform.position.y > fallDistance;
+                LastGroundedPosition.y - transform.position.y > fallDistance;
         }
     }
     public float DodgeDuration =>
@@ -46,7 +46,7 @@ public sealed class PlayerMotor : MonoBehaviour
     private void Awake()
     {
         _characterController = GetComponent<CharacterController>();
-        _lastGroundedY = transform.position.y;
+        LastGroundedPosition = transform.position;
 
         if (_config == null)
         {
@@ -75,7 +75,7 @@ public sealed class PlayerMotor : MonoBehaviour
     private void OnEnable()
     {
         _timeWithoutGround = 0f;
-        _lastGroundedY = transform.position.y;
+        LastGroundedPosition = transform.position;
         _jumpStarted = false;
     }
 
@@ -127,6 +127,14 @@ public sealed class PlayerMotor : MonoBehaviour
         _horizontalVelocity = Vector3.zero;
     }
 
+    public void FacePosition(Vector3 position)
+    {
+        Vector3 direction = position - transform.position;
+        direction.y = 0f;
+        if (direction.sqrMagnitude > 0.0001f)
+            transform.rotation = Quaternion.LookRotation(direction, Vector3.up);
+    }
+
     public void Teleport(Vector3 position, Quaternion rotation)
     {
         bool wasEnabled = _characterController.enabled;
@@ -137,7 +145,7 @@ public sealed class PlayerMotor : MonoBehaviour
         _horizontalVelocity = Vector3.zero;
         _verticalVelocity = 0f;
         _timeWithoutGround = 0f;
-        _lastGroundedY = position.y;
+        LastGroundedPosition = position;
         _jumpStarted = false;
     }
 
@@ -364,7 +372,7 @@ public sealed class PlayerMotor : MonoBehaviour
         if (IsGrounded)
         {
             _timeWithoutGround = 0f;
-            _lastGroundedY = transform.position.y;
+            LastGroundedPosition = transform.position;
             if (_verticalVelocity <= 0f)
                 _jumpStarted = false;
         }
@@ -405,7 +413,7 @@ public sealed class PlayerMotor : MonoBehaviour
         _horizontalVelocity = Vector3.zero;
         _verticalVelocity = 0f;
         _timeWithoutGround = 0f;
-        _lastGroundedY = transform.position.y;
+        LastGroundedPosition = transform.position;
         _jumpStarted = false;
     }
 }

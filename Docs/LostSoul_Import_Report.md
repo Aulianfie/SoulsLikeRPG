@@ -33,6 +33,8 @@ SoulDrop
 
 模型高度约 0.65 米，中心对齐原碰撞器中心。场景 `Assets/_Game/Scenes/03_AncientDungeon_Checkpoint.unity` 新增 `SoulDrop_ModelPreview`，放在 `checkpoint_dungeon_03` 附近供预览。此实例是视觉展示，尚未接入死亡生成或拾取行为。
 
+后续更新：用户将根节点缩放设为 2 倍，已保留。死亡生成与拾取现已实现，静态预览已移除；当前使用运行时掉落实例。详见 [死亡掉魂说明](DeathSoulDrop_Implementation.md)。
+
 重复接入菜单：`Tools > SoulsLike RPG > Day8 > Apply LostSoul Model`；模型检查菜单：`Tools > SoulsLike RPG > Day8 > Validate LostSoul Model`。本次已经执行并保存。
 
 ## 验证与产物

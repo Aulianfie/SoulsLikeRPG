@@ -15,6 +15,8 @@ public sealed class PlayerInteractor : MonoBehaviour
 
     private PlayerStateMachine _stateMachine;
 
+    public float MaxInteractionDistance => _maxInteractionDistance;
+
     private void Awake()
     {
         _inputReader = GetComponent<PlayerInputReader>();

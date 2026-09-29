@@ -14,6 +14,7 @@ public sealed class CheckpointManager : MonoBehaviour
     private EnemyStateMachine[] _enemies;
     private SoulWallet _wallet;
     private PlayerProgression _progression;
+    private PlayerSoulDrop _soulDrop;
     private GameSaveData _loadedSave;
     private bool _initialized;
     private bool _canSave;
@@ -32,6 +33,7 @@ public sealed class CheckpointManager : MonoBehaviour
         {
             _wallet = _playerHealth.GetComponent<SoulWallet>();
             _progression = _playerHealth.GetComponent<PlayerProgression>();
+            _soulDrop = _playerHealth.GetComponent<PlayerSoulDrop>();
         }
         EnemyStateMachine[] allEnemies = FindObjectsOfType<EnemyStateMachine>(true);
         var sceneEnemies = new List<EnemyStateMachine>(allEnemies.Length);
@@ -70,6 +72,8 @@ public sealed class CheckpointManager : MonoBehaviour
             _wallet.SoulsChanged += HandleSoulsChanged;
         if (_progression != null)
             _progression.ProgressionChanged += MarkSavePending;
+        if (_soulDrop != null)
+            _soulDrop.SoulDropChanged += MarkSavePending;
     }
 
     private void Start()
@@ -82,6 +86,8 @@ public sealed class CheckpointManager : MonoBehaviour
             if (_progression != null)
                 _progression.SetProgression(_loadedSave.level, _loadedSave.vigor,
                     _loadedSave.endurance, _loadedSave.strength);
+            if (_soulDrop != null)
+                _soulDrop.RestoreFromSave(_loadedSave);
         }
         _initialized = true;
         _savePending = true;
@@ -108,6 +114,8 @@ public sealed class CheckpointManager : MonoBehaviour
             endurance = _progression.Endurance,
             strength = _progression.Strength
         };
+        if (_soulDrop != null)
+            _soulDrop.WriteToSave(data);
         _savePending = false;
         return SaveService.Save(data);
     }
@@ -131,6 +139,8 @@ public sealed class CheckpointManager : MonoBehaviour
             _wallet.SoulsChanged -= HandleSoulsChanged;
         if (_progression != null)
             _progression.ProgressionChanged -= MarkSavePending;
+        if (_soulDrop != null)
+            _soulDrop.SoulDropChanged -= MarkSavePending;
     }
 
     public bool ActivateCheckpoint(CheckpointSite checkpoint)

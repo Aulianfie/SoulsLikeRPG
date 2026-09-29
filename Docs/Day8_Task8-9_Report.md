@@ -2,7 +2,7 @@
 
 ## Task8：Soul 与成长存档
 
-沿用 `SaveService` 和 `CheckpointManager`，将 `GameSaveData.CurrentVersion` 提升为 2。保存字段为 `version`、`sceneName`、`checkpointId`、`souls`、`level`、`vigor`、`endurance`、`strength`。不保存最大 HP、最大体力或伤害倍率；读档后由当前 `PlayerProgressionConfig` 重新计算。
+沿用 `SaveService` 和 `CheckpointManager`，Task8 阶段将存档版本提升为 2。基础字段为 `version`、`sceneName`、`checkpointId`、`souls`、`level`、`vigor`、`endurance`、`strength`。后续死亡掉魂功能已将当前版本提升为 3，并增加遗留掉魂数据，见 [死亡掉魂说明](DeathSoulDrop_Implementation.md)。不保存最大 HP、最大体力或伤害倍率；读档后由当前 `PlayerProgressionConfig` 重新计算。
 
 保存时机：
 
@@ -14,7 +14,7 @@
 
 兼容与文件保护：
 
-- v1 赐福存档保留场景和赐福 ID，补齐 1000 Soul、等级与三项属性均为 1，然后保存为 v2。
+- v1 赐福存档保留场景和赐福 ID，补齐 1000 Soul、等级与三项属性均为 1，然后保存为当前版本；v2 保留原余额与成长，迁移后默认没有掉魂。
 - v2 中的 0 金币是合法余额；缺失成长字段、负余额、损坏 JSON 或不支持的版本均拒绝加载。
 - 无法读取的现有存档不会被自动保存覆盖。此时角色使用默认状态，修复存档前自动保存停用；Console 会提示读取问题。
 - 写入仍采用临时文件加原子替换，避免直接覆盖写入造成半份存档。
@@ -36,9 +36,9 @@ SoulDrop                 [SoulDrop.cs]
 └── Collider             [SphereCollider，Is Trigger]
 ```
 
-`SoulDrop.cs` 只保留视觉根引用。碰撞器独立于模型；未来将 Placeholder 替换为 SoulModel，Shader、ParticleSystem、Light 等视觉内容继续放在 VisualRoot 下。没有在场景中自动生成掉魂，也没有死亡掉魂或拾取行为，这些留给文档后续阶段。
+Task9 原阶段的 `SoulDrop.cs` 仅保留视觉根引用，碰撞器独立于模型。后续已替换模型并实现死亡生成、拾取和二次死亡丢魂；视觉内容仍放在 VisualRoot 下，详见 [死亡掉魂说明](DeathSoulDrop_Implementation.md)。
 
-后续更新：已使用用户提供的 LostSoul FBX 的优化副本替换 Placeholder，并在检查点场景加入视觉预览实例。减面、压缩与材质记录见 [LostSoul_Import_Report.md](LostSoul_Import_Report.md)。
+后续更新：已使用用户提供的 LostSoul FBX 优化副本替换 Placeholder。接入死亡掉魂后移除了静态预览，实例由死亡事件生成。减面、压缩与材质记录见 [LostSoul_Import_Report.md](LostSoul_Import_Report.md)。
 
 编辑器配置菜单：`Tools > SoulsLike RPG > Day8 > Build Task8-9 In Open Scene`。本次已执行，无需再运行即可使用；重复执行不会覆盖已有 SoulDrop Prefab。
 

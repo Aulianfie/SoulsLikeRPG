@@ -90,11 +90,11 @@ public static class Day8Task89Validation
         Check(SaveService.Load(path) == null, "不存在的存档返回空结果");
         var data = new GameSaveData("03_AncientDungeon_Checkpoint", "")
             { souls = 0, level = 4, vigor = 2, endurance = 2, strength = 2 };
-        Check(SaveService.Save(data, path), "尚未激活赐福时可以创建 v2 成长存档");
+        Check(SaveService.Save(data, path), "尚未激活赐福时可以创建当前版本成长存档");
         GameSaveData loaded = SaveService.Load(path);
-        Check(loaded.version == 2 && loaded.souls == 0 && loaded.level == 4 &&
+        Check(loaded.version == GameSaveData.CurrentVersion && loaded.souls == 0 && loaded.level == 4 &&
             loaded.vigor == 2 && loaded.endurance == 2 && loaded.strength == 2,
-            "v2 零余额与全部基础成长字段精确往返");
+            "当前版本零余额与全部基础成长字段精确往返");
         string json = File.ReadAllText(path);
         Check(!json.Contains("MaxHealth") && !json.Contains("MaxStamina") &&
             !json.Contains("DamageMultiplier"), "存档不包含派生战斗属性");
@@ -109,18 +109,18 @@ public static class Day8Task89Validation
         File.WriteAllText(path,
             "{\"version\":1,\"sceneName\":\"03_AncientDungeon_Checkpoint\",\"checkpointId\":\"checkpoint_dungeon_01\"}");
         loaded = SaveService.Load(path);
-        Check(loaded != null && loaded.version == 2 && loaded.souls == 1000 &&
+        Check(loaded != null && loaded.version == GameSaveData.CurrentVersion && loaded.souls == 1000 &&
             loaded.level == 1 && loaded.vigor == 1 && loaded.endurance == 1 && loaded.strength == 1 &&
-            loaded.checkpointId == "checkpoint_dungeon_01", "v1 赐福迁移为 v2：1000 Soul 与 1 级属性");
-        Check(SaveService.Save(loaded, path) && File.ReadAllText(path).Contains("\"version\": 2"),
-            "迁移后的旧档可持久化为 v2");
+            loaded.checkpointId == "checkpoint_dungeon_01", "v1 赐福迁移为当前版本：1000 Soul 与 1 级属性");
+        Check(SaveService.Save(loaded, path) && File.ReadAllText(path).Contains($"\"version\": {GameSaveData.CurrentVersion}"),
+            "迁移后的旧档可持久化为当前版本");
         _expectStorageWarning = true;
         try
         {
             foreach (string invalid in new[]
             {
                 "{bad json", "{}", "{\"version\":2,\"sceneName\":\"scene\"}",
-                "{\"version\":3,\"sceneName\":\"scene\",\"checkpointId\":\"grace\"}",
+                "{\"version\":99,\"sceneName\":\"scene\",\"checkpointId\":\"grace\"}",
                 "{\"version\":2,\"sceneName\":\"scene\",\"souls\":-1,\"level\":1,\"vigor\":1,\"endurance\":1,\"strength\":1}"
             })
             {
@@ -230,7 +230,7 @@ public static class Day8Task89Validation
                     progression.Vigor == 1 && progression.Endurance == 1 && progression.Strength == 1,
                     "真实 v1 存档启动时迁移为 1000 金币及初始成长，HUD 正确恢复");
                 Check(manager.CurrentCheckpoint.CheckpointId == SessionState.GetString(Key + "CheckpointId", "") &&
-                    SaveService.Load().version == 2, "旧版赐福在实际启动中恢复，并自动持久化为 v2");
+                    SaveService.Load().version == GameSaveData.CurrentVersion, "旧版赐福在实际启动中恢复，并自动持久化为当前版本");
                 SessionState.SetInt(Key + "Cycle", 4);
                 WriteReport(null);
                 EditorApplication.isPlaying = false;

@@ -137,6 +137,12 @@ public sealed class PlayerStateMachine : MonoBehaviour
         if (sqrDistance > maxDistance * maxDistance)
             return false;
 
+        if (!target.RequiresInteractionAnimation)
+        {
+            target.Interact();
+            return true;
+        }
+
         // 先保存目标，再进入交互状态。
         InteractState.SetTarget(behaviour, maxDistance);
         ChangeState(InteractState);
