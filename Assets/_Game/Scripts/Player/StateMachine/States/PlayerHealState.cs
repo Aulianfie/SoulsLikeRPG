@@ -1,12 +1,14 @@
 public sealed class PlayerHealState : PlayerState
 {
-    private PlayerHealingFlask _flask;
+    private const float AnimationFailsafeSeconds = 8f;
+
+    private IPlayerHealingItem _item;
     private bool _applied;
     private bool _startFailed;
     private float _elapsed;
 
     public PlayerHealState(PlayerStateMachine stateMachine) : base(stateMachine) { }
-    public void SetFlask(PlayerHealingFlask flask) => _flask = flask;
+    public void SetItem(IPlayerHealingItem item) => _item = item;
 
     public override void Enter()
     {
@@ -14,14 +16,18 @@ public sealed class PlayerHealState : PlayerState
         StateMachine.InputReader.ClearDodgeBuffer();
         _applied = false;
         _elapsed = 0f;
-        _startFailed = _flask == null || !_flask.CanUse || !StateMachine.PlayerAnimator.PlayHealing();
-        if (!_startFailed) _flask.SetUseVisual(true);
+        _startFailed = !IsItemAvailable() || !_item.CanUse || !StateMachine.PlayerAnimator.PlayHealing();
+        if (!_startFailed)
+        {
+            StateMachine.WeaponVisibility?.HideWeapon();
+            _item.SetUseVisual(true);
+        }
     }
 
     public override void Tick(float deltaTime)
     {
         ClearOtherActions();
-        if (_startFailed || _flask == null || !_flask.isActiveAndEnabled)
+        if (_startFailed || !IsItemAvailable())
         {
             ReturnToMovement();
             return;
@@ -37,7 +43,7 @@ public sealed class PlayerHealState : PlayerState
         }
         StateMachine.InputReader.ClearDodgeBuffer();
         StateMachine.Motor.TickLocomotion(StateMachine.InputReader.MoveInput, false,
-            deltaTime, _flask.MovementMultiplier);
+            deltaTime, _item.MovementMultiplier);
         if (StateMachine.Motor.ShouldEnterAirborne)
         {
             StateMachine.ChangeState(StateMachine.AirborneState);
@@ -47,24 +53,31 @@ public sealed class PlayerHealState : PlayerState
         _elapsed += deltaTime;
         if (StateMachine.PlayerAnimator.TryGetHealingNormalizedTime(out float time))
         {
-            if (!_applied && time >= _flask.HealPoint)
+            if (!_applied && time >= _item.HealPoint)
             {
                 _applied = true;
-                if (_flask.TryConsume()) StateMachine.Health.Heal(_flask.HealAmount);
+                if (_item.TryConsume()) StateMachine.Health.Heal(_item.HealAmount);
             }
-            if (time >= 0.95f) ReturnToMovement();
+            if (time >= _item.CompletionPoint) ReturnToMovement();
         }
         // Animator 被意外换掉或停止时也能退出，避免卡在道具状态。
-        if (_elapsed >= 8f) ReturnToMovement();
+        if (_elapsed >= AnimationFailsafeSeconds) ReturnToMovement();
     }
 
     public override void Exit()
     {
-        _flask?.SetUseVisual(false);
+        if (_item != null && !(_item is UnityEngine.Object obj && obj == null))
+            _item.SetUseVisual(false);
+        StateMachine.WeaponVisibility?.ShowWeapon();
         StateMachine.PlayerAnimator.StopHealing();
         StateMachine.InputReader.ClearAllBuffers();
         ClearOtherActions();
-        _flask = null;
+        _item = null;
+    }
+
+    private bool IsItemAvailable()
+    {
+        return _item != null && !(_item is UnityEngine.Object obj && obj == null) && _item.IsAvailable;
     }
 
     private void ClearOtherActions()

@@ -63,7 +63,7 @@ public class PlayerInputReader : MonoBehaviour
         _dodgeAction = _gameplayMap.FindAction("Dodge", true);
         _lockOnAction = _gameplayMap.FindAction("LockOn", true);
         _interactAction = _gameplayMap.FindAction("Interact", true);
-        _useItemAction = _gameplayMap.FindAction("UseItem", false);
+        _useItemAction = _gameplayMap.FindAction("UseItem", true);
     }
 
     private void OnEnable()

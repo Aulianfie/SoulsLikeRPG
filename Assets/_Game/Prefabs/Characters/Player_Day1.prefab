@@ -62,6 +62,7 @@ GameObject:
   - component: {fileID: 7600510059757946923}
   - component: {fileID: 918789381535791617}
   - component: {fileID: 8740939154773209752}
+  - component: {fileID: 918789381535791618}
   m_Layer: 0
   m_Name: Player_Day1
   m_TagString: Player
@@ -419,10 +420,9 @@ MonoBehaviour:
   _maxCharges: 3
   _healAmount: 40
   _healPoint: 0.45
+  _completionPoint: 0.95
   _movementMultiplier: 0.4
   _heldBottle: {fileID: 1257923031535119442}
-  _hiddenWeaponRenderers:
-  - {fileID: 6159141931407823820}
 --- !u!114 &8740939154773209752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -894,3 +894,17 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 8595731175941201687}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &918789381535791618
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4208464230741577774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e611c02349b92274689df9c0523f5caa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _weaponRenderers:
+  - {fileID: 6159141931407823820}

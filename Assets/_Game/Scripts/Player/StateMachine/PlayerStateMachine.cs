@@ -20,6 +20,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerStamina Stamina { get; private set; }
     public PlayerTargeting Targeting { get; private set; }
     public PlayerItemController Items { get; private set; }
+    public IPlayerWeaponVisibility WeaponVisibility { get; private set; }
     public PlayerState CurrentState { get; private set; }
     public string CurrentStateName =>
         CurrentState == null ? "None" : CurrentState.GetType().Name;
@@ -46,6 +47,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         Stamina = GetComponent<PlayerStamina>();
         Targeting = GetComponent<PlayerTargeting>();
         Items = GetComponent<PlayerItemController>();
+        WeaponVisibility = GetComponent<IPlayerWeaponVisibility>();
         LocomotionState = new PlayerLocomotionState(this);
         AirborneState = new PlayerAirborneState(this);
         AttackState = new PlayerAttackState(this);
@@ -80,12 +82,13 @@ public sealed class PlayerStateMachine : MonoBehaviour
         CurrentState?.Tick(Time.deltaTime);
     }
 
-    public bool TryBeginHealing(PlayerHealingFlask flask)
+    public bool TryBeginHealing(IPlayerHealingItem item)
     {
+        MonoBehaviour behaviour = item as MonoBehaviour;
         if (CurrentState != LocomotionState || !Motor.IsGrounded || Health.IsDead ||
-            flask == null || flask.gameObject != gameObject || !flask.CanUse)
+            behaviour == null || behaviour.gameObject != gameObject || !item.CanUse)
             return false;
-        HealState.SetFlask(flask);
+        HealState.SetItem(item);
         ChangeState(HealState);
         return CurrentState == HealState;
     }
@@ -175,7 +178,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         CurrentState = null;
         InputReader.ClearPendingActions();
         Combat.ResetForRespawn();
-        GetComponent<PlayerHealingFlask>()?.Refill();
+        Items?.RefillRestItems();
         Targeting.ClearTarget();
         Motor.StopHorizontalMovement();
         PlayerAnimator.PlayLocomotion(0f);

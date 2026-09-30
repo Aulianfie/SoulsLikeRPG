@@ -195,6 +195,7 @@ public static class Day9Setup
     {
         PlayerHealingFlask flask = player.GetComponent<PlayerHealingFlask>() ?? player.AddComponent<PlayerHealingFlask>();
         PlayerItemController items = player.GetComponent<PlayerItemController>() ?? player.AddComponent<PlayerItemController>();
+        PlayerWeaponVisibility visibility = player.GetComponent<PlayerWeaponVisibility>() ?? player.AddComponent<PlayerWeaponVisibility>();
         Animator animator = player.GetComponentInChildren<Animator>();
         Transform bone = animator.GetBoneTransform(hand);
         Transform held = bone.Find("HealingFlaskPlaceholder");
@@ -209,7 +210,9 @@ public static class Day9Setup
         held.gameObject.SetActive(false);
         var serialized = new SerializedObject(flask);
         serialized.FindProperty("_heldBottle").objectReferenceValue = held.gameObject;
-        var renderers = serialized.FindProperty("_hiddenWeaponRenderers");
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+        var weaponData = new SerializedObject(visibility);
+        var renderers = weaponData.FindProperty("_weaponRenderers");
         Renderer[] hidden = Array.Empty<Renderer>();
         if (hand == HumanBodyBones.RightHand)
         {
@@ -219,7 +222,7 @@ public static class Day9Setup
         }
         renderers.arraySize = hidden.Length;
         for (int index = 0; index < hidden.Length; index++) renderers.GetArrayElementAtIndex(index).objectReferenceValue = hidden[index];
-        serialized.ApplyModifiedPropertiesWithoutUndo();
+        weaponData.ApplyModifiedPropertiesWithoutUndo();
         var itemData = new SerializedObject(items);
         itemData.FindProperty("_currentQuickItem").objectReferenceValue = flask;
         itemData.ApplyModifiedPropertiesWithoutUndo();
@@ -227,6 +230,7 @@ public static class Day9Setup
         {
             PrefabUtility.RecordPrefabInstancePropertyModifications(flask);
             PrefabUtility.RecordPrefabInstancePropertyModifications(items);
+            PrefabUtility.RecordPrefabInstancePropertyModifications(visibility);
         }
         return flask;
     }

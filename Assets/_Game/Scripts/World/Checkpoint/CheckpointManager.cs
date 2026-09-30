@@ -16,6 +16,7 @@ public sealed class CheckpointManager : MonoBehaviour
     private PlayerProgression _progression;
     private PlayerSoulDrop _soulDrop;
     private PlayerHealingFlask _flask;
+    private PlayerItemController _items;
     private GameSaveData _loadedSave;
     private bool _initialized;
     private bool _canSave;
@@ -38,6 +39,7 @@ public sealed class CheckpointManager : MonoBehaviour
             _progression = _playerHealth.GetComponent<PlayerProgression>();
             _soulDrop = _playerHealth.GetComponent<PlayerSoulDrop>();
             _flask = _playerHealth.GetComponent<PlayerHealingFlask>();
+            _items = _playerHealth.GetComponent<PlayerItemController>();
             if (_progression != null)
                 _observedProgression = (_progression.Level, _progression.Vigor,
                     _progression.Endurance, _progression.Strength);
@@ -129,8 +131,9 @@ public sealed class CheckpointManager : MonoBehaviour
         };
         if (_soulDrop != null)
             _soulDrop.WriteToSave(data);
-        _savePending = false;
-        return SaveService.Save(data);
+        bool saved = SaveService.Save(data);
+        _savePending = !saved;
+        return saved;
     }
 
     private void HandleSoulsChanged(int souls) => MarkSavePending();
@@ -190,7 +193,7 @@ public sealed class CheckpointManager : MonoBehaviour
         checkpoint.MarkActivated();
         _playerHealth.RestoreFull();
         _playerStamina.RestoreFull();
-        _flask?.Refill();
+        _items?.RefillRestItems();
         MarkSavePending();
         SaveCurrentProgression();
         ResetWorld();
