@@ -7,6 +7,7 @@ public sealed class PlayerLocomotionState : PlayerState
 
     public override void Tick(float deltaTime)
     {
+        bool useItemRequested = StateMachine.InputReader.ConsumeUseItem();
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
 
         if (
@@ -46,6 +47,9 @@ public sealed class PlayerLocomotionState : PlayerState
             StateMachine.ChangeState(StateMachine.AttackState);
             return;
         }
+
+        if (useItemRequested && StateMachine.Items != null && StateMachine.Items.TryUseItem())
+            return;
 
         // Day5 Task3（按反馈调整）：锁定与否共用同一套相机相对移动，
         // 角色朝移动方向转身、可奔跑；

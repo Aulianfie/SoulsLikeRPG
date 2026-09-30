@@ -1,0 +1,60 @@
+{
+  "source_bytes": 48825788,
+  "source_triangles": 50000,
+  "source_texture_resolution": 4096,
+  "optimized_triangles": 1400,
+  "reference_model": "Assets\\Dark Fantasy Environment\\Meshes\\SM_vase_04.fbx",
+  "reference_triangles": 1112,
+  "reference_fbx_bytes": 74272,
+  "reference_fbx_budget_bytes": 96553,
+  "reference_texture_files": [
+    {
+      "path": "Assets\\Dark Fantasy Environment\\Materials\\Textures\\M_vases_BaseMap.png",
+      "bytes": 4495804
+    },
+    {
+      "path": "Assets\\Dark Fantasy Environment\\Materials\\Textures\\M_vases_Normal.png",
+      "bytes": 6971104
+    },
+    {
+      "path": "Assets\\Dark Fantasy Environment\\Materials\\Textures\\M_vases_MaskMap.png",
+      "bytes": 5396376
+    }
+  ],
+  "reference_total_bytes": 16937556,
+  "total_budget_bytes": 22018822,
+  "optimized_total_bytes": 1934829,
+  "files": [
+    {
+      "path": "Assets\\ThirdParty\\HealingFlask\\Models\\HealingFlask_Optimized.fbx",
+      "bytes": 76940
+    },
+    {
+      "path": "Assets\\ThirdParty\\HealingFlask\\Textures\\HealingFlask_BaseColor.jpg",
+      "bytes": 292628
+    },
+    {
+      "path": "Assets\\ThirdParty\\HealingFlask\\Textures\\HealingFlask_MetallicSmoothness.png",
+      "bytes": 305659
+    },
+    {
+      "path": "Assets\\ThirdParty\\HealingFlask\\Textures\\HealingFlask_Normal.png",
+      "bytes": 1259602
+    }
+  ],
+  "normalized_height_m": 0.18,
+  "surface_distance_p95_m": 0.0005611341330222785,
+  "surface_distance_max_m": 0.0011333429720252752,
+  "attempts": [
+    {
+      "target": 1400,
+      "triangles": 1400,
+      "fbx_bytes": 77740
+    }
+  ],
+  "within_fbx_budget": true,
+  "within_total_budget": true,
+  "within_triangle_budget": true,
+  "source_sha256": "96fa44d68f7c0b329ecfc57d28dee5173b85e13f2d062f3d296922a79b75dc73",
+  "normal_baked_from_source": true
+}

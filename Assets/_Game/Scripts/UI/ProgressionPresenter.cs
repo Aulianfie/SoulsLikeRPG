@@ -175,9 +175,9 @@ public sealed class ProgressionPresenter : MonoBehaviour
         if (!IsOpen || !_levelUpPanel.IsVisible)
             return;
         bool canUpgrade = _progression.CanUpgrade(_selectedStat);
-        string status = canUpgrade ? "Select an attribute and confirm." :
-            _wallet.CanAfford(_progression.UpgradeCost) ? "Cannot upgrade this attribute." :
-            "Not enough Soul.";
+        string status = canUpgrade ? "请选择属性并确认升级。" :
+            _wallet.CanAfford(_progression.UpgradeCost) ? "当前属性无法升级。" :
+            "金币不足。";
         _levelUpPanel.SetSummary(_wallet.CurrentSouls, _progression.Level,
             _progression.UpgradeCost, canUpgrade, status);
         for (int i = 0; i < 3; i++)

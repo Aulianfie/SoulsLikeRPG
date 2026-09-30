@@ -4,7 +4,7 @@ using UnityEngine;
 [Serializable]
 public sealed class GameSaveData
 {
-    public const int CurrentVersion = 3;
+    public const int CurrentVersion = 4;
 
     public int version;
     public string sceneName;
@@ -17,6 +17,7 @@ public sealed class GameSaveData
     public bool hasSoulDrop;
     public int droppedSouls;
     public Vector3 soulDropPosition;
+    public int flaskCharges = -1;
 
     public GameSaveData(string sceneName, string checkpointId)
     {

@@ -25,10 +25,13 @@ public class PlayerAnimator : MonoBehaviour
 
     private PlayerMotor _motor;
     private int _currentAttackStateHash;
+    private int _itemUseLayer = -1;
+    private static readonly int HealStateHash = Animator.StringToHash("ItemUse.Heal");
 
     private void Awake()
     {
         _motor = GetComponent<PlayerMotor>();
+        if (_animator != null) _itemUseLayer = _animator.GetLayerIndex("ItemUse");
         if (_animator == null)
         {
             Debug.LogError( "PlayerAnimator 没有配置 Animator 引用。", this );
@@ -47,6 +50,36 @@ public class PlayerAnimator : MonoBehaviour
 
         _animator.SetBool(GroundedHash, !_motor.ShouldEnterAirborne);
         _animator.SetFloat(VerticalSpeedHash, _motor.VerticalVelocity);
+    }
+
+    public bool PlayHealing()
+    {
+        if (_animator == null || _itemUseLayer < 0 || !_animator.HasState(_itemUseLayer, HealStateHash))
+            return false;
+        PlayLocomotion(0.08f);
+        _animator.SetLayerWeight(_itemUseLayer, 1f);
+        _animator.CrossFadeInFixedTime(HealStateHash, 0.08f, _itemUseLayer, 0f);
+        return true;
+    }
+
+    public bool TryGetHealingNormalizedTime(out float time)
+    {
+        time = 0f;
+        if (_animator == null || _itemUseLayer < 0) return false;
+        AnimatorStateInfo state = _animator.IsInTransition(_itemUseLayer)
+            ? _animator.GetNextAnimatorStateInfo(_itemUseLayer)
+            : _animator.GetCurrentAnimatorStateInfo(_itemUseLayer);
+        if (state.fullPathHash != HealStateHash) return false;
+        time = state.normalizedTime;
+        return true;
+    }
+
+    public void StopHealing()
+    {
+        if (_animator == null || _itemUseLayer < 0) return;
+        _animator.SetLayerWeight(_itemUseLayer, 0f);
+        if (_animator.isActiveAndEnabled)
+            _animator.Play("ItemUse.Empty", _itemUseLayer, 0f);
     }
 
     /// <summary>
@@ -270,6 +303,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (_animator != null)
         {
+            StopHealing();
             _animator.SetFloat(MoveSpeedHash, 0f);
             _animator.SetBool(GroundedHash, true);
             _animator.SetFloat(VerticalSpeedHash, 0f);

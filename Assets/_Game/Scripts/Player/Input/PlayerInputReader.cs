@@ -20,11 +20,14 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _dodgeAction;
     private InputAction _lockOnAction;
     private InputAction _interactAction;
+    private InputAction _useItemAction;
     private bool _jumpRequested;
     private bool _lightAttackRequested;
     private bool _dodgeRequested;
     private bool _lockOnRequested;
     private bool _interactRequested;
+    private bool _useItemRequested;
+    private int _useItemRequestFrame;
     private float _lightAttackExpireTime;
     private float _dodgeExpireTime;
 
@@ -60,6 +63,7 @@ public class PlayerInputReader : MonoBehaviour
         _dodgeAction = _gameplayMap.FindAction("Dodge", true);
         _lockOnAction = _gameplayMap.FindAction("LockOn", true);
         _interactAction = _gameplayMap.FindAction("Interact", true);
+        _useItemAction = _gameplayMap.FindAction("UseItem", false);
     }
 
     private void OnEnable()
@@ -80,6 +84,7 @@ public class PlayerInputReader : MonoBehaviour
         _dodgeAction.performed += OnDodge;
         _lockOnAction.performed += OnLockOn;
         _interactAction.performed += OnInteract;
+        if (_useItemAction != null) _useItemAction.performed += OnUseItem;
 
         _gameplayMap.Enable();
     }
@@ -118,6 +123,7 @@ public class PlayerInputReader : MonoBehaviour
 
         if (_interactAction != null)
             _interactAction.performed -= OnInteract;
+        if (_useItemAction != null) _useItemAction.performed -= OnUseItem;
 
         ClearPendingActions();
 
@@ -173,6 +179,19 @@ public class PlayerInputReader : MonoBehaviour
     {
         bool requested = _interactRequested;
         _interactRequested = false;
+        return requested;
+    }
+
+    private void OnUseItem(InputAction.CallbackContext context)
+    {
+        _useItemRequested = true;
+        _useItemRequestFrame = Time.frameCount;
+    }
+
+    public bool ConsumeUseItem()
+    {
+        bool requested = _useItemRequested && Time.frameCount <= _useItemRequestFrame + 1;
+        _useItemRequested = false;
         return requested;
     }
 
@@ -242,6 +261,7 @@ public class PlayerInputReader : MonoBehaviour
         _jumpRequested = false;
         _lockOnRequested = false;
         _interactRequested = false;
+        _useItemRequested = false;
         MoveInput = Vector2.zero;
         LookInput = Vector2.zero;
         SprintInput = false;

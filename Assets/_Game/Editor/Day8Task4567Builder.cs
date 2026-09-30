@@ -235,8 +235,8 @@ public static class Day8Task4567Builder
         gameObject.transform.SetParent(parent, false);
         TextMeshProUGUI text = gameObject.GetComponent<TextMeshProUGUI>();
         SetRect(text.rectTransform, x, y, width, height);
-        text.font = TMP_Settings.defaultFontAsset;
-        text.text = value;
+        text.font = Day8ChineseUISetup.EnsureFont();
+        text.text = Day8ChineseUISetup.Translate(value);
         text.fontSize = size;
         text.color = color;
         text.alignment = alignment;

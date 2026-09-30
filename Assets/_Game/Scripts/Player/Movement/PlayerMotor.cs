@@ -89,7 +89,8 @@ public sealed class PlayerMotor : MonoBehaviour
     public void TickLocomotion(
         Vector2 moveInput,
         bool sprintInput,
-        float deltaTime
+        float deltaTime,
+        float speedMultiplier = 1f
     )
     {
         if (!_isInitialized)
@@ -98,7 +99,10 @@ public sealed class PlayerMotor : MonoBehaviour
         Vector3 moveDirection =
             GetCameraRelativeDirection(moveInput);
 
-        UpdateHorizontalVelocity(moveDirection, sprintInput, deltaTime);
+        speedMultiplier = Mathf.Clamp01(speedMultiplier);
+        if (speedMultiplier < 1f)
+            _horizontalVelocity = Vector3.ClampMagnitude(_horizontalVelocity, _config.MoveSpeed * speedMultiplier);
+        UpdateHorizontalVelocity(moveDirection, sprintInput, deltaTime, speedMultiplier);
         RotateTowards(_horizontalVelocity, deltaTime);
         Move(deltaTime);
     }
@@ -264,13 +268,14 @@ public sealed class PlayerMotor : MonoBehaviour
     private void UpdateHorizontalVelocity(
         Vector3 moveDirection,
         bool sprintInput,
-        float deltaTime
+        float deltaTime,
+        float speedMultiplier
     )
     {
         // 存在移动输入 并且 按下冲刺键 才会使用冲刺速度
         bool isSprinting =
             sprintInput && moveDirection.sqrMagnitude > 0.0001f;
-        float currentMoveSpeed = isSprinting ? _config.SprintSpeed : _config.MoveSpeed;
+        float currentMoveSpeed = (isSprinting ? _config.SprintSpeed : _config.MoveSpeed) * speedMultiplier;
         
         // 如果没有输入，targetVelocity = moveDirection = 0
         Vector3 targetVelocity = moveDirection * currentMoveSpeed;

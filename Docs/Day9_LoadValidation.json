@@ -1,0 +1,9 @@
+{
+    "passed": true,
+    "checks": [
+        "Reload restores zero charges and HUD rather than refilling",
+        "Reloaded empty flask remains unusable when injured",
+        "Real E interaction refills empty flask and HUD"
+    ],
+    "failure": ""
+}

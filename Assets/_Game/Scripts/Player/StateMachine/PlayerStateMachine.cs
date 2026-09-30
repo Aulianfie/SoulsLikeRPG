@@ -19,6 +19,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerHealth Health { get; private set; }
     public PlayerStamina Stamina { get; private set; }
     public PlayerTargeting Targeting { get; private set; }
+    public PlayerItemController Items { get; private set; }
     public PlayerState CurrentState { get; private set; }
     public string CurrentStateName =>
         CurrentState == null ? "None" : CurrentState.GetType().Name;
@@ -31,6 +32,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerDeadState DeadState { get; private set; }
 
     public PlayerInteractState InteractState { get; private set; }
+    public PlayerHealState HealState { get; private set; }
 
     private bool _hasStarted;
 
@@ -43,6 +45,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         Health = GetComponent<PlayerHealth>();
         Stamina = GetComponent<PlayerStamina>();
         Targeting = GetComponent<PlayerTargeting>();
+        Items = GetComponent<PlayerItemController>();
         LocomotionState = new PlayerLocomotionState(this);
         AirborneState = new PlayerAirborneState(this);
         AttackState = new PlayerAttackState(this);
@@ -50,6 +53,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         HurtState = new PlayerHurtState(this);
         DeadState = new PlayerDeadState(this);
         InteractState = new PlayerInteractState(this);
+        HealState = new PlayerHealState(this);
     }
 
     private void OnEnable()
@@ -71,7 +75,19 @@ public sealed class PlayerStateMachine : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (CurrentState != LocomotionState)
+            InputReader.ConsumeUseItem();
         CurrentState?.Tick(Time.deltaTime);
+    }
+
+    public bool TryBeginHealing(PlayerHealingFlask flask)
+    {
+        if (CurrentState != LocomotionState || !Motor.IsGrounded || Health.IsDead ||
+            flask == null || flask.gameObject != gameObject || !flask.CanUse)
+            return false;
+        HealState.SetFlask(flask);
+        ChangeState(HealState);
+        return CurrentState == HealState;
     }
 
     private void OnDisable()
@@ -159,6 +175,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         CurrentState = null;
         InputReader.ClearPendingActions();
         Combat.ResetForRespawn();
+        GetComponent<PlayerHealingFlask>()?.Refill();
         Targeting.ClearTarget();
         Motor.StopHorizontalMovement();
         PlayerAnimator.PlayLocomotion(0f);

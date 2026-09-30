@@ -63,7 +63,7 @@ public static class SaveService
             {
                 version = 0, souls = -1, level = 0, vigor = 0, endurance = 0, strength = 0,
                 hasSoulDrop = true, droppedSouls = -1,
-                soulDropPosition = new Vector3(float.NaN, float.NaN, float.NaN)
+                soulDropPosition = new Vector3(float.NaN, float.NaN, float.NaN), flaskCharges = -2
             };
             JsonUtility.FromJsonOverwrite(File.ReadAllText(path, Encoding.UTF8), data);
             if (data != null && data.version == 1 &&
@@ -76,10 +76,15 @@ public static class SaveService
             }
             if (data.version == 2)
             {
-                data.version = GameSaveData.CurrentVersion;
+                data.version = 3;
                 data.hasSoulDrop = false;
                 data.droppedSouls = 0;
                 data.soulDropPosition = Vector3.zero;
+            }
+            if (data.version == 3)
+            {
+                data.version = GameSaveData.CurrentVersion;
+                data.flaskCharges = -1;
             }
             if (!IsValid(data))
             {
@@ -97,9 +102,9 @@ public static class SaveService
 
     private static bool IsValid(GameSaveData data)
     {
-        // 空 checkpointId 表示使用默认出生点；v3 同时保存未取回的魂。
+        // 空 checkpointId 表示使用默认出生点；v4 同时保存未取回的魂与血瓶数量。
         return data != null && data.version == GameSaveData.CurrentVersion &&
-            !string.IsNullOrWhiteSpace(data.sceneName) && data.souls >= 0 &&
+            !string.IsNullOrWhiteSpace(data.sceneName) && data.souls >= 0 && data.flaskCharges >= -1 &&
             data.level >= 1 && data.vigor >= 1 && data.endurance >= 1 && data.strength >= 1 &&
             (data.hasSoulDrop ? data.droppedSouls > 0 : data.droppedSouls == 0) &&
             IsFinite(data.soulDropPosition.x) && IsFinite(data.soulDropPosition.y) &&

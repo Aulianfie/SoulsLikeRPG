@@ -1,0 +1,10 @@
+Scene=Assets/_Game/Scenes/03_AncientDungeon_Checkpoint.unity
+DirtyBefore=False
+DirtyAfter=False
+Vertices=1713
+Triangles=1400
+Bounds=(0.14, 0.18, 0.10)
+BaseMap=1024x1024
+Normal=1024x1024
+Mask=512x512
+URP material and independent prefab saved. Main scene and placeholder prefab were not replaced.

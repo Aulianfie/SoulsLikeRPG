@@ -52,10 +52,7 @@ public sealed class PlayerInteractor : MonoBehaviour
 
             float sqrDistance = (behaviour.transform.position - transform.position).sqrMagnitude;
             if (sqrDistance > _maxInteractionDistance * _maxInteractionDistance)
-            {
-                _nearby.RemoveAt(i);
                 continue;
-            }
             if (sqrDistance < closestSqrDistance)
             {
                 closest = interactable;

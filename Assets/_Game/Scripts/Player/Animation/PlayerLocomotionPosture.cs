@@ -17,10 +17,12 @@ public sealed class PlayerLocomotionPosture : MonoBehaviour
 
     private Animator _animator;
     private Transform _spine;
+    private int _itemUseLayer;
 
     private void Awake()
     {
         _animator = GetComponentInChildren<Animator>();
+        _itemUseLayer = _animator != null ? _animator.GetLayerIndex("ItemUse") : -1;
         if (_movementConfig == null ||
             _animator == null ||
             _animator.avatar == null ||
@@ -42,6 +44,8 @@ public sealed class PlayerLocomotionPosture : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (_itemUseLayer >= 0 && _animator.GetLayerWeight(_itemUseLayer) > 0f)
+            return;
         float locomotionWeight = GetLocomotionWeight();
         if (locomotionWeight <= 0f || _movementConfig.SprintSpeed <= 0f)
             return;
