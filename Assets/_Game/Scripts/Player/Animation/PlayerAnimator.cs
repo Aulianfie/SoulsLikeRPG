@@ -24,6 +24,7 @@ public class PlayerAnimator : MonoBehaviour
     private const int BaseLayerIndex = 0;
 
     private PlayerMotor _motor;
+    private RuntimeAnimatorController _baseController;
     private int _currentAttackStateHash;
     private int _itemUseLayer = -1;
     private static readonly int HealStateHash = Animator.StringToHash("ItemUse.Heal");
@@ -31,12 +32,26 @@ public class PlayerAnimator : MonoBehaviour
     private void Awake()
     {
         _motor = GetComponent<PlayerMotor>();
+        if (_animator != null)
+        {
+            _baseController = _animator.runtimeAnimatorController;
+            if (_baseController is AnimatorOverrideController overrides)
+                _baseController = overrides.runtimeAnimatorController;
+        }
         if (_animator != null) _itemUseLayer = _animator.GetLayerIndex("ItemUse");
         if (_animator == null)
         {
             Debug.LogError( "PlayerAnimator 没有配置 Animator 引用。", this );
             enabled = false;
         }
+    }
+
+    public void ApplyWeaponOverride(AnimatorOverrideController controller)
+    {
+        if (_animator == null) return;
+        _animator.runtimeAnimatorController = controller != null ? controller : _baseController;
+        _currentAttackStateHash = 0;
+        _itemUseLayer = _animator.GetLayerIndex("ItemUse");
     }
 
     private void Update()

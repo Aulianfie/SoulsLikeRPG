@@ -32,7 +32,7 @@ public sealed class AttackData : ScriptableObject
     [SerializeField, Range(0.1f, 1f)]
     private float _completionNormalizedTime = 0.6f;
 
-    [Tooltip("完成点之后的额外后摇时间（秒），结束后才能衔接下一段或退出攻击")]
+    [Tooltip("未衔接下一段时，完成点之后等待的收招时间（秒）。已缓存的连招不等待此时间。")]
     [SerializeField, Min(0f)] private float _recoveryTime = 0.1f;
 
     [Header("Combo Input Window (Normalized)")]
@@ -41,6 +41,13 @@ public sealed class AttackData : ScriptableObject
 
     [Tooltip("允许缓存下一段攻击输入的结束点（normalizedTime）")]
     [SerializeField, Range(0f, 1f)] private float _comboInputEnd = 0.5f;
+
+    [Header("Combo Transition (Normalized)")]
+    [Tooltip(
+        "已缓存下一击时，允许切入下一段的动画位置；越小衔接越快。\n" +
+        "独立于输入窗口和 Recovery Time；到点后收到窗口内输入也会立即衔接。\n" +
+        "0 = 沿用 Combo Input End（兼容旧配置）。有效点限制在命中窗口结束与完成点之间。")]
+    [SerializeField, Range(0f, 1f)] private float _comboTransitionPoint = 0f;
 
     [Header("Dodge Cancel Window (Normalized)")]
     [SerializeField, Range(0f, 1f)] private float _dodgeCancelStart = 0.55f;
@@ -64,6 +71,11 @@ public sealed class AttackData : ScriptableObject
     public float RecoveryTime => _recoveryTime;
     public float ComboInputStart => _comboInputStart;
     public float ComboInputEnd => _comboInputEnd;
+    public float ComboTransitionPoint => Mathf.Clamp(
+        _comboTransitionPoint > 0f ? _comboTransitionPoint : _comboInputEnd,
+        _hitWindowEnd,
+        _completionNormalizedTime
+    );
     public float DodgeCancelStart => _dodgeCancelStart;
     public float DodgeCancelEnd => _dodgeCancelEnd;
     public float RotateAssistTime => _rotateAssistTime;
@@ -82,6 +94,14 @@ public sealed class AttackData : ScriptableObject
             _comboInputStart,
             _comboInputEnd
         );
+        if (_comboTransitionPoint > 0f)
+        {
+            _comboTransitionPoint = Mathf.Clamp(
+                _comboTransitionPoint,
+                _hitWindowEnd,
+                _completionNormalizedTime
+            );
+        }
         _dodgeCancelEnd = Mathf.Max(_dodgeCancelStart, _dodgeCancelEnd);
     }
 }

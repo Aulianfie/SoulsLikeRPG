@@ -1,0 +1,6 @@
+Project=G:/Unity Project/SoulsLikeRPG/SoulsLikeRPG/Assets
+Scene=Assets/_Game/Scenes/03_AncientDungeon_Checkpoint.unity
+Dirty=False
+Playing=False
+Errors=0 Warnings=0 Logs=18
+Player=Player_Day1 position=(0.75, 24.58, 5.93) prefab=Assets/_Game/Prefabs/Characters/Player_Day1.prefab

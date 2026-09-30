@@ -21,6 +21,9 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _lockOnAction;
     private InputAction _interactAction;
     private InputAction _useItemAction;
+    private InputAction _switchWeaponAction;
+    private int _switchWeaponDirection;
+    private int _switchWeaponRequestFrame;
     private bool _jumpRequested;
     private bool _lightAttackRequested;
     private bool _dodgeRequested;
@@ -64,6 +67,7 @@ public class PlayerInputReader : MonoBehaviour
         _lockOnAction = _gameplayMap.FindAction("LockOn", true);
         _interactAction = _gameplayMap.FindAction("Interact", true);
         _useItemAction = _gameplayMap.FindAction("UseItem", true);
+        _switchWeaponAction = _gameplayMap.FindAction("SwitchWeapon", false);
     }
 
     private void OnEnable()
@@ -85,6 +89,7 @@ public class PlayerInputReader : MonoBehaviour
         _lockOnAction.performed += OnLockOn;
         _interactAction.performed += OnInteract;
         if (_useItemAction != null) _useItemAction.performed += OnUseItem;
+        if (_switchWeaponAction != null) _switchWeaponAction.performed += OnSwitchWeapon;
 
         _gameplayMap.Enable();
     }
@@ -124,6 +129,7 @@ public class PlayerInputReader : MonoBehaviour
         if (_interactAction != null)
             _interactAction.performed -= OnInteract;
         if (_useItemAction != null) _useItemAction.performed -= OnUseItem;
+        if (_switchWeaponAction != null) _switchWeaponAction.performed -= OnSwitchWeapon;
 
         ClearPendingActions();
 
@@ -195,6 +201,22 @@ public class PlayerInputReader : MonoBehaviour
         return requested;
     }
 
+    private void OnSwitchWeapon(InputAction.CallbackContext context)
+    {
+        float scroll = context.ReadValue<float>();
+        if (Mathf.Approximately(scroll, 0f)) return;
+        // 一个更新内只保留一个离散方向，与滚轮数值大小无关。
+        _switchWeaponDirection = scroll > 0f ? -1 : 1;
+        _switchWeaponRequestFrame = Time.frameCount;
+    }
+
+    public int ConsumeSwitchWeapon()
+    {
+        int direction = Time.frameCount <= _switchWeaponRequestFrame + 1 ? _switchWeaponDirection : 0;
+        _switchWeaponDirection = 0;
+        return direction;
+    }
+
     public bool ConsumeJump()
     {
         if (!_jumpRequested)
@@ -262,6 +284,7 @@ public class PlayerInputReader : MonoBehaviour
         _lockOnRequested = false;
         _interactRequested = false;
         _useItemRequested = false;
+        _switchWeaponDirection = 0;
         MoveInput = Vector2.zero;
         LookInput = Vector2.zero;
         SprintInput = false;

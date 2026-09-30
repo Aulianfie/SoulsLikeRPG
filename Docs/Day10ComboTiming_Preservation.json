@@ -1,0 +1,22 @@
+{
+  "Files": [
+    {
+      "Path": "Assets/_Game/Scenes/03_AncientDungeon_Checkpoint.unity",
+      "Unchanged": true
+    },
+    {
+      "Path": "Assets/_Game/Prefabs/Characters/Player_Day1.prefab",
+      "Unchanged": true
+    },
+    {
+      "Path": "Assets/_Game/Configs/Combat/AD_LightAttack_1.asset",
+      "Unchanged": true
+    },
+    {
+      "Path": "Assets/_Game/Configs/Weapons/AD_LongSword_1.asset",
+      "Unchanged": true
+    }
+  ],
+  "SaveUnchanged": true,
+  "SaveSHA256": "8457BADFED8BDDDF4EC7DE3A0B1E2DDF69B56158EB5411C493CB96B439347E6E"
+}

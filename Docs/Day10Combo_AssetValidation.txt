@@ -1,0 +1,6 @@
+Main scene has zero missing scripts
+Player prefab has zero missing scripts
+LongSword has valid data, combo, model, overrides and Enemy hitbox
+GreatSword has valid data, combo, model, overrides and Enemy hitbox
+Player prefab contains exactly two precreated weapons
+All ten gameplay actions exist

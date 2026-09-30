@@ -20,6 +20,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerStamina Stamina { get; private set; }
     public PlayerTargeting Targeting { get; private set; }
     public PlayerItemController Items { get; private set; }
+    public PlayerEquipment Equipment { get; private set; }
     public IPlayerWeaponVisibility WeaponVisibility { get; private set; }
     public PlayerState CurrentState { get; private set; }
     public string CurrentStateName =>
@@ -47,6 +48,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         Stamina = GetComponent<PlayerStamina>();
         Targeting = GetComponent<PlayerTargeting>();
         Items = GetComponent<PlayerItemController>();
+        Equipment = GetComponent<PlayerEquipment>();
         WeaponVisibility = GetComponent<IPlayerWeaponVisibility>();
         LocomotionState = new PlayerLocomotionState(this);
         AirborneState = new PlayerAirborneState(this);
@@ -78,7 +80,10 @@ public sealed class PlayerStateMachine : MonoBehaviour
     private void Update()
     {
         if (CurrentState != LocomotionState)
+        {
             InputReader.ConsumeUseItem();
+            InputReader.ConsumeSwitchWeapon();
+        }
         CurrentState?.Tick(Time.deltaTime);
     }
 

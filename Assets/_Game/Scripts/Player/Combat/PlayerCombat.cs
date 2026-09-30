@@ -25,6 +25,10 @@ public sealed class PlayerCombat : MonoBehaviour
 
     private PlayerAnimator _playerAnimator;
     private PlayerProgression _progression;
+    private WeaponData _currentWeapon;
+    private AttackCombo ActiveCombo => _currentWeapon != null
+        ? _currentWeapon.LightAttackCombo : _attackCombo;
+    private float StaminaMultiplier => _currentWeapon != null ? _currentWeapon.StaminaMultiplier : 1f;
     private bool _hitboxActive;
     private float _recoveryTimer;
 
@@ -38,28 +42,28 @@ public sealed class PlayerCombat : MonoBehaviour
     /// </summary>
     public bool AttackQueued { get; private set; }
 
-    public int MaxComboCount => _attackCombo != null
-        ? _attackCombo.Count
+    public int MaxComboCount => ActiveCombo != null
+        ? ActiveCombo.Count
         : 0;
 
     /// <summary>是否还有下一段攻击可以衔接。</summary>
     public bool HasNextAttack =>
-        _attackCombo != null && ComboIndex + 1 < _attackCombo.Count;
+        ActiveCombo != null && ComboIndex + 1 < ActiveCombo.Count;
 
     /// <summary>当前段的配置数据；未配置连招时返回 null。</summary>
     public AttackData CurrentAttack =>
-        _attackCombo != null ? _attackCombo.Get(ComboIndex) : null;
+        ActiveCombo != null ? ActiveCombo.Get(ComboIndex) : null;
 
     /// <summary>下一段攻击的体力消耗；没有下一段时返回 0。</summary>
     public float NextAttackStaminaCost
     {
         get
         {
-            AttackData next = _attackCombo != null
-                ? _attackCombo.Get(ComboIndex + 1)
+            AttackData next = ActiveCombo != null
+                ? ActiveCombo.Get(ComboIndex + 1)
                 : null;
 
-            return next != null ? next.StaminaCost : 0f;
+            return next != null ? next.StaminaCost * StaminaMultiplier : 0f;
         }
     }
 
@@ -68,11 +72,11 @@ public sealed class PlayerCombat : MonoBehaviour
     {
         get
         {
-            AttackData first = _attackCombo != null
-                ? _attackCombo.Get(0)
+            AttackData first = ActiveCombo != null
+                ? ActiveCombo.Get(0)
                 : null;
 
-            return first != null ? first.StaminaCost : 0f;
+            return first != null ? first.StaminaCost * StaminaMultiplier : 0f;
         }
     }
 
@@ -81,7 +85,7 @@ public sealed class PlayerCombat : MonoBehaviour
     /// 用于区分"合法的 0 消耗"与"未配置时的 fallback"。
     /// </summary>
     public bool HasFirstAttack =>
-        _attackCombo != null && _attackCombo.Get(0) != null;
+        ActiveCombo != null && ActiveCombo.Get(0) != null;
 
     /// <summary>当前段允许的转向辅助时长（秒）。</summary>
     public float CurrentRotateAssistTime =>
@@ -133,7 +137,7 @@ public sealed class PlayerCombat : MonoBehaviour
 
     /// <summary>
     /// 是否已到达"允许正式衔接下一段攻击"的动画位置。
-    /// ComboTransitionPoint 复用手感窗口终点 ComboInputEnd：
+    /// 使用独立的 ComboTransitionPoint；输入窗口只控制能否缓存输入。
     /// 已缓存的下一段会在此点直接切段，不再等待完成点与后摇。
     /// </summary>
     public bool IsComboTransitionReached
@@ -152,7 +156,7 @@ public sealed class PlayerCombat : MonoBehaviour
                 return false;
             }
 
-            return normalizedTime >= data.ComboInputEnd;
+            return normalizedTime >= data.ComboTransitionPoint;
         }
     }
 
@@ -174,7 +178,7 @@ public sealed class PlayerCombat : MonoBehaviour
             );
         }
 
-        if (_attackCombo == null || _attackCombo.Count == 0)
+        if (GetComponent<PlayerEquipment>() == null && (_attackCombo == null || _attackCombo.Count == 0))
         {
             Debug.LogError(
                 "PlayerCombat 没有配置 AttackCombo，攻击无法播放。",
@@ -245,6 +249,15 @@ public sealed class PlayerCombat : MonoBehaviour
         ComboIndex = 0;
         AttackQueued = false;
         _recoveryTimer = 0f;
+    }
+
+    public void SetWeapon(WeaponData weapon, WeaponHitbox hitbox)
+    {
+        CloseHitWindow();
+        ResetCombo();
+        _currentWeapon = weapon;
+        _weaponHitbox = hitbox;
+        _playerAnimator.ApplyWeaponOverride(weapon.AnimatorOverrideController);
     }
 
     public void ResetForRespawn()
@@ -367,6 +380,8 @@ public sealed class PlayerCombat : MonoBehaviour
             int damage = _progression != null
                 ? _progression.CalculateAttackDamage(data.Damage)
                 : data.Damage;
+            if (_currentWeapon != null)
+                damage = Mathf.Max(0, Mathf.RoundToInt(damage * _currentWeapon.DamageMultiplier));
             _weaponHitbox.BeginAttack(damage);
             _hitboxActive = true;
         }

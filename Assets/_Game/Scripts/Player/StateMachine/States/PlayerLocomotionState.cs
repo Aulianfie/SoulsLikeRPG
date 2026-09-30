@@ -7,6 +7,9 @@ public sealed class PlayerLocomotionState : PlayerState
 
     public override void Tick(float deltaTime)
     {
+        int switchDirection = StateMachine.InputReader.ConsumeSwitchWeapon();
+        if (switchDirection != 0)
+            StateMachine.Equipment?.CycleWeapon(switchDirection);
         bool useItemRequested = StateMachine.InputReader.ConsumeUseItem();
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
 

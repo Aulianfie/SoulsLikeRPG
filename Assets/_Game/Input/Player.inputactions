@@ -7,6 +7,15 @@
             "id": "879f776c-3c35-494b-b13f-53c7cb565812",
             "actions": [
                 {
+                    "name": "SwitchWeapon",
+                    "type": "PassThrough",
+                    "id": "ea09202e-ad70-4d9e-8d93-03c3a981e6ae",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Move",
                     "type": "Value",
                     "id": "59dae59d-e74c-4440-9ef8-fc5c001440b2",
@@ -89,6 +98,17 @@
                 }
             ],
             "bindings": [
+                {
+                    "name": "",
+                    "id": "c1c5abb0-f8ce-44e0-a1fa-a8720845653e",
+                    "path": "<Mouse>/scroll/y",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SwitchWeapon",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
                 {
                     "name": "",
                     "id": "d79594ad-16e1-4846-88f9-12929083aa1c",

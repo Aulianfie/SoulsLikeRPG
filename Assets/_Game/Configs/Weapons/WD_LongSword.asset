@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c2767ac21035ff241a791d6f569fc184, type: 3}
+  m_Name: WD_LongSword
+  m_EditorClassIdentifier: 
+  _weaponId: LongSword
+  _displayName: "\u957F\u5251"
+  _weaponPrefab: {fileID: 2052841070428734732, guid: ddefe3877f9a87147a9ed19f5f277aec,
+    type: 3}
+  _lightAttackCombo: {fileID: 11400000, guid: 1340a204a056b6a40b81d50669338397, type: 2}
+  _damageMultiplier: 1
+  _staminaMultiplier: 1
+  _animatorOverrideController: {fileID: 22100000, guid: c57c88ccbe7d636418f1f32f7f1e9d1e,
+    type: 2}
+  _weaponType: 0
