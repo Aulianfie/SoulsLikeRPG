@@ -35,6 +35,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
 
     public PlayerInteractState InteractState { get; private set; }
     public PlayerHealState HealState { get; private set; }
+    public PlayerWeaponSwitchState WeaponSwitchState { get; private set; }
 
     private bool _hasStarted;
 
@@ -58,6 +59,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         DeadState = new PlayerDeadState(this);
         InteractState = new PlayerInteractState(this);
         HealState = new PlayerHealState(this);
+        WeaponSwitchState = new PlayerWeaponSwitchState(this);
     }
 
     private void OnEnable()

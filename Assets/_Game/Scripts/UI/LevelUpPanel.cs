@@ -17,6 +17,8 @@ public sealed class LevelUpPanel : MonoBehaviour
     [SerializeField] private TMP_Text[] _effectTexts;
     [SerializeField] private Button _confirmButton;
     [SerializeField] private Button _closeButton;
+    [SerializeField] private GameObject[] _selectedFrames;
+    [SerializeField] private bool _useBlessingStyle;
 
     private static readonly Color SelectedColor = new Color(0.3f, 0.25f, 0.14f, 1f);
     private static readonly Color UnselectedColor = new Color(0.09f, 0.10f, 0.11f, 1f);
@@ -66,14 +68,18 @@ public sealed class LevelUpPanel : MonoBehaviour
     public void SetStatPreview(StatType stat, StatUpgradePreview preview, bool selected)
     {
         int index = (int)stat;
-        _statButtons[index].image.color = selected ? SelectedColor : UnselectedColor;
-        _statValueTexts[index].text = selected
+        _statButtons[index].image.color = _useBlessingStyle
+            ? (selected ? new Color(0.19f, 0.15f, 0.085f, 0.9f) : new Color(0.065f, 0.072f, 0.08f, 0.85f))
+            : (selected ? SelectedColor : UnselectedColor);
+        if (_selectedFrames != null && index < _selectedFrames.Length)
+            _selectedFrames[index].SetActive(selected);
+        _statValueTexts[index].text = selected || _useBlessingStyle
             ? $"{preview.CurrentValue}  >  {preview.NextValue}"
             : preview.CurrentValue.ToString(CultureInfo.InvariantCulture);
         string format = stat == StatType.Strength ? "0.00" : "0.##";
         string current = preview.CurrentEffect.ToString(format, CultureInfo.InvariantCulture);
         string next = preview.NextEffect.ToString(format, CultureInfo.InvariantCulture);
-        _effectTexts[index].text = selected ? $"{current}  >  {next}" : current;
+        _effectTexts[index].text = selected || _useBlessingStyle ? $"{current}  >  {next}" : current;
     }
 
     private void SelectVigor() => StatSelected?.Invoke(StatType.Vigor);

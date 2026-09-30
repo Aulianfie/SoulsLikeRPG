@@ -10,6 +10,7 @@ public sealed class PlayerLocomotionState : PlayerState
         int switchDirection = StateMachine.InputReader.ConsumeSwitchWeapon();
         if (switchDirection != 0)
             StateMachine.Equipment?.CycleWeapon(switchDirection);
+        if (StateMachine.CurrentState != this) return;
         bool useItemRequested = StateMachine.InputReader.ConsumeUseItem();
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
 

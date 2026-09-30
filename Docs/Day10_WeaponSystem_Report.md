@@ -6,6 +6,8 @@
 
 ## 已实现
 
+后续更新：长剑 / 大剑已统一接入肩后换武器动作，约 0.8 秒，在动画中点实际更换装备与图标。新行为及 67 项专项运行验收见 `Docs/Day10_WeaponSwitch_Report.md`；下方 117 项记录对应接入换武器动作前的连招版本。
+
 - `WeaponData` 保存 ID、显示名、武器预制体、轻攻击连招、伤害 / 体力倍率、Animator Override 和武器类型。无运行时状态。
 - `PlayerEquipment` 管理两个预创建的武器模型、当前槽位和 `WeaponChanged` 事件。切换关闭旧 Hitbox、重置连招 / 攻击缓存、更新当前 Hitbox 与动画覆盖；不反复 Instantiate / Destroy。
 - `PlayerCombat` 继续共用原有命中窗口、连招窗口、体力、闪避取消、后摇和锁定攻击辅助。接入装备时读取当前武器配置；未配置装备的旧场景保留原 `_attackCombo` 备用行为。

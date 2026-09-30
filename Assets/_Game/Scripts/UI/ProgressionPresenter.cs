@@ -8,6 +8,7 @@ using UnityEngine.InputSystem;
 public sealed class ProgressionPresenter : MonoBehaviour
 {
     [SerializeField] private GraceMenuUI _graceMenu;
+    [SerializeField] private BlessingMenuRoot _blessingMenu;
     [SerializeField] private LevelUpPanel _levelUpPanel;
     [SerializeField] private CheckpointManager _checkpointManager;
     [SerializeField] private PlayerProgression _progression;
@@ -37,7 +38,8 @@ public sealed class ProgressionPresenter : MonoBehaviour
         _cancelAction.AddBinding("<Keyboard>/escape");
         _cancelAction.AddBinding("<Gamepad>/buttonEast");
         SetOverlayVisible(false);
-        _graceMenu.Hide();
+        if (_blessingMenu != null) _blessingMenu.Hide();
+        else _graceMenu.Hide();
         _levelUpPanel.Hide();
     }
 
@@ -47,11 +49,20 @@ public sealed class ProgressionPresenter : MonoBehaviour
         _progression.ProgressionChanged += Refresh;
         _wallet.SoulsChanged += HandleSoulsChanged;
         _health.Died += CloseMenu;
-        _graceMenu.LevelUpRequested += OpenLevelUp;
-        _graceMenu.CloseRequested += CloseMenu;
+        if (_blessingMenu != null)
+        {
+            _blessingMenu.AttributesRequested += OpenLevelUp;
+            _blessingMenu.RestRequested += RestAtCheckpoint;
+            _blessingMenu.CloseRequested += CloseMenu;
+        }
+        else
+        {
+            _graceMenu.LevelUpRequested += OpenLevelUp;
+            _graceMenu.CloseRequested += CloseMenu;
+        }
         _levelUpPanel.StatSelected += SelectStat;
         _levelUpPanel.ConfirmRequested += ConfirmUpgrade;
-        _levelUpPanel.CloseRequested += BackToGrace;
+        _levelUpPanel.CloseRequested += HandlePageClose;
         _cancelAction.performed += HandleCancel;
     }
 
@@ -62,11 +73,20 @@ public sealed class ProgressionPresenter : MonoBehaviour
         _progression.ProgressionChanged -= Refresh;
         _wallet.SoulsChanged -= HandleSoulsChanged;
         _health.Died -= CloseMenu;
-        _graceMenu.LevelUpRequested -= OpenLevelUp;
-        _graceMenu.CloseRequested -= CloseMenu;
+        if (_blessingMenu != null)
+        {
+            _blessingMenu.AttributesRequested -= OpenLevelUp;
+            _blessingMenu.RestRequested -= RestAtCheckpoint;
+            _blessingMenu.CloseRequested -= CloseMenu;
+        }
+        else
+        {
+            _graceMenu.LevelUpRequested -= OpenLevelUp;
+            _graceMenu.CloseRequested -= CloseMenu;
+        }
         _levelUpPanel.StatSelected -= SelectStat;
         _levelUpPanel.ConfirmRequested -= ConfirmUpgrade;
-        _levelUpPanel.CloseRequested -= BackToGrace;
+        _levelUpPanel.CloseRequested -= HandlePageClose;
         _cancelAction.performed -= HandleCancel;
     }
 
@@ -110,7 +130,8 @@ public sealed class ProgressionPresenter : MonoBehaviour
     {
         if (!IsOpen)
             return;
-        _graceMenu.Hide();
+        if (_blessingMenu != null) _blessingMenu.ShowPage(BlessingPage.Attributes);
+        else _graceMenu.Hide();
         _levelUpPanel.Show(_selectedStat);
         Refresh();
     }
@@ -137,7 +158,8 @@ public sealed class ProgressionPresenter : MonoBehaviour
         if (!IsOpen)
             return;
         _levelUpPanel.Hide();
-        _graceMenu.Show();
+        if (_blessingMenu != null) _blessingMenu.ShowDefault();
+        else _graceMenu.Show();
     }
 
     public void CloseMenu()
@@ -146,7 +168,8 @@ public sealed class ProgressionPresenter : MonoBehaviour
             return;
         IsOpen = false;
         _cancelAction.Disable();
-        _graceMenu.Hide();
+        if (_blessingMenu != null) _blessingMenu.Hide();
+        else _graceMenu.Hide();
         _levelUpPanel.Hide();
         SetOverlayVisible(false);
         Time.timeScale = _previousTimeScale;
@@ -188,9 +211,24 @@ public sealed class ProgressionPresenter : MonoBehaviour
     }
 
     private void HandleSoulsChanged(int souls) => Refresh();
+    private void HandlePageClose()
+    {
+        if (_blessingMenu != null) CloseMenu();
+        else BackToGrace();
+    }
+
+    private void RestAtCheckpoint()
+    {
+        if (!IsOpen || _checkpointManager.CurrentCheckpoint == null)
+            return;
+        // 复用既有补满资源、刷新敌人和存档行为。事件会重置首页，再展示休息说明。
+        _checkpointManager.ActivateCheckpoint(_checkpointManager.CurrentCheckpoint);
+        _blessingMenu.ShowPage(BlessingPage.Rest);
+    }
+
     private void HandleCancel(InputAction.CallbackContext context)
     {
-        if (_levelUpPanel.IsVisible)
+        if (_blessingMenu != null ? _blessingMenu.CurrentPage != BlessingPage.None : _levelUpPanel.IsVisible)
             BackToGrace();
         else
             CloseMenu();

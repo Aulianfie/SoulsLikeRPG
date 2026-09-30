@@ -28,6 +28,34 @@ public class PlayerAnimator : MonoBehaviour
     private int _currentAttackStateHash;
     private int _itemUseLayer = -1;
     private static readonly int HealStateHash = Animator.StringToHash("ItemUse.Heal");
+    private static readonly int WeaponSwitchStateHash = Animator.StringToHash("Base Layer.WeaponSwitch");
+
+    public bool HasWeaponSwitchAnimation => _animator != null &&
+        _animator.HasState(BaseLayerIndex, WeaponSwitchStateHash);
+
+    public bool PlayWeaponSwitch()
+    {
+        if (!HasWeaponSwitchAnimation || !_animator.isActiveAndEnabled) return false;
+        _animator.CrossFadeInFixedTime(WeaponSwitchStateHash, 0.08f, BaseLayerIndex, 0f);
+        return true;
+    }
+
+    public bool TryGetWeaponSwitchNormalizedTime(out float time)
+    {
+        time = 0f;
+        if (_animator == null || !_animator.isActiveAndEnabled) return false;
+        AnimatorStateInfo state = _animator.IsInTransition(BaseLayerIndex)
+            ? _animator.GetNextAnimatorStateInfo(BaseLayerIndex)
+            : _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+        if (state.fullPathHash != WeaponSwitchStateHash) return false;
+        time = state.normalizedTime;
+        return true;
+    }
+
+    public void StopWeaponSwitch()
+    {
+        if (_animator != null && _animator.isActiveAndEnabled) PlayLocomotion(0.08f);
+    }
 
     private void Awake()
     {

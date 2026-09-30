@@ -16,6 +16,7 @@ MonoBehaviour:
   _displayName: "\u957F\u5251"
   _weaponPrefab: {fileID: 2052841070428734732, guid: ddefe3877f9a87147a9ed19f5f277aec,
     type: 3}
+  _icon: {fileID: 21300000, guid: 81a0d90051237ec438ed19397e971751, type: 3}
   _lightAttackCombo: {fileID: 11400000, guid: 1340a204a056b6a40b81d50669338397, type: 2}
   _damageMultiplier: 1
   _staminaMultiplier: 1
