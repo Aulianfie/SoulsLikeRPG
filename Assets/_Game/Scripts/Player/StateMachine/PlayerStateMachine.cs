@@ -10,7 +10,8 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerTargeting))]
 public sealed class PlayerStateMachine : MonoBehaviour
 {
-    [SerializeField] private bool _logStateChanges = true;
+    [SerializeField]
+    private bool _logStateChanges = true;
 
     public PlayerInputReader InputReader { get; private set; }
     public PlayerMotor Motor { get; private set; }
@@ -23,8 +24,21 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerEquipment Equipment { get; private set; }
     public IPlayerWeaponVisibility WeaponVisibility { get; private set; }
     public PlayerState CurrentState { get; private set; }
-    public string CurrentStateName =>
-        CurrentState == null ? "None" : CurrentState.GetType().Name;
+
+    public string CurrentStateName
+    {
+        get
+        {
+            if (CurrentState == null)
+            {
+                return "None";
+            }
+            else
+            {
+                return CurrentState.GetType().Name;
+            }
+        }
+    }
 
     public PlayerLocomotionState LocomotionState { get; private set; }
     public PlayerAirborneState AirborneState { get; private set; }
@@ -32,13 +46,13 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerDodgeState DodgeState { get; private set; }
     public PlayerHurtState HurtState { get; private set; }
     public PlayerDeadState DeadState { get; private set; }
-
     public PlayerInteractState InteractState { get; private set; }
     public PlayerUseItemState UseItemState { get; private set; }
     public PlayerWeaponSwitchState WeaponSwitchState { get; private set; }
 
     private bool _hasStarted;
     private bool _jumpAttackUsed;
+
     public bool HasUsedJumpAttack => _jumpAttackUsed;
 
     private void Awake()
@@ -69,7 +83,9 @@ public sealed class PlayerStateMachine : MonoBehaviour
         // 首次启用时，其他组件的 Awake 尚未保证全部执行完毕。
         // 等到 Start 再读取 PlayerHealth，避免把默认生命值 0 误判为死亡。
         if (_hasStarted)
+        {
             EnterInitialState();
+        }
     }
 
     private void Start()
@@ -83,41 +99,85 @@ public sealed class PlayerStateMachine : MonoBehaviour
     /// </summary>
     private void Update()
     {
-        if (Motor.IsGrounded && Motor.VerticalVelocity <= 0f) _jumpAttackUsed = false;
+        if (Motor.IsGrounded &&
+            Motor.VerticalVelocity <= 0f)
+        {
+            _jumpAttackUsed = false;
+        }
+
         // 切槽独立于动作状态，在 Tick 及动作清理输入前处理；死亡/菜单/暂停由 Items 拦截。
-        if (InputReader.ConsumeSwitchQuickItem()) Items?.SwitchNextItem();
+        if (InputReader.ConsumeSwitchQuickItem())
+        {
+            Items?.SwitchNextItem();
+        }
+
         if (CurrentState != LocomotionState)
         {
             InputReader.ConsumeUseItem();
             InputReader.ConsumeSwitchWeapon();
             InputReader.ConsumeWeaponSkill();
         }
+
         CurrentState?.Tick(Time.deltaTime);
     }
 
     public bool TryBeginAttack(PlayerAttackType type)
     {
-        if (Health.IsDead || !InputReader.isActiveAndEnabled || Time.timeScale <= 0f) return false;
+        if (Health.IsDead ||
+            !InputReader.isActiveAndEnabled ||
+            Time.timeScale <= 0f)
+        {
+            return false;
+        }
+
         if (type == PlayerAttackType.Jump)
         {
-            if (CurrentState != AirborneState || Motor.IsGrounded || _jumpAttackUsed) return false;
+            if (CurrentState != AirborneState ||
+                Motor.IsGrounded ||
+                _jumpAttackUsed)
+            {
+                return false;
+            }
         }
-        else if (CurrentState != LocomotionState || !Motor.IsGrounded) return false;
-        if (!Combat.CanStartAttack(type)) return false;
+        else if (CurrentState != LocomotionState ||
+            !Motor.IsGrounded)
+        {
+            return false;
+        }
+
+        if (!Combat.CanStartAttack(type))
+        {
+            return false;
+        }
+
         AttackState.SetAttackType(type);
         ChangeState(AttackState);
-        bool started = CurrentState == AttackState && Combat.IsAttacking;
-        if (started && type == PlayerAttackType.Jump) _jumpAttackUsed = true;
+        bool started = CurrentState == AttackState &&
+            Combat.IsAttacking;
+        if (started &&
+            type == PlayerAttackType.Jump)
+        {
+            _jumpAttackUsed = true;
+        }
+
         return started;
     }
 
     public bool TryBeginUseItem(IPlayerQuickItem item)
     {
         MonoBehaviour behaviour = item as MonoBehaviour;
-        if (CurrentState != LocomotionState || !Motor.IsGrounded || Health.IsDead ||
-            !InputReader.isActiveAndEnabled || Time.timeScale <= 0f ||
-            behaviour == null || behaviour.gameObject != gameObject || !item.CanUse)
+        if (CurrentState != LocomotionState ||
+            !Motor.IsGrounded ||
+            Health.IsDead ||
+            !InputReader.isActiveAndEnabled ||
+            Time.timeScale <= 0f ||
+            behaviour == null ||
+            behaviour.gameObject != gameObject ||
+            !item.CanUse)
+        {
             return false;
+        }
+
         UseItemState.SetItem(item);
         ChangeState(UseItemState);
         return CurrentState == UseItemState;
@@ -131,60 +191,56 @@ public sealed class PlayerStateMachine : MonoBehaviour
 
     public void ChangeState(PlayerState newState)
     {
-        if (
-            newState == null ||
+        if (newState == null ||
             newState == CurrentState ||
-            CurrentState == DeadState
-        )
+            CurrentState == DeadState)
+        {
             return;
+        }
 
         string previousStateName = CurrentStateName;
-
         CurrentState?.Exit();
         CurrentState = newState;
         CurrentState.Enter();
-
         if (_logStateChanges)
         {
-            Debug.Log(
-                $"Player State: {previousStateName} -> {CurrentStateName}",
-                this
-            );
+            Debug.Log($"Player State: {previousStateName} -> {CurrentStateName}", this);
         }
     }
 
     public void HandleDamageTaken()
     {
         if (Health == null)
+        {
             return;
+        }
 
         ChangeState(Health.IsDead ? DeadState : HurtState);
     }
 
-    public bool TryBeginInteraction(
-        IInteractable target,
-        float maxDistance
-    )
+    public bool TryBeginInteraction(IInteractable target, float maxDistance)
     {
         // 只允许存活、站在地面且处于移动状态的玩家开始交互。
         if (Health.IsDead ||
             CurrentState != LocomotionState ||
             !Motor.IsGrounded)
+        {
             return false;
+        }
 
         MonoBehaviour behaviour = target as MonoBehaviour;
-
         if (behaviour == null ||
             !behaviour.isActiveAndEnabled ||
             !target.CanInteract)
+        {
             return false;
+        }
 
-        float sqrDistance =
-            (behaviour.transform.position -
-            transform.position).sqrMagnitude;
-
+        float sqrDistance = (behaviour.transform.position - transform.position).sqrMagnitude;
         if (sqrDistance > maxDistance * maxDistance)
+        {
             return false;
+        }
 
         if (!target.RequiresInteractionAnimation)
         {
@@ -200,8 +256,11 @@ public sealed class PlayerStateMachine : MonoBehaviour
 
     public void Respawn()
     {
-        if (Health == null || Health.IsDead)
+        if (Health == null ||
+            Health.IsDead)
+        {
             return;
+        }
 
         string previousStateName = CurrentStateName;
         CurrentState?.Exit();
@@ -215,15 +274,15 @@ public sealed class PlayerStateMachine : MonoBehaviour
         PlayerAnimator.PlayLocomotion(0f);
         CurrentState = LocomotionState;
         CurrentState.Enter();
-
         if (_logStateChanges)
+        {
             Debug.Log($"Player State: {previousStateName} -> {CurrentStateName}", this);
+        }
     }
 
     private void EnterInitialState()
     {
-        ChangeState(Health != null && Health.IsDead
-            ? DeadState
-            : LocomotionState);
+        ChangeState(Health != null &&
+                Health.IsDead ? DeadState : LocomotionState);
     }
 }

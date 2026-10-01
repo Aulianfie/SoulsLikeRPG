@@ -1,6 +1,5 @@
 using UnityEngine;
 
-
 /// <summary>
 /// 管理敌人的巡逻、战斗、返回领地、受击和死亡状态。
 /// </summary>
@@ -17,17 +16,14 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
     [Header("Target")]
     [SerializeField]
     private Transform _targetOverride;
-
     [SerializeField, Min(0.1f)]
     private float _attackRange = 1.8f;
-
     private PlayerHealth _targetHealth;
     // Detection 只负责首次索敌；进入战斗后由 Leash 决定何时放弃。
     private bool _hasEngagedTarget;
     // 返回途中受击后，Hurt 结束仍应继续返回。
     private bool _isReturningHome;
     private Quaternion _homeRotation;
-
     [Header("Debug")]
     [SerializeField]
     private bool _logStateChanges = true;
@@ -40,9 +36,22 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
     public Transform Target { get; private set; }
     public float AttackRange => _attackRange;
     public bool HasEngagedTarget => _hasEngagedTarget;
-    
-    public string CurrentStateName =>
-        CurrentState == null ? "None" : CurrentState.GetType().Name;
+
+    public string CurrentStateName
+    {
+        get
+        {
+            if (CurrentState == null)
+            {
+                return "None";
+            }
+            else
+            {
+                return CurrentState.GetType().Name;
+            }
+        }
+    }
+
     /// <summary>
     /// 当前状态及其状态实例。
     /// </summary>
@@ -63,7 +72,6 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         Combat = GetComponent<EnemyCombat>();
         Territory = GetComponent<EnemyTerritory>();
         _homeRotation = transform.rotation;
-
         IdleState = new EnemyIdleState(this);
         PatrolState = new EnemyPatrolState(this);
         ChaseState = new EnemyChaseState(this);
@@ -89,7 +97,11 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
 
     private void OnDisable()
     {
-        if (Health != null) Health.DamageTaken -= OnDamageTaken;
+        if (Health != null)
+        {
+            Health.DamageTaken -= OnDamageTaken;
+        }
+
         CurrentState?.Exit();
         CurrentState = null;
         Combat?.CancelAttack();
@@ -106,7 +118,10 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         ChangeState(HurtState);
     }
 
-    private void OnDamageTaken(DamageInfo damageInfo) => HandleDamageTaken();
+    private void OnDamageTaken(DamageInfo damageInfo)
+    {
+        HandleDamageTaken();
+    }
 
     public void EvaluateTargetState()
     {
@@ -129,7 +144,8 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         }
 
         if (!Territory.IsInsideLeashArea(transform.position) ||
-            (_hasEngagedTarget && !Territory.IsInsideLeashArea(Target.position)))
+            (_hasEngagedTarget &&
+            !Territory.IsInsideLeashArea(Target.position)))
         {
             ChangeState(ReturnHomeState);
             return;
@@ -149,9 +165,13 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         if (HasTargetInAttackRange())
         {
             if (Combat.CanStartAttack)
+            {
                 ChangeState(AttackState);
+            }
             else
+            {
                 ChangeState(IdleState);
+            }
 
             return;
         }
@@ -161,7 +181,8 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
 
     public bool HasTargetInDetectionRange()
     {
-        return HasValidTarget() && Territory.IsInsideDetectionArea(Target.position);
+        return HasValidTarget() &&
+            Territory.IsInsideDetectionArea(Target.position);
     }
 
     public bool ShouldReturnHome()
@@ -185,8 +206,7 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
 
     public bool HasTargetInAttackRange()
     {
-        return
-            HasValidTarget() &&
+        return HasValidTarget() &&
             DistanceToTarget <= _attackRange + RangeTolerance;
     }
 
@@ -195,7 +215,9 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         get
         {
             if (Target == null)
+            {
                 return float.PositiveInfinity;
+            }
 
             Vector3 offset = Target.position - transform.position;
             offset.y = 0f;
@@ -205,27 +227,23 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
 
     public void ChangeState(EnemyState newState)
     {
-        if (
-            newState == null ||
+        if (newState == null ||
             CurrentState == newState ||
-            CurrentState == DeadState
-        )
+            CurrentState == DeadState)
+        {
             return;
+        }
 
         string previousStateName = CurrentStateName;
-
         CurrentState?.Exit();
         CurrentState = newState;
         CurrentState.Enter();
-
         if (_logStateChanges)
         {
-            Debug.Log(
-                $"Enemy State: {previousStateName} -> {CurrentStateName}",
-                this
-            );
+            Debug.Log($"Enemy State: {previousStateName} -> {CurrentStateName}", this);
         }
     }
+
     /// <summary>
     /// 重置敌人的状态机和属性，以便在玩家复活或重新加载检查点时恢复敌人。
     /// 该方法会退出当前状态，重置战斗和移动组件，并将敌人传送回领地的初始位置和朝向。
@@ -233,7 +251,9 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
     public void ResetForCheckpoint()
     {
         if (!isActiveAndEnabled)
+        {
             return;
+        }
 
         string previousStateName = CurrentStateName;
         CurrentState?.Exit();
@@ -243,23 +263,26 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         EnemyAnimator.SetSpeed(1f);
         _hasEngagedTarget = false;
         _isReturningHome = false;
-
         Motor.Teleport(Territory.HomePosition, _homeRotation);
-
         Health.RestoreFull();
         CurrentState = PatrolState;
         CurrentState.Enter();
-
         if (_logStateChanges)
+        {
             Debug.Log($"Enemy State: {previousStateName} -> {CurrentStateName}", this);
+        }
     }
 
     public bool HasValidTarget()
     {
-        if (Target == null || !Target.gameObject.activeInHierarchy)
+        if (Target == null ||
+            !Target.gameObject.activeInHierarchy)
+        {
             return false;
+        }
 
-        return _targetHealth == null || !_targetHealth.IsDead;
+        return _targetHealth == null ||
+            !_targetHealth.IsDead;
     }
 
     private void ResolveTarget()
@@ -272,14 +295,18 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         }
 
         _targetHealth = FindFirstObjectByType<PlayerHealth>();
-        Target = _targetHealth == null ? null : _targetHealth.transform;
+        if (_targetHealth == null)
+        {
+            Target = null;
+        }
+        else
+        {
+            Target = _targetHealth.transform;
+        }
 
         if (Target == null)
         {
-            Debug.LogWarning(
-                "EnemyStateMachine 未找到 PlayerHealth，敌人将继续巡逻。",
-                this
-            );
+            Debug.LogWarning("EnemyStateMachine 未找到 PlayerHealth，敌人将继续巡逻。", this);
         }
     }
 
@@ -288,6 +315,8 @@ public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
         _attackRange = Mathf.Max(0.1f, _attackRange);
         EnemyTerritory territory = GetComponent<EnemyTerritory>();
         if (territory != null)
+        {
             _attackRange = Mathf.Min(_attackRange, territory.DetectionRadius);
+        }
     }
 }

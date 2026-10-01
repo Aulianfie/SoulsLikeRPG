@@ -4,133 +4,401 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyAnimator), typeof(EnemyMotor), typeof(BossDamageArea))]
 public sealed class BossSkillRunner : MonoBehaviour
 {
-    [SerializeField] WeaponHitbox _leftHand;
-    [SerializeField] WeaponHitbox _rightHand;
-    [SerializeField] Transform _leftFoot;
-    [SerializeField] Transform _rightFoot;
-    [SerializeField] Transform _throwSocket;
-    [SerializeField] BossRockProjectile _rockPrefab;
-    [SerializeField] LayerMask _obstacleLayers = 1;
-    readonly HashSet<IDamageable> hitTargets = new HashSet<IDamageable>();
-    readonly List<BossRockProjectile> projectiles = new List<BossRockProjectile>();
-    readonly List<GameObject> effects = new List<GameObject>();
-    EnemyAnimator animationDriver;
-    EnemyMotor motor;
-    BossDamageArea area;
-    BossBlackboard board;
-    BossSkillData current;
-    int stateHash;
-    bool locked, released, handsOpen, specialStarted, movementBlocked;
-    Vector3 direction, aim;
-    float startedAt, travel, travelLimit;
-    public bool IsRunning => current != null;
-    public bool DirectionLocked => locked;
-    public bool Released => released;
-    public float NormalizedTime { get; private set; }
-    public string Phase => current == null ? "无技能" : NormalizedTime < current.DirectionLock ? "前摇追踪" : NormalizedTime < current.HitStart ? "方向锁定" : NormalizedTime <= current.HitEnd ? "出手" : "收招";
-    public Vector3 ThrowPosition => _throwSocket != null ? _throwSocket.position : transform.position + Vector3.up * 3;
-    public int LiveProjectileCount { get { int count = 0; foreach (var stone in projectiles) if (stone != null && !stone.Resolved) count++; return count; } }
+    // Serialized fields
+    [SerializeField]
+    private WeaponHitbox _leftHand;
+    [SerializeField]
+    private WeaponHitbox _rightHand;
+    [SerializeField]
+    private Transform _leftFoot;
+    [SerializeField]
+    private Transform _rightFoot;
+    [SerializeField]
+    private Transform _throwSocket;
+    [SerializeField]
+    private BossRockProjectile _rockPrefab;
+    [SerializeField]
+    private LayerMask _obstacleLayers = 1;
 
-    void Awake() { animationDriver = GetComponent<EnemyAnimator>(); motor = GetComponent<EnemyMotor>(); area = GetComponent<BossDamageArea>(); }
-    public void Bind(BossBlackboard blackboard) { board = blackboard; }
+    // Dependencies
+    private EnemyAnimator _animationDriver;
+    private EnemyMotor _motor;
+    private BossDamageArea _damageArea;
+    private BossBlackboard _blackboard;
+
+    // Runtime state
+    private readonly HashSet<IDamageable> _hitTargets = new HashSet<IDamageable>();
+    private readonly List<BossRockProjectile> _projectiles = new List<BossRockProjectile>();
+    private readonly List<GameObject> _effects = new List<GameObject>();
+    private BossSkillData _currentSkill;
+    private int _currentStateHash;
+    private bool _isDirectionLocked;
+    private bool _hasReleased;
+    private bool _areHandsActive;
+    private bool _hasStartedSpecialMovement;
+    private bool _isMovementBlocked;
+    private Vector3 _lockedDirection;
+    private Vector3 _aimPosition;
+    private float _startedAt;
+    private float _traveledDistance;
+    private float _travelDistanceLimit;
+
+    // Public properties
+    public bool IsRunning => _currentSkill != null;
+    public bool DirectionLocked => _isDirectionLocked;
+    public bool Released => _hasReleased;
+    public float NormalizedTime { get; private set; }
+
+    public string Phase
+    {
+        get
+        {
+            if (_currentSkill == null)
+            {
+                return "无技能";
+            }
+            else if (NormalizedTime < _currentSkill.DirectionLock)
+            {
+                return "前摇追踪";
+            }
+            else if (NormalizedTime < _currentSkill.HitStart)
+            {
+                return "方向锁定";
+            }
+            else if (NormalizedTime <= _currentSkill.HitEnd)
+            {
+                return "出手";
+            }
+            else
+            {
+                return "收招";
+            }
+        }
+    }
+
+    public Vector3 ThrowPosition
+    {
+        get
+        {
+            if (_throwSocket != null)
+            {
+                return _throwSocket.position;
+            }
+            else
+            {
+                return transform.position + Vector3.up * 3;
+            }
+        }
+    }
+
+    public int LiveProjectileCount
+    {
+        get
+        {
+            int count = 0;
+            foreach (var stone in _projectiles)
+            {
+                if (stone != null &&
+                    !stone.Resolved)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+    }
+
+    private void Awake()
+    {
+        _animationDriver = GetComponent<EnemyAnimator>();
+        _motor = GetComponent<EnemyMotor>();
+        _damageArea = GetComponent<BossDamageArea>();
+    }
+
+    public void Bind(BossBlackboard blackboard)
+    {
+        _blackboard = blackboard;
+    }
 
     public bool Begin(BossSkillData skill)
     {
-        if (IsRunning || skill == null || board == null || board.Target == null || GetComponent<EnemyHealth>().CurrentHealth <= 0) return false;
-        if (!animationDriver.PlayState(skill.StateHash)) { Debug.LogError("Boss 找不到动画状态：" + skill.StateName, this); return false; }
-        motor.Stop(); hitTargets.Clear(); area.ResetSweep(); current = skill; stateHash = skill.StateHash;
-        board.Commit(skill, Time.time);
-        locked = released = handsOpen = specialStarted = movementBlocked = false;
-        NormalizedTime = 0; startedAt = Time.time; travel = 0;
-        travelLimit = skill.Family == BossSkillFamily.Dash ? Mathf.Max(.2f, board.Distance - 1.8f) : board.Distance + 2;
-        direction = transform.forward; aim = board.Target.position + Vector3.up;
-        animationDriver.SetSpeed(skill.PlaybackSpeed);
+        if (IsRunning ||
+            skill == null ||
+            _blackboard == null ||
+            _blackboard.Target == null ||
+            GetComponent<EnemyHealth>().CurrentHealth <= 0)
+        {
+            return false;
+        }
+
+        if (!_animationDriver.PlayState(skill.StateHash))
+        {
+            Debug.LogError("Boss 找不到动画状态：" + skill.StateName, this);
+            return false;
+        }
+
+        _motor.Stop();
+        // 双手共用本次技能的命中集合，避免同一目标被左右手重复结算。
+        _hitTargets.Clear();
+        _damageArea.ResetSweep();
+        _currentSkill = skill;
+        _currentStateHash = skill.StateHash;
+        _blackboard.Commit(skill, Time.time);
+        _isMovementBlocked = false;
+        _hasStartedSpecialMovement = false;
+        _areHandsActive = false;
+        _hasReleased = false;
+        _isDirectionLocked = false;
+        NormalizedTime = 0;
+        _startedAt = Time.time;
+        _traveledDistance = 0;
+        if (skill.Family == BossSkillFamily.Dash)
+        {
+            _travelDistanceLimit = Mathf.Max(.2f, _blackboard.Distance - 1.8f);
+        }
+        else
+        {
+            _travelDistanceLimit = _blackboard.Distance + 2;
+        }
+
+        _lockedDirection = transform.forward;
+        _aimPosition = _blackboard.Target.position + Vector3.up;
+        _animationDriver.SetSpeed(skill.PlaybackSpeed);
         return true;
     }
 
     public BTStatus Tick(float dt)
     {
-        if (!IsRunning) return BTStatus.Success;
-        if (!animationDriver.TryGetStateNormalizedTime(stateHash, out float t))
+        if (!IsRunning)
         {
-            if (Time.time - startedAt > 15) { Debug.LogError("Boss 技能动画未完成：" + current.Id, this); Abort(); }
+            return BTStatus.Success;
+        }
+
+        if (!_animationDriver.TryGetStateNormalizedTime(_currentStateHash, out float t))
+        {
+            if (Time.time - _startedAt > 15)
+            {
+                Debug.LogError("Boss 技能动画未完成：" + _currentSkill.Id, this);
+                Abort();
+            }
+
             return BTStatus.Running;
         }
-        NormalizedTime = t;
-        if (!locked)
-        {
-            if (board.Target != null)
-            {
-                if (current.Family != BossSkillFamily.Stomp) motor.FaceTarget(board.Target.position, dt);
-                aim = board.Target.position + Vector3.up;
-            }
-            if (t >= current.DirectionLock) { locked = true; direction = transform.forward; }
-        }
-        if (current.MoveSpeed > 0 && t >= current.MoveStart && t <= current.MoveEnd && !movementBlocked)
-        {
-            if (!specialStarted) { motor.BeginSpecialMovement(); specialStarted = true; }
-            float step = Mathf.Min(current.MoveSpeed * dt, Mathf.Max(0, travelLimit - travel));
-            if (step > 0 && motor.MoveSpecial(direction, step, _obstacleLayers)) travel += step;
-            else { movementBlocked = true; motor.EndSpecialMovement(); }
-        }
-        if (specialStarted && t > current.MoveEnd) motor.EndSpecialMovement();
 
-        bool active = t >= current.HitStart && t <= current.HitEnd;
-        if (current.DamageKind == BossDamageKind.Hands)
+        NormalizedTime = t;
+        if (!_isDirectionLocked)
         {
-            if (active && !handsOpen)
+            if (_blackboard.Target != null)
             {
-                if ((current.Hands & 1) != 0 && _leftHand != null) _leftHand.BeginAttack(current.Damage, hitTargets);
-                if ((current.Hands & 2) != 0 && _rightHand != null) _rightHand.BeginAttack(current.Damage, hitTargets);
-                handsOpen = true;
+                if (_currentSkill.Family != BossSkillFamily.Stomp)
+                {
+                    _motor.FaceTarget(_blackboard.Target.position, dt);
+                }
+
+                _aimPosition = _blackboard.Target.position + Vector3.up;
             }
-            else if (!active && handsOpen) CloseHands();
+
+            if (t >= _currentSkill.DirectionLock)
+            {
+                _isDirectionLocked = true;
+                _lockedDirection = transform.forward;
+            }
         }
-        else if (current.DamageKind == BossDamageKind.BodySweep && active)
-            area.Sweep(transform.position + Vector3.up * 1.3f, current.Radius, current.Damage, hitTargets);
-        if (!released && t >= current.Release)
+
+        if (_currentSkill.MoveSpeed > 0 &&
+            t >= _currentSkill.MoveStart &&
+            t <= _currentSkill.MoveEnd &&
+            !_isMovementBlocked)
         {
-            released = true;
-            if (current.DamageKind == BossDamageKind.GroundPulse)
+            if (!_hasStartedSpecialMovement)
             {
-                Transform foot = current.Side == BossSkillSide.Left ? _leftFoot : current.Side == BossSkillSide.Right ? _rightFoot : null;
-                Vector3 center = foot != null ? foot.position : transform.position; center.y = transform.position.y;
-                area.Pulse(center, current.Radius, current.Damage, hitTargets);
+                _motor.BeginSpecialMovement();
+                _hasStartedSpecialMovement = true;
             }
-            else if (current.DamageKind == BossDamageKind.Projectile && _rockPrefab != null)
+
+            float step = Mathf.Min(_currentSkill.MoveSpeed * dt, Mathf.Max(0, _travelDistanceLimit - _traveledDistance));
+            if (step > 0 &&
+                _motor.MoveSpecial(_lockedDirection, step, _obstacleLayers))
             {
-                projectiles.RemoveAll(p => p == null);
+                _traveledDistance += step;
+            }
+            else
+            {
+                _isMovementBlocked = true;
+                _motor.EndSpecialMovement();
+            }
+        }
+
+        if (_hasStartedSpecialMovement &&
+            t > _currentSkill.MoveEnd)
+        {
+            _motor.EndSpecialMovement();
+        }
+
+        bool active = t >= _currentSkill.HitStart &&
+            t <= _currentSkill.HitEnd;
+        if (_currentSkill.DamageKind == BossDamageKind.Hands)
+        {
+            if (active &&
+                !_areHandsActive)
+            {
+                if ((_currentSkill.Hands & 1) != 0 &&
+                    _leftHand != null)
+                {
+                    _leftHand.BeginAttack(_currentSkill.Damage, _hitTargets);
+                }
+
+                if ((_currentSkill.Hands & 2) != 0 &&
+                    _rightHand != null)
+                {
+                    _rightHand.BeginAttack(_currentSkill.Damage, _hitTargets);
+                }
+
+                _areHandsActive = true;
+            }
+            else if (!active &&
+                _areHandsActive)
+            {
+                CloseHands();
+            }
+        }
+        else if (_currentSkill.DamageKind == BossDamageKind.BodySweep &&
+            active)
+        {
+            _damageArea.Sweep(transform.position + Vector3.up * 1.3f, _currentSkill.Radius, _currentSkill.Damage, _hitTargets);
+        }
+
+        if (!_hasReleased &&
+            t >= _currentSkill.Release)
+        {
+            _hasReleased = true;
+            if (_currentSkill.DamageKind == BossDamageKind.GroundPulse)
+            {
+                Transform foot;
+                if (_currentSkill.Side == BossSkillSide.Left)
+                {
+                    foot = _leftFoot;
+                }
+                else if (_currentSkill.Side == BossSkillSide.Right)
+                {
+                    foot = _rightFoot;
+                }
+                else
+                {
+                    foot = null;
+                }
+
+                Vector3 center;
+                if (foot != null)
+                {
+                    center = foot.position;
+                }
+                else
+                {
+                    center = transform.position;
+                }
+
+                center.y = transform.position.y;
+                _damageArea.Pulse(center, _currentSkill.Radius, _currentSkill.Damage, _hitTargets);
+            }
+            else if (_currentSkill.DamageKind == BossDamageKind.Projectile &&
+                _rockPrefab != null)
+            {
+                _projectiles.RemoveAll(p => p == null);
                 var stone = Instantiate(_rockPrefab, ThrowPosition, Quaternion.identity);
                 UnityEngine.SceneManagement.SceneManager.MoveGameObjectToScene(stone.gameObject, gameObject.scene);
-                stone.Launch(gameObject, aim, current.Damage); projectiles.Add(stone);
+                stone.Launch(gameObject, _aimPosition, _currentSkill.Damage);
+                _projectiles.Add(stone);
             }
         }
-        if (t < current.Completion) return BTStatus.Running;
-        Finish(true); return BTStatus.Success;
+
+        if (t < _currentSkill.Completion)
+        {
+            return BTStatus.Running;
+        }
+
+        Finish(true);
+        return BTStatus.Success;
     }
 
-    void CloseHands() { _leftHand?.EndAttack(); _rightHand?.EndAttack(); handsOpen = false; }
-    void Finish(bool completed)
+    private void CloseHands()
     {
-        CloseHands(); motor.EndSpecialMovement(); motor.Stop(); animationDriver.SetSpeed(1);
-        board?.Finish(Time.time, completed); current = null;
-        if (completed) animationDriver.PlayIdle();
+        _leftHand?.EndAttack();
+        _rightHand?.EndAttack();
+        _areHandsActive = false;
     }
-    public void Abort(bool recordHistory = true)
+
+    private void Finish(bool completed)
     {
-        if (current != null && recordHistory) Finish(false);
-        else
+        CloseHands();
+        _motor.EndSpecialMovement();
+        _motor.Stop();
+        _animationDriver.SetSpeed(1);
+        _blackboard?.Finish(Time.time, completed);
+        _currentSkill = null;
+        if (completed)
         {
-            CloseHands(); motor?.EndSpecialMovement(); motor?.Stop();
-            if (animationDriver != null) animationDriver.SetSpeed(1);
-            current = null; if (board != null) board.CurrentSkill = null;
+            _animationDriver.PlayIdle();
         }
     }
-    public void TrackEffect(GameObject effect) { effects.RemoveAll(e => e == null); effects.Add(effect); }
+
+    public void Abort(bool recordHistory = true)
+    {
+        if (_currentSkill != null &&
+            recordHistory)
+        {
+            Finish(false);
+        }
+        else
+        {
+            CloseHands();
+            _motor?.EndSpecialMovement();
+            _motor?.Stop();
+            if (_animationDriver != null)
+            {
+                _animationDriver.SetSpeed(1);
+            }
+
+            _currentSkill = null;
+            if (_blackboard != null)
+            {
+                _blackboard.CurrentSkill = null;
+            }
+        }
+    }
+
+    public void TrackEffect(GameObject effect)
+    {
+        _effects.RemoveAll(e => e == null);
+        _effects.Add(effect);
+    }
+
     public void ClearProjectiles()
     {
-        foreach (var stone in projectiles) if (stone != null) stone.Dissolve(); projectiles.Clear();
-        foreach (var effect in effects) if (effect != null) Destroy(effect); effects.Clear();
+        foreach (var stone in _projectiles)
+        {
+            if (stone != null)
+            {
+                stone.Dissolve();
+            }
+        }
+
+        _projectiles.Clear();
+        foreach (var effect in _effects)
+        {
+            if (effect != null)
+            {
+                Destroy(effect);
+            }
+        }
+
+        _effects.Clear();
     }
-    void OnDisable() { Abort(false); ClearProjectiles(); }
+
+    private void OnDisable()
+    {
+        Abort(false);
+        ClearProjectiles();
+    }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 [Serializable]
 public sealed class BossBlackboard
 {
+    // Public properties
     public Transform Target { get; internal set; }
     public float Distance { get; internal set; }
     public float Angle { get; internal set; }
@@ -21,24 +22,86 @@ public sealed class BossBlackboard
     public BossSkillData LastCompletedSkill { get; private set; }
     public int SameSkillCount { get; private set; }
     public float NextDecisionTime { get; internal set; }
-    readonly Dictionary<BossSkillFamily, float> readyTimes = new Dictionary<BossSkillFamily, float>();
-    readonly Queue<BossSkillFamily> recent = new Queue<BossSkillFamily>();
-    public float ReadyAt(BossSkillFamily family) => readyTimes.TryGetValue(family, out float value) ? value : 0;
-    public int RecentCount(BossSkillFamily family) { int count = 0; foreach (var entry in recent) if (entry == family) count++; return count; }
-    public void Commit(BossSkillData skill, float now) { CurrentSkill = skill; readyTimes[skill.Family] = now + skill.Cooldown; }
+
+    // Runtime state
+    private readonly Dictionary<BossSkillFamily, float> _familyReadyTimes = new Dictionary<BossSkillFamily, float>();
+    private readonly Queue<BossSkillFamily> _recentSkillFamilies = new Queue<BossSkillFamily>();
+
+    public float ReadyAt(BossSkillFamily family)
+    {
+        if (_familyReadyTimes.TryGetValue(family, out float value))
+        {
+            return value;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+
+    public int RecentCount(BossSkillFamily family)
+    {
+        int count = 0;
+        foreach (var entry in _recentSkillFamilies)
+        {
+            if (entry == family)
+            {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    public void Commit(BossSkillData skill, float now)
+    {
+        CurrentSkill = skill;
+        _familyReadyTimes[skill.Family] = now + skill.Cooldown;
+    }
+
     public void Finish(float now, bool completed)
     {
-        if (CurrentSkill == null) return;
-        SameSkillCount = LastSkill == CurrentSkill ? SameSkillCount + 1 : 1;
+        if (CurrentSkill == null)
+        {
+            return;
+        }
+
+        if (LastSkill == CurrentSkill)
+        {
+            SameSkillCount = SameSkillCount + 1;
+        }
+        else
+        {
+            SameSkillCount = 1;
+        }
+
         LastSkill = CurrentSkill;
-        if (completed) LastCompletedSkill = CurrentSkill;
-        recent.Enqueue(CurrentSkill.Family); if (recent.Count > 3) recent.Dequeue();
+        if (completed)
+        {
+            LastCompletedSkill = CurrentSkill;
+        }
+
+        _recentSkillFamilies.Enqueue(CurrentSkill.Family);
+        if (_recentSkillFamilies.Count > 3)
+        {
+            _recentSkillFamilies.Dequeue();
+        }
+
         NextDecisionTime = now + CurrentSkill.Recovery;
         CurrentSkill = null;
     }
+
     public void Reset()
     {
-        readyTimes.Clear(); recent.Clear(); CurrentSkill = LastSkill = LastCompletedSkill = null;
-        SameSkillCount = 0; SideDwell = FarDwell = 0; NextDecisionTime = 0; ActiveNode = "Idle";
+        _familyReadyTimes.Clear();
+        _recentSkillFamilies.Clear();
+        LastCompletedSkill = null;
+        LastSkill = null;
+        CurrentSkill = null;
+        SameSkillCount = 0;
+        FarDwell = 0;
+        SideDwell = 0;
+        NextDecisionTime = 0;
+        ActiveNode = "Idle";
     }
 }

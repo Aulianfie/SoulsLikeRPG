@@ -4,8 +4,10 @@ using UnityEngine.InputSystem;
 public class PlayerInputReader : MonoBehaviour
 {
     [Header("Input Buffer")]
-    [SerializeField, Min(0f)] private float _lightAttackBufferDuration = 0.20f;
-    [SerializeField, Min(0f)] private float _dodgeBufferDuration = 0.15f;
+    [SerializeField, Min(0f)]
+    private float _lightAttackBufferDuration = 0.20f;
+    [SerializeField, Min(0f)]
+    private float _dodgeBufferDuration = 0.15f;
 
     public Vector2 MoveInput { get; private set; }
     public Vector2 LookInput { get; private set; }
@@ -40,11 +42,10 @@ public class PlayerInputReader : MonoBehaviour
     private float _lightAttackExpireTime;
     private float _dodgeExpireTime;
 
-    public bool HasBufferedLightAttack =>
-        _lightAttackRequested && Time.time <= _lightAttackExpireTime;
-
-    public bool HasBufferedDodge =>
-        _dodgeRequested && Time.time <= _dodgeExpireTime;
+    public bool HasBufferedLightAttack => _lightAttackRequested &&
+        Time.time <= _lightAttackExpireTime;
+    public bool HasBufferedDodge => _dodgeRequested &&
+        Time.time <= _dodgeExpireTime;
 
     /// <summary>
     /// 初始化玩家输入读取器，绑定输入动作到相应的回调函数。
@@ -57,18 +58,12 @@ public class PlayerInputReader : MonoBehaviour
     private void CacheActions()
     {
         var playerInput = GetComponent<PlayerInput>();
-        _gameplayMap = playerInput.actions.FindActionMap(
-            "Gameplay",
-            true
-        );
+        _gameplayMap = playerInput.actions.FindActionMap("Gameplay", true);
         _moveAction = _gameplayMap.FindAction("Move", true);
         _lookAction = _gameplayMap.FindAction("Look", true);
         _sprintAction = _gameplayMap.FindAction("Sprint", true);
         _jumpAction = _gameplayMap.FindAction("Jump", true);
-        _lightAttackAction = _gameplayMap.FindAction(
-            "LightAttack",
-            true
-        );
+        _lightAttackAction = _gameplayMap.FindAction("LightAttack", true);
         _dodgeAction = _gameplayMap.FindAction("Dodge", true);
         _lockOnAction = _gameplayMap.FindAction("LockOn", true);
         _interactAction = _gameplayMap.FindAction("Interact", true);
@@ -81,25 +76,36 @@ public class PlayerInputReader : MonoBehaviour
     private void OnEnable()
     {
         CacheActions();
-
         _moveAction.performed += OnMove;
         _moveAction.canceled += OnMove;
-
         _lookAction.performed += OnLook;
         _lookAction.canceled += OnLook;
-
         _sprintAction.performed += OnSprint;
         _sprintAction.canceled += OnSprint;
-
         _jumpAction.performed += OnJump;
         _lightAttackAction.performed += OnLightAttack;
         _dodgeAction.performed += OnDodge;
         _lockOnAction.performed += OnLockOn;
         _interactAction.performed += OnInteract;
-        if (_useItemAction != null) _useItemAction.performed += OnUseItem;
-        if (_switchQuickItemAction != null) _switchQuickItemAction.performed += OnSwitchQuickItem;
-        if (_switchWeaponAction != null) _switchWeaponAction.performed += OnSwitchWeapon;
-        if (_weaponSkillAction != null) _weaponSkillAction.performed += OnWeaponSkill;
+        if (_useItemAction != null)
+        {
+            _useItemAction.performed += OnUseItem;
+        }
+
+        if (_switchQuickItemAction != null)
+        {
+            _switchQuickItemAction.performed += OnSwitchQuickItem;
+        }
+
+        if (_switchWeaponAction != null)
+        {
+            _switchWeaponAction.performed += OnSwitchWeapon;
+        }
+
+        if (_weaponSkillAction != null)
+        {
+            _weaponSkillAction.performed += OnWeaponSkill;
+        }
 
         _gameplayMap.Enable();
     }
@@ -125,45 +131,67 @@ public class PlayerInputReader : MonoBehaviour
         }
 
         if (_jumpAction != null)
+        {
             _jumpAction.performed -= OnJump;
+        }
 
         if (_lightAttackAction != null)
+        {
             _lightAttackAction.performed -= OnLightAttack;
+        }
 
         if (_dodgeAction != null)
+        {
             _dodgeAction.performed -= OnDodge;
+        }
 
         if (_lockOnAction != null)
+        {
             _lockOnAction.performed -= OnLockOn;
+        }
 
         if (_interactAction != null)
+        {
             _interactAction.performed -= OnInteract;
-        if (_useItemAction != null) _useItemAction.performed -= OnUseItem;
-        if (_switchQuickItemAction != null) _switchQuickItemAction.performed -= OnSwitchQuickItem;
-        if (_switchWeaponAction != null) _switchWeaponAction.performed -= OnSwitchWeapon;
-        if (_weaponSkillAction != null) _weaponSkillAction.performed -= OnWeaponSkill;
+        }
+
+        if (_useItemAction != null)
+        {
+            _useItemAction.performed -= OnUseItem;
+        }
+
+        if (_switchQuickItemAction != null)
+        {
+            _switchQuickItemAction.performed -= OnSwitchQuickItem;
+        }
+
+        if (_switchWeaponAction != null)
+        {
+            _switchWeaponAction.performed -= OnSwitchWeapon;
+        }
+
+        if (_weaponSkillAction != null)
+        {
+            _weaponSkillAction.performed -= OnWeaponSkill;
+        }
 
         ClearPendingActions();
-
         _gameplayMap?.Disable();
     }
 
     private void OnMove(InputAction.CallbackContext context)
     {
         MoveInput = context.ReadValue<Vector2>();
-        // Debug.Log($"Move: {MoveInput}");
     }
 
     private void OnLook(InputAction.CallbackContext context)
     {
         LookInput = context.ReadValue<Vector2>();
-        // Debug.Log($"Look: {LookInput}");
     }
 
     private void OnSprint(InputAction.CallbackContext context)
     {
         SprintInput = context.ReadValueAsButton();
-        // Debug.Log($"Sprint: {SprintInput}");
     }
 
     private void OnJump(InputAction.CallbackContext context)
@@ -208,7 +236,8 @@ public class PlayerInputReader : MonoBehaviour
 
     public bool ConsumeUseItem()
     {
-        bool requested = _useItemRequested && Time.frameCount <= _useItemRequestFrame + 1;
+        bool requested = _useItemRequested &&
+            Time.frameCount <= _useItemRequestFrame + 1;
         _useItemRequested = false;
         return requested;
     }
@@ -218,9 +247,11 @@ public class PlayerInputReader : MonoBehaviour
         _switchQuickItemRequested = true;
         _switchQuickItemRequestFrame = Time.frameCount;
     }
+
     public bool ConsumeSwitchQuickItem()
     {
-        bool requested = _switchQuickItemRequested && Time.frameCount <= _switchQuickItemRequestFrame + 1;
+        bool requested = _switchQuickItemRequested &&
+            Time.frameCount <= _switchQuickItemRequestFrame + 1;
         _switchQuickItemRequested = false;
         return requested;
     }
@@ -228,15 +259,38 @@ public class PlayerInputReader : MonoBehaviour
     private void OnSwitchWeapon(InputAction.CallbackContext context)
     {
         float scroll = context.ReadValue<float>();
-        if (Mathf.Approximately(scroll, 0f)) return;
+        if (Mathf.Approximately(scroll, 0f))
+        {
+            return;
+        }
+
         // 一个更新内只保留一个离散方向，与滚轮数值大小无关。
-        _switchWeaponDirection = scroll > 0f ? -1 : 1;
+        if (scroll > 0f)
+        {
+            // 一个更新内只保留一个离散方向，与滚轮数值大小无关。
+            _switchWeaponDirection = -1;
+        }
+        else
+        {
+            // 一个更新内只保留一个离散方向，与滚轮数值大小无关。
+            _switchWeaponDirection = 1;
+        }
+
         _switchWeaponRequestFrame = Time.frameCount;
     }
 
     public int ConsumeSwitchWeapon()
     {
-        int direction = Time.frameCount <= _switchWeaponRequestFrame + 1 ? _switchWeaponDirection : 0;
+        int direction;
+        if (Time.frameCount <= _switchWeaponRequestFrame + 1)
+        {
+            direction = _switchWeaponDirection;
+        }
+        else
+        {
+            direction = 0;
+        }
+
         _switchWeaponDirection = 0;
         return direction;
     }
@@ -250,7 +304,8 @@ public class PlayerInputReader : MonoBehaviour
     // Like UseItem and WeaponSwitch, skill requests never survive another state.
     public bool ConsumeWeaponSkill()
     {
-        bool requested = _weaponSkillRequested && Time.frameCount <= _weaponSkillRequestFrame + 1;
+        bool requested = _weaponSkillRequested &&
+            Time.frameCount <= _weaponSkillRequestFrame + 1;
         _weaponSkillRequested = false;
         return requested;
     }
@@ -258,7 +313,9 @@ public class PlayerInputReader : MonoBehaviour
     public bool ConsumeJump()
     {
         if (!_jumpRequested)
+        {
             return false;
+        }
 
         _jumpRequested = false;
         return true;
@@ -267,7 +324,9 @@ public class PlayerInputReader : MonoBehaviour
     public bool ConsumeLockOn()
     {
         if (!_lockOnRequested)
+        {
             return false;
+        }
 
         _lockOnRequested = false;
         return true;

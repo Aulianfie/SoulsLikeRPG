@@ -7,12 +7,13 @@ using UnityEngine;
 public sealed class CheckpointManager : MonoBehaviour
 {
     [Tooltip("独立测试场景关闭此项，避免测试进度覆盖正式场景存档。")]
-    [SerializeField] private bool _persistProgression = true;
-    [SerializeField] private PlayerHealth _playerHealth;
-    [SerializeField] private PlayerStamina _playerStamina;
-
-    private readonly Dictionary<string, CheckpointSite> _checkpoints =
-        new Dictionary<string, CheckpointSite>(StringComparer.Ordinal);
+    [SerializeField]
+    private bool _persistProgression = true;
+    [SerializeField]
+    private PlayerHealth _playerHealth;
+    [SerializeField]
+    private PlayerStamina _playerStamina;
+    private readonly Dictionary<string, CheckpointSite> _checkpoints = new Dictionary<string, CheckpointSite>(StringComparer.Ordinal);
     private ICheckpointResettable[] _enemies;
     private SoulWallet _wallet;
     private PlayerProgression _progression;
@@ -25,13 +26,23 @@ public sealed class CheckpointManager : MonoBehaviour
     private bool _savePending;
     private bool _hasForeignSceneSave;
     private (int level, int vigor, int endurance, int strength) _observedProgression;
-
     public event Action<CheckpointSite> CheckpointActivated;
-
     public CheckpointSite CurrentCheckpoint { get; private set; }
-    public Transform CurrentRespawnPoint => CurrentCheckpoint != null
-        ? CurrentCheckpoint.RespawnPoint
-        : null;
+
+    public Transform CurrentRespawnPoint
+    {
+        get
+        {
+            if (CurrentCheckpoint != null)
+            {
+                return CurrentCheckpoint.RespawnPoint;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
 
     private void Awake()
     {
@@ -43,26 +54,35 @@ public sealed class CheckpointManager : MonoBehaviour
             _items = _playerHealth.GetComponent<PlayerItemController>();
             _playerMana = _playerHealth.GetComponent<PlayerMana>();
             if (_progression != null)
-                _observedProgression = (_progression.Level, _progression.Vigor,
-                    _progression.Endurance, _progression.Strength);
+            {
+                _observedProgression = (_progression.Level, _progression.Vigor, _progression.Endurance, _progression.Strength);
+            }
         }
+
         MonoBehaviour[] allEnemies = FindObjectsOfType<MonoBehaviour>(true);
         var sceneEnemies = new List<ICheckpointResettable>();
         foreach (MonoBehaviour enemy in allEnemies)
         {
-            if (enemy is ICheckpointResettable resettable && enemy.gameObject.scene == gameObject.scene)
+            if (enemy is ICheckpointResettable resettable &&
+                enemy.gameObject.scene == gameObject.scene)
+            {
                 sceneEnemies.Add(resettable);
+            }
         }
-        _enemies = sceneEnemies.ToArray();
 
+        _enemies = sceneEnemies.ToArray();
         foreach (CheckpointSite checkpoint in FindObjectsOfType<CheckpointSite>(true))
         {
             if (checkpoint.gameObject.scene != gameObject.scene ||
                 string.IsNullOrWhiteSpace(checkpoint.CheckpointId))
+            {
                 continue;
+            }
 
             if (!_checkpoints.TryAdd(checkpoint.CheckpointId, checkpoint))
+            {
                 Debug.LogWarning($"Duplicate checkpoint ID: {checkpoint.CheckpointId}", checkpoint);
+            }
         }
 
         RestoreCheckpointFromSave();
@@ -70,43 +90,75 @@ public sealed class CheckpointManager : MonoBehaviour
 
     private void RestoreCheckpointFromSave()
     {
-        if (!_persistProgression) { _canSave = false; return; }
+        if (!_persistProgression)
+        {
+            _canSave = false;
+            return;
+        }
+
         _loadedSave = SaveService.Load();
         // 无法读取的文件保留原样，避免自动保存覆盖损坏或更高版本的存档。
-        _canSave = _loadedSave != null || !File.Exists(SaveService.SaveFilePath);
-        _hasForeignSceneSave = _loadedSave != null && _loadedSave.sceneName != gameObject.scene.name;
-        if (_loadedSave != null && _loadedSave.sceneName == gameObject.scene.name)
+        _canSave = _loadedSave != null ||
+            !File.Exists(SaveService.SaveFilePath);
+        _hasForeignSceneSave = _loadedSave != null &&
+            _loadedSave.sceneName != gameObject.scene.name;
+        if (_loadedSave != null &&
+            _loadedSave.sceneName == gameObject.scene.name)
+        {
             TryRestoreCheckpoint(_loadedSave.checkpointId);
+        }
     }
 
     private void OnEnable()
     {
         if (_wallet != null)
+        {
             _wallet.SoulsChanged += HandleSoulsChanged;
+        }
+
         if (_progression != null)
+        {
             _progression.ProgressionChanged += HandleProgressionChanged;
+        }
+
         if (_soulDrop != null)
+        {
             _soulDrop.SoulDropChanged += MarkSavePending;
+        }
+
         if (_items != null)
+        {
             _items.QuickItemsChanged += MarkSavePending;
+        }
     }
 
     private void Start()
     {
         // 所有玩家组件的 Awake 已结束，加载后由成长配置重新计算派生属性。
-        if (_loadedSave != null && _loadedSave.sceneName == gameObject.scene.name)
+        if (_loadedSave != null &&
+            _loadedSave.sceneName == gameObject.scene.name)
         {
             if (_wallet != null)
+            {
                 _wallet.SetSouls(_loadedSave.souls);
+            }
+
             if (_progression != null)
-                _progression.SetProgression(_loadedSave.level, _loadedSave.vigor,
-                    _loadedSave.endurance, _loadedSave.strength);
+            {
+                _progression.SetProgression(_loadedSave.level, _loadedSave.vigor, _loadedSave.endurance, _loadedSave.strength);
+            }
+
             if (_soulDrop != null)
+            {
                 _soulDrop.RestoreFromSave(_loadedSave);
+            }
+
             _items?.RestoreFromSave(_loadedSave);
         }
+
         _initialized = true;
-        _savePending = _canSave && !_hasForeignSceneSave;
+        _savePending = _canSave &&
+            !_hasForeignSceneSave;
         _loadedSave = null;
     }
 
@@ -114,15 +166,23 @@ public sealed class CheckpointManager : MonoBehaviour
     {
         // 扣魂事件早于属性递增；同一帧结束后只写一次完整快照。
         if (_savePending)
+        {
             SaveCurrentProgression();
+        }
     }
 
     public bool SaveCurrentProgression()
     {
-        if (!_initialized || !_canSave || _hasForeignSceneSave || _wallet == null || _progression == null)
+        if (!_initialized ||
+            !_canSave ||
+            _hasForeignSceneSave ||
+            _wallet == null ||
+            _progression == null)
+        {
             return false;
-        var data = new GameSaveData(gameObject.scene.name,
-            CurrentCheckpoint != null ? CurrentCheckpoint.CheckpointId : "")
+        }
+
+        var data = new GameSaveData(gameObject.scene.name, CurrentCheckpoint != null ? CurrentCheckpoint.CheckpointId : "")
         {
             souls = _wallet.CurrentSouls,
             level = _progression.Level,
@@ -132,28 +192,41 @@ public sealed class CheckpointManager : MonoBehaviour
         };
         _items?.WriteToSave(data);
         if (_soulDrop != null)
+        {
             _soulDrop.WriteToSave(data);
+        }
+
         bool saved = SaveService.Save(data);
         _savePending = !saved;
         return saved;
     }
 
-    private void HandleSoulsChanged(int souls) => MarkSavePending();
+    private void HandleSoulsChanged(int souls)
+    {
+        MarkSavePending();
+    }
+
     private void HandleProgressionChanged()
     {
-        var current = (_progression.Level, _progression.Vigor,
-            _progression.Endurance, _progression.Strength);
+        var current = (_progression.Level, _progression.Vigor, _progression.Endurance, _progression.Strength);
         // Start 重算派生属性也会通知，但基础成长未变时不算玩家的新进度。
         if (current == _observedProgression)
+        {
             return;
+        }
+
         _observedProgression = current;
         MarkSavePending();
     }
 
     private void MarkSavePending()
     {
-        if (!_initialized || !_persistProgression)
+        if (!_initialized ||
+            !_persistProgression)
+        {
             return;
+        }
+
         // 明确的钱包、成长、掉魂变化或赐福交互允许替换有效的异场景存档。
         // 损坏/未来存档仍由 _canSave 阻止覆盖。
         _hasForeignSceneSave = false;
@@ -163,32 +236,56 @@ public sealed class CheckpointManager : MonoBehaviour
     private void OnApplicationPause(bool paused)
     {
         if (paused)
+        {
             SaveCurrentProgression();
+        }
     }
 
-    private void OnApplicationQuit() => SaveCurrentProgression();
+    private void OnApplicationQuit()
+    {
+        SaveCurrentProgression();
+    }
 
     private void OnDisable()
     {
         if (_savePending)
+        {
             SaveCurrentProgression();
+        }
+
         if (_wallet != null)
+        {
             _wallet.SoulsChanged -= HandleSoulsChanged;
+        }
+
         if (_progression != null)
+        {
             _progression.ProgressionChanged -= HandleProgressionChanged;
+        }
+
         if (_soulDrop != null)
+        {
             _soulDrop.SoulDropChanged -= MarkSavePending;
+        }
+
         if (_items != null)
+        {
             _items.QuickItemsChanged -= MarkSavePending;
+        }
     }
 
     public bool ActivateCheckpoint(CheckpointSite checkpoint)
     {
-        if (checkpoint == null || !checkpoint.CanInteract ||
+        if (checkpoint == null ||
+            !checkpoint.CanInteract ||
             !_checkpoints.TryGetValue(checkpoint.CheckpointId, out CheckpointSite registered) ||
-            registered != checkpoint || _playerHealth == null || _playerStamina == null ||
+            registered != checkpoint ||
+            _playerHealth == null ||
+            _playerStamina == null ||
             _playerHealth.IsDead)
+        {
             return false;
+        }
 
         CurrentCheckpoint = checkpoint;
         checkpoint.MarkActivated();
@@ -207,8 +304,11 @@ public sealed class CheckpointManager : MonoBehaviour
     {
         foreach (ICheckpointResettable enemy in _enemies)
         {
-            if (enemy is MonoBehaviour component && component != null)
+            if (enemy is MonoBehaviour component &&
+                component != null)
+            {
                 enemy.ResetForCheckpoint();
+            }
         }
     }
 
@@ -216,9 +316,12 @@ public sealed class CheckpointManager : MonoBehaviour
     {
         if (string.IsNullOrWhiteSpace(checkpointId) ||
             !_checkpoints.TryGetValue(checkpointId, out CheckpointSite checkpoint) ||
-            !checkpoint.enabled || !checkpoint.gameObject.activeInHierarchy ||
+            !checkpoint.enabled ||
+            !checkpoint.gameObject.activeInHierarchy ||
             checkpoint.RespawnPoint == null)
+        {
             return false;
+        }
 
         CurrentCheckpoint = checkpoint;
         checkpoint.MarkActivated();
