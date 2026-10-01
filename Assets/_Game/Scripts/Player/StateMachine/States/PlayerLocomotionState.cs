@@ -10,7 +10,14 @@ public sealed class PlayerLocomotionState : PlayerState
         int switchDirection = StateMachine.InputReader.ConsumeSwitchWeapon();
         if (switchDirection != 0)
             StateMachine.Equipment?.CycleWeapon(switchDirection);
-        if (StateMachine.CurrentState != this) return;
+        if (StateMachine.CurrentState != this)
+        {
+            // 开始上半身切换的这一帧也保持正常移动，避免漏掉一次 Motor 更新。
+            if (StateMachine.CurrentState == StateMachine.WeaponSwitchState)
+                StateMachine.Motor.TickLocomotion(StateMachine.InputReader.MoveInput,
+                    StateMachine.InputReader.SprintInput, deltaTime);
+            return;
+        }
         bool useItemRequested = StateMachine.InputReader.ConsumeUseItem();
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
 

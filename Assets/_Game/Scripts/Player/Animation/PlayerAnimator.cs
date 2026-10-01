@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerAnimator : MonoBehaviour
 {
     [SerializeField] private Animator _animator;
+    [SerializeField] private AnimationClip _weaponSwitchClip;
     [SerializeField, Min(0f)] private float _dampTime = 0.1f;
     
     private static readonly int MoveSpeedHash = Animator.StringToHash("MoveSpeed");
@@ -28,33 +29,51 @@ public class PlayerAnimator : MonoBehaviour
     private int _currentAttackStateHash;
     private int _itemUseLayer = -1;
     private static readonly int HealStateHash = Animator.StringToHash("ItemUse.Heal");
-    private static readonly int WeaponSwitchStateHash = Animator.StringToHash("Base Layer.WeaponSwitch");
+    private int _weaponSwitchLayer = -1;
+    private static readonly int WeaponSwitchStateHash = Animator.StringToHash("WeaponSwitch.Switch");
+    private static readonly int WeaponSwitchSpeedHash = Animator.StringToHash("WeaponSwitchSpeed");
 
-    public bool HasWeaponSwitchAnimation => _animator != null &&
-        _animator.HasState(BaseLayerIndex, WeaponSwitchStateHash);
+    public bool HasWeaponSwitchAnimation => _animator != null && _weaponSwitchClip != null &&
+        _weaponSwitchLayer >= 0 && _animator.HasState(_weaponSwitchLayer, WeaponSwitchStateHash);
 
-    public bool PlayWeaponSwitch()
+    public bool PlayWeaponSwitch(float duration, float completionPoint)
     {
         if (!HasWeaponSwitchAnimation || !_animator.isActiveAndEnabled) return false;
-        _animator.CrossFadeInFixedTime(WeaponSwitchStateHash, 0.08f, BaseLayerIndex, 0f);
+        // 到达完成点所需的秒数由装备组件配置，不改变全局 Animator 速度。
+        float speed = _weaponSwitchClip.length * completionPoint / Mathf.Max(0.1f, duration);
+        _animator.SetFloat(WeaponSwitchSpeedHash, speed);
+        _animator.SetLayerWeight(_weaponSwitchLayer, 1f);
+        _animator.CrossFadeInFixedTime(WeaponSwitchStateHash,
+            Mathf.Min(0.06f, duration * 0.15f), _weaponSwitchLayer, 0f);
         return true;
     }
 
     public bool TryGetWeaponSwitchNormalizedTime(out float time)
     {
         time = 0f;
-        if (_animator == null || !_animator.isActiveAndEnabled) return false;
-        AnimatorStateInfo state = _animator.IsInTransition(BaseLayerIndex)
-            ? _animator.GetNextAnimatorStateInfo(BaseLayerIndex)
-            : _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+        if (_animator == null || !_animator.isActiveAndEnabled || _weaponSwitchLayer < 0) return false;
+        AnimatorStateInfo state = _animator.IsInTransition(_weaponSwitchLayer)
+            ? _animator.GetNextAnimatorStateInfo(_weaponSwitchLayer)
+            : _animator.GetCurrentAnimatorStateInfo(_weaponSwitchLayer);
         if (state.fullPathHash != WeaponSwitchStateHash) return false;
         time = state.normalizedTime;
         return true;
     }
 
+    public void FadeWeaponSwitch(float normalizedTime, float completionPoint)
+    {
+        if (_animator == null || _weaponSwitchLayer < 0) return;
+        float fadeStart = Mathf.Max(0f, completionPoint - 0.1f);
+        _animator.SetLayerWeight(_weaponSwitchLayer,
+            1f - Mathf.InverseLerp(fadeStart, completionPoint, normalizedTime));
+    }
+
     public void StopWeaponSwitch()
     {
-        if (_animator != null && _animator.isActiveAndEnabled) PlayLocomotion(0.08f);
+        if (_animator == null || _weaponSwitchLayer < 0) return;
+        _animator.SetLayerWeight(_weaponSwitchLayer, 0f);
+        if (_animator.isActiveAndEnabled)
+            _animator.Play("WeaponSwitch.Empty", _weaponSwitchLayer, 0f);
     }
 
     private void Awake()
@@ -66,7 +85,11 @@ public class PlayerAnimator : MonoBehaviour
             if (_baseController is AnimatorOverrideController overrides)
                 _baseController = overrides.runtimeAnimatorController;
         }
-        if (_animator != null) _itemUseLayer = _animator.GetLayerIndex("ItemUse");
+        if (_animator != null)
+        {
+            _itemUseLayer = _animator.GetLayerIndex("ItemUse");
+            _weaponSwitchLayer = _animator.GetLayerIndex("WeaponSwitch");
+        }
         if (_animator == null)
         {
             Debug.LogError( "PlayerAnimator 没有配置 Animator 引用。", this );
@@ -80,6 +103,7 @@ public class PlayerAnimator : MonoBehaviour
         _animator.runtimeAnimatorController = controller != null ? controller : _baseController;
         _currentAttackStateHash = 0;
         _itemUseLayer = _animator.GetLayerIndex("ItemUse");
+        _weaponSwitchLayer = _animator.GetLayerIndex("WeaponSwitch");
     }
 
     private void Update()
@@ -347,6 +371,7 @@ public class PlayerAnimator : MonoBehaviour
         if (_animator != null)
         {
             StopHealing();
+            StopWeaponSwitch();
             _animator.SetFloat(MoveSpeedHash, 0f);
             _animator.SetBool(GroundedHash, true);
             _animator.SetFloat(VerticalSpeedHash, 0f);

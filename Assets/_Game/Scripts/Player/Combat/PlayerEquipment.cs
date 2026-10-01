@@ -14,7 +14,10 @@ public sealed class PlayerEquipment : MonoBehaviour
 
     [SerializeField] private WeaponSlot[] _slots = Array.Empty<WeaponSlot>();
     [SerializeField, Min(0)] private int _defaultSlot;
-    [Header("Shared Weapon Switch (Normalized)")]
+    [Header("Shared Weapon Switch")]
+    [Tooltip("从开始切换到恢复可攻击的时长（秒）；不影响移动或奔跑速度。")]
+    [SerializeField, Min(0.1f)] private float _switchDuration = 0.4f;
+    [Header("Animation Timing (Normalized)")]
     [Tooltip("右手伸向肩后时隐藏旧武器；所有槽位共用同一动作。")]
     [SerializeField, Range(0f, 1f)] private float _switchHidePoint = 0.38f;
     [Tooltip("实际替换装备、攻击配置和模型的时间点。")]
@@ -26,6 +29,7 @@ public sealed class PlayerEquipment : MonoBehaviour
     private PlayerCombat _combat;
     private int _pendingSlotIndex = -1;
 
+    public float SwitchDuration => _switchDuration;
     public float SwitchHidePoint => _switchHidePoint;
     public float SwitchEquipPoint => _switchEquipPoint;
     public float SwitchShowPoint => _switchShowPoint;
@@ -128,6 +132,8 @@ public sealed class PlayerEquipment : MonoBehaviour
 
     private void OnValidate()
     {
+        _switchDuration = Mathf.Max(0.1f, _switchDuration);
+        _switchCompletionPoint = Mathf.Clamp(_switchCompletionPoint, 0.1f, 1f);
         _switchEquipPoint = Mathf.Max(_switchHidePoint, _switchEquipPoint);
         _switchShowPoint = Mathf.Max(_switchEquipPoint, _switchShowPoint);
         _switchCompletionPoint = Mathf.Max(_switchShowPoint, _switchCompletionPoint);

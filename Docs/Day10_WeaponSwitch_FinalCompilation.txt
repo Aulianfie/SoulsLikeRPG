@@ -1,0 +1,2 @@
+Library/ScriptAssemblies/Assembly-CSharp-Editor.dll: errors=0; warnings=0
+Console errors=0; warnings=0; playing=False; sceneDirty=False

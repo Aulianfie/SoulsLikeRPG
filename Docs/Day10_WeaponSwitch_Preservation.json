@@ -2,28 +2,56 @@
   "ProtectedFiles": [
     {
       "Path": "Assets/_Game/Scenes/03_AncientDungeon_Checkpoint.unity",
-      "MatchesTaskStart": false
-    },
-    {
-      "Path": "Assets/_Game/Prefabs/Characters/Player_Day1.prefab",
-      "MatchesTaskStart": true
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "E1496798EF41679D2C3708BC435139999AA1C0D2BB7395A2E7477293DB088B6F"
     },
     {
       "Path": "Assets/_Game/Configs/Weapons/AD_GreatSword_1.asset",
-      "MatchesTaskStart": true
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "26CEDAC389A486101A3BE5AF1684DA07FD75ABFC78EE4D41DECA1A218A0FAE57"
     },
     {
       "Path": "Assets/_Game/Configs/Weapons/AD_GreatSword_2.asset",
-      "MatchesTaskStart": true
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "6D708E5B61D1B1731D275539EEFBF40CEF2A109CB3BCDE11FD2984E0B7FBD1D1"
     },
     {
       "Path": "Assets/_Game/Configs/Weapons/AD_GreatSword_3.asset",
-      "MatchesTaskStart": true
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "FD61A421C1C45FE99A77221D8D12DF9592A1855043C4096454626A570ADA775A"
+    },
+    {
+      "Path": "Assets/_Game/Configs/Weapons/WD_LongSword.asset",
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "9578606EDA14F1526C7FDB273B5883D65567858AAC991AA6BA2A38EEDF96E716"
+    },
+    {
+      "Path": "Assets/_Game/Configs/Weapons/WD_GreatSword.asset",
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "263049646D953D7B06B644356C2C688A14ED18FEBFCB658EDAE9A61CF418C610"
+    },
+    {
+      "Path": "Assets/_Game/Input/Player.inputactions",
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "912182D415F0628480E0E8FD11B0AE73E4A131C668FEEA5E68FEEE8A1EAE1F40"
+    },
+    {
+      "Path": "Assets/_Game/Animations/Masks/AM_ItemUse_UpperBody.mask",
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "988E9DF8DE62E7AB9521D48576393DC8CA8C683CC2837754B1115617A160ED36"
+    },
+    {
+      "Path": "Assets/_Game/UI/Prefabs/PF_PlayerHUD.prefab",
+      "UnchangedFromContinuationStart": true,
+      "SHA256": "8E541BD321D9D3A25309FDE1FAEE5EF8737BAACC8CF70A62BD563EBCC2E749B2"
     }
   ],
+  "PlayerPrefabOnlyClipAndSwitchSettingsChanged": true,
   "SaveUnchanged": true,
-  "SaveSHA256": "8457BADFED8BDDDF4EC7DE3A0B1E2DDF69B56158EB5411C493CB96B439347E6E",
-  "SceneMatchesPrePlaySnapshot": true,
-  "SceneSHA256": "F49E2417716FAF09F66CC617B80FFB7147F4CE3B473E99158B3CD5CBEB363C4C",
-  "Note": "Scene updated concurrently by equipment HUD task; current pre-play scene preserved. WeaponData Icon and UI files were not modified by this animation task."
+  "SaveSHA256": "09DFDD447B8ADCA559A30078DA171CB59AAE4296F7E0D0EE02394B46516398DA",
+  "SceneFileUnchanged": true,
+  "SceneMatchesPrePlaySnapshot": false,
+  "SceneSnapshotDifference": "Only Cinemachine generated TopRig transform local rotation differs in the editor snapshot; no scene file saved or modified.",
+  "SceneSHA256": "E1496798EF41679D2C3708BC435139999AA1C0D2BB7395A2E7477293DB088B6F",
+  "Note": "Existing HUD, weapon data and combo tuning preserved. Player prefab only adds switch clip reference and timing settings."
 }

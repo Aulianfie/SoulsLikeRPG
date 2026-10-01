@@ -277,7 +277,8 @@ public class PlayerInputReader : MonoBehaviour
         ClearDodgeBuffer();
     }
 
-    public void ClearPendingActions()
+    // 清理离散动作请求，保留持续的移动、视角和奔跑输入。
+    public void ClearActionRequests()
     {
         ClearAllBuffers();
         _jumpRequested = false;
@@ -285,6 +286,11 @@ public class PlayerInputReader : MonoBehaviour
         _interactRequested = false;
         _useItemRequested = false;
         _switchWeaponDirection = 0;
+    }
+
+    public void ClearPendingActions()
+    {
+        ClearActionRequests();
         MoveInput = Vector2.zero;
         LookInput = Vector2.zero;
         SprintInput = false;

@@ -210,6 +210,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 988915846045734863}
+  _weaponSwitchClip: {fileID: -1207436675468947075, guid: cc364f99de28696408d0c47eb284d8cc,
+    type: 3}
   _dampTime: 0.1
 --- !u!114 &4855156850861977873
 MonoBehaviour:
@@ -471,6 +473,11 @@ MonoBehaviour:
   - Data: {fileID: 11400000, guid: d65a5a0e285f491448186b1328bcf567, type: 2}
     Hitbox: {fileID: 6170064548994101431}
   _defaultSlot: 0
+  _switchDuration: 0.4
+  _switchHidePoint: 0.38
+  _switchEquipPoint: 0.5
+  _switchShowPoint: 0.65
+  _switchCompletionPoint: 0.93
 --- !u!1 &6224024120811738658
 GameObject:
   m_ObjectHideFlags: 0

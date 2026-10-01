@@ -10,12 +10,12 @@ public sealed class PlayerWeaponSwitchState : PlayerState
 
     public override void Enter()
     {
-        StateMachine.InputReader.ClearPendingActions();
+        StateMachine.InputReader.ClearActionRequests();
         StateMachine.Combat.ResetForRespawn();
-        StateMachine.Motor.StopHorizontalMovement();
         _elapsed = 0f;
         _committed = false;
-        _started = StateMachine.PlayerAnimator.PlayWeaponSwitch();
+        _started = StateMachine.PlayerAnimator.PlayWeaponSwitch(
+            StateMachine.Equipment.SwitchDuration, StateMachine.Equipment.SwitchCompletionPoint);
     }
 
     public override void Tick(float deltaTime)
@@ -36,7 +36,8 @@ public sealed class PlayerWeaponSwitchState : PlayerState
             return;
         }
         StateMachine.InputReader.ClearDodgeBuffer();
-        StateMachine.Motor.TickLocomotion(Vector2.zero, false, deltaTime, 0f);
+        StateMachine.Motor.TickLocomotion(StateMachine.InputReader.MoveInput,
+            StateMachine.InputReader.SprintInput, deltaTime);
         if (StateMachine.Motor.ShouldEnterAirborne)
         {
             StateMachine.ChangeState(StateMachine.AirborneState);
@@ -58,10 +59,11 @@ public sealed class PlayerWeaponSwitchState : PlayerState
                 _committed = true;
             }
             if (time >= equipment.SwitchShowPoint) StateMachine.WeaponVisibility?.ShowWeapon();
+            StateMachine.PlayerAnimator.FadeWeaponSwitch(time, equipment.SwitchCompletionPoint);
             if (time >= equipment.SwitchCompletionPoint) ReturnToMovement();
         }
         // 动画或控制器被外部替换也必须恢复武器显示并退出。
-        if (_elapsed >= 3f) ReturnToMovement();
+        if (_elapsed >= equipment.SwitchDuration + 1f) ReturnToMovement();
     }
 
     public override void Exit()
@@ -69,7 +71,7 @@ public sealed class PlayerWeaponSwitchState : PlayerState
         StateMachine.WeaponVisibility?.ShowWeapon();
         StateMachine.Equipment?.CancelWeaponSwitch();
         StateMachine.PlayerAnimator.StopWeaponSwitch();
-        StateMachine.InputReader.ClearPendingActions();
+        StateMachine.InputReader.ClearActionRequests();
     }
 
     private void ClearOtherActions()
