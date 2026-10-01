@@ -19,15 +19,15 @@ MonoBehaviour:
   _manaCost: 35
   _hitWindowStart: 0.33
   _hitWindowEnd: 0.62
-  _completionNormalizedTime: 0.9
-  _recoveryTime: 0.2
+  _completionNormalizedTime: 0.7
+  _recoveryTime: 0
   _comboInputStart: 0
   _comboInputEnd: 0
   _comboTransitionPoint: 0
   _dodgeCancelStart: 0
   _dodgeCancelEnd: 0
   _rotateAssistTime: 0.2
-  _moveDistance: 0.8
+  _moveDistance: 4
   _motionStart: 0.2
   _motionEnd: 0.5
   _alignJumpStrikeToLanding: 0
