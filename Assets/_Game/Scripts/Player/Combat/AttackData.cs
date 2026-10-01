@@ -59,8 +59,22 @@ public sealed class AttackData : ScriptableObject
     [Tooltip("攻击开始后允许向输入方向转向的持续时间（秒）")]
     [SerializeField, Min(0f)] private float _rotateAssistTime = 0.12f;
 
-    [Header("Optional Motion (预留，暂未接入位移)")]
+    [Header("Attack Motion (战技前进位移)")]
+    [Tooltip("战技在指定动画时段内尝试前进的总距离，单位米；0为原地。碰撞可能使实际移动距离更短。")]
     [SerializeField, Min(0f)] private float _moveDistance = 0f;
+    [Tooltip("开始前进的归一化动画进度。")]
+    [SerializeField, Range(0f, 1f)] private float _motionStart = 0.18f;
+    [Tooltip("结束前进的归一化动画进度。收招阶段停止位移。")]
+    [SerializeField, Range(0f, 1f)] private float _motionEnd = 0.5f;
+
+    [Header("Jump Strike Alignment (跳劈挥砍与落地衔接)")]
+    [Tooltip("前摇在抬刀姿态等待，下降到地面附近后继续挥砍；等待时角色仍受重力影响。")]
+    [SerializeField] private bool _alignJumpStrikeToLanding;
+    [SerializeField, Range(0f, 1f)] private float _jumpWindupHoldPoint = 0.25f;
+    [Tooltip("下落时离地不超过此距离才释放挥砍。地面检测忽略敌人碰撞层。")]
+    [SerializeField, Min(0f)] private float _jumpStrikeGroundDistance = 0.9f;
+
+    [Header("Optional Impulse (预留)")]
     [SerializeField, Min(0f)] private float _forwardImpulse = 0f;
 
     public string AnimationStateName => _animationStateName;
@@ -83,6 +97,11 @@ public sealed class AttackData : ScriptableObject
     public float DodgeCancelEnd => _dodgeCancelEnd;
     public float RotateAssistTime => _rotateAssistTime;
     public float MoveDistance => _moveDistance;
+    public float MotionStart => _motionStart;
+    public float MotionEnd => _motionEnd;
+    public bool AlignJumpStrikeToLanding => _alignJumpStrikeToLanding;
+    public float JumpWindupHoldPoint => _jumpWindupHoldPoint;
+    public float JumpStrikeGroundDistance => _jumpStrikeGroundDistance;
     public float ForwardImpulse => _forwardImpulse;
 
     private void OnValidate()
@@ -106,5 +125,7 @@ public sealed class AttackData : ScriptableObject
             );
         }
         _dodgeCancelEnd = Mathf.Max(_dodgeCancelStart, _dodgeCancelEnd);
+        _motionEnd = Mathf.Max(_motionStart, _motionEnd);
+        _jumpWindupHoldPoint = Mathf.Min(_jumpWindupHoldPoint, Mathf.Max(0f, _hitWindowStart - .02f));
     }
 }

@@ -18,7 +18,7 @@ MonoBehaviour:
   _staminaCost: 25
   _manaCost: 0
   _hitWindowStart: 0.32
-  _hitWindowEnd: 0.85
+  _hitWindowEnd: 0.62
   _completionNormalizedTime: 0.9
   _recoveryTime: 0.12
   _comboInputStart: 0
@@ -28,4 +28,9 @@ MonoBehaviour:
   _dodgeCancelEnd: 0
   _rotateAssistTime: 0.08
   _moveDistance: 0
+  _motionStart: 0.18
+  _motionEnd: 0.5
+  _alignJumpStrikeToLanding: 1
+  _jumpWindupHoldPoint: 0.25
+  _jumpStrikeGroundDistance: 0.9
   _forwardImpulse: 0

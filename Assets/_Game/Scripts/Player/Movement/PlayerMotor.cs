@@ -115,6 +115,27 @@ public sealed class PlayerMotor : MonoBehaviour
         Move(deltaTime);
     }
 
+    // CharacterController resolves walls/bodies; gravity is integrated exactly once.
+    public void TickAttackMotion(Vector3 direction, float distance, float deltaTime)
+    {
+        if (!_isInitialized || deltaTime <= 0f) return;
+        direction.y = 0f;
+        _horizontalVelocity = direction.normalized * (Mathf.Max(0f, distance) / deltaTime);
+        Move(deltaTime);
+    }
+
+    public bool IsNearGroundForJumpStrike(float distance)
+    {
+        if (IsGrounded && _verticalVelocity <= 0f) return true;
+        if (_verticalVelocity > 0f || _characterController == null) return false;
+        Vector3 feet = transform.TransformPoint(_characterController.center) - Vector3.up * (_characterController.height * .5f);
+        // Do not treat an enemy's head as ground for deciding the animation phase.
+        int groundLayers = Physics.DefaultRaycastLayers & ~(1 << 3);
+        return Physics.Raycast(feet + Vector3.up * .1f, Vector3.down, out RaycastHit hit,
+            Mathf.Max(0f, distance) + .1f, groundLayers, QueryTriggerInteraction.Ignore) &&
+            !hit.transform.IsChildOf(transform) && Vector3.Angle(hit.normal, Vector3.up) <= _characterController.slopeLimit;
+    }
+
     public void Jump()
     {
         if (!_isInitialized)

@@ -27,6 +27,8 @@ public class PlayerAnimator : MonoBehaviour
     private PlayerMotor _motor;
     private RuntimeAnimatorController _baseController;
     private int _currentAttackStateHash;
+    private static readonly int JumpAttackSpeedHash = Animator.StringToHash("JumpAttackSpeed");
+    private bool _hasJumpAttackSpeed;
     private int _itemUseLayer = -1;
     private static readonly int HealStateHash = Animator.StringToHash("ItemUse.Heal");
     private int _weaponSwitchLayer = -1;
@@ -89,6 +91,7 @@ public class PlayerAnimator : MonoBehaviour
         {
             _itemUseLayer = _animator.GetLayerIndex("ItemUse");
             _weaponSwitchLayer = _animator.GetLayerIndex("WeaponSwitch");
+            CacheJumpPlaybackParameter();
         }
         if (_animator == null)
         {
@@ -104,6 +107,25 @@ public class PlayerAnimator : MonoBehaviour
         _currentAttackStateHash = 0;
         _itemUseLayer = _animator.GetLayerIndex("ItemUse");
         _weaponSwitchLayer = _animator.GetLayerIndex("WeaponSwitch");
+        CacheJumpPlaybackParameter();
+    }
+
+    private void CacheJumpPlaybackParameter()
+    {
+        _hasJumpAttackSpeed = System.Array.Exists(_animator.parameters,
+            p => p.nameHash == JumpAttackSpeedHash && p.type == AnimatorControllerParameterType.Float);
+    }
+
+    public void SetJumpAttackPaused(bool paused)
+    {
+        if (_animator != null && _hasJumpAttackSpeed) _animator.SetFloat(JumpAttackSpeedHash, paused ? 0f : 1f);
+    }
+
+    public void HoldJumpAttackAt(float normalizedTime)
+    {
+        if (_animator == null || !_hasJumpAttackSpeed) return;
+        _animator.Play(_currentAttackStateHash, BaseLayerIndex, normalizedTime);
+        SetJumpAttackPaused(true);
     }
 
     private void Update()

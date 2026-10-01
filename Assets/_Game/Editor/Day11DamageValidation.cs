@@ -59,6 +59,7 @@ public static class Day11DamageValidation
             }
             foreach (var type in new[] { PlayerAttackType.Jump, PlayerAttackType.WeaponSkill })
             {
+                foreach (var c in colliders) Physics.IgnoreCollision(Player.GetComponent<CharacterController>(), c, type == PlayerAttackType.Jump);
                 string key = slot + "/" + type;
                 damageSamples[key] = new List<int>();
                 foreach (float distance in new[] { .8f, 1.2f, 1.6f })

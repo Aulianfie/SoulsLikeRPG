@@ -54,6 +54,12 @@ public static class Day11Setup
     [MenuItem("Tools/SoulsLike RPG/Day11/2 Configure Selected Actions")]
     public static void ConfigureActions()
     {
+        var initializeFeel = new Dictionary<string, bool>();
+        foreach (string id in new[] { "LongSword_Jump", "GreatSword_Jump", "LongSword_Skill", "GreatSword_Skill" })
+        {
+            string path = $"{Folder}/AD_{id}.asset";
+            initializeFeel[id] = !File.Exists(path) || !File.ReadAllText(path).Contains("_motionStart:");
+        }
         MigrateMovesets();
         const string actionFolder = "Assets/_Game/Animations/Day11";
         if (!AssetDatabase.IsValidFolder(actionFolder)) AssetDatabase.CreateFolder("Assets/_Game/Animations", "Day11");
@@ -74,6 +80,17 @@ public static class Day11Setup
         AnimationClip greatSkill = CopyMotion("GreatSword/WeaponSkill/2Hand_Base_Skill_1_InPlace.fbx", "Skill_GreatSword");
         AnimationClip jumpKey = EnsureState(machine, "JumpAttack", longJump, new Vector3(600, -100, 0));
         AnimationClip skillKey = EnsureState(machine, "WeaponSkill", longSkill, new Vector3(600, 100, 0));
+        if (!controller.parameters.Any(p => p.name == "JumpAttackSpeed"))
+        {
+            controller.AddParameter("JumpAttackSpeed", AnimatorControllerParameterType.Float);
+            var parameters = controller.parameters;
+            parameters.Single(p => p.name == "JumpAttackSpeed").defaultFloat = 1f;
+            controller.parameters = parameters;
+        }
+        var jumpState = machine.states.Select(s => s.state).Single(s => s.name == "JumpAttack");
+        jumpState.speedParameter = "JumpAttackSpeed";
+        jumpState.speedParameterActive = true;
+        EditorUtility.SetDirty(jumpState);
         for (int i = 0; i < controllers.Length; i++)
         {
             var pairs = new List<KeyValuePair<AnimationClip, AnimationClip>>();
@@ -89,10 +106,25 @@ public static class Day11Setup
                 if (pairs.Single(p => p.Key == old.Key).Value != old.Value)
                     throw new InvalidOperationException("Existing override changed: " + old.Key.name);
         }
-        ConfigureMoveset("LongSword", BuildAction("AD_LongSword_Jump", "JumpAttack", 35, 25, 0, .32f, .85f, .90f, .12f, .08f),
+        ConfigureMoveset("LongSword", BuildAction("AD_LongSword_Jump", "JumpAttack", 35, 25, 0, .32f, .62f, .90f, .12f, .08f),
             BuildAction("AD_LongSword_Skill", "WeaponSkill", 45, 0, 20, .36f, .60f, .90f, .12f, .18f));
         ConfigureMoveset("GreatSword", BuildAction("AD_GreatSword_Jump", "JumpAttack", 35, 22, 0, .33f, .60f, .78f, .16f, .06f),
             BuildAction("AD_GreatSword_Skill", "WeaponSkill", 55, 0, 35, .33f, .62f, .90f, .20f, .20f));
+        foreach (var entry in initializeFeel)
+        {
+            if (!entry.Value) continue;
+            var attack = AssetDatabase.LoadAssetAtPath<AttackData>($"{Folder}/AD_{entry.Key}.asset");
+            var feel = new SerializedObject(attack);
+            bool skill = entry.Key.EndsWith("Skill");
+            if (skill && attack.MoveDistance <= 0f)
+                feel.FindProperty("_moveDistance").floatValue = entry.Key.StartsWith("LongSword") ? .6f : .8f;
+            feel.FindProperty("_motionStart").floatValue = entry.Key.StartsWith("LongSword") ? .18f : .20f;
+            feel.FindProperty("_motionEnd").floatValue = .50f;
+            feel.FindProperty("_alignJumpStrikeToLanding").boolValue = entry.Key == "LongSword_Jump";
+            feel.FindProperty("_jumpWindupHoldPoint").floatValue = .25f;
+            feel.FindProperty("_jumpStrikeGroundDistance").floatValue = .9f;
+            feel.ApplyModifiedPropertiesWithoutUndo();
+        }
         foreach (var original in originalStates)
             if (original.Key.motion != original.Value) throw new InvalidOperationException("Existing Animator motion changed: " + original.Key.name);
         if (!layers.SequenceEqual(controller.layers.Select(l => l.name))) throw new InvalidOperationException("Animator layers changed");

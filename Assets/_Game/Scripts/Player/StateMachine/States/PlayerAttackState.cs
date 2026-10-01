@@ -1,7 +1,16 @@
+using UnityEngine;
+
 public sealed class PlayerAttackState : PlayerState
 {
     private float _elapsedTime;
     private PlayerAttackType _attackType;
+    private float _motionDistance;
+    private float _lastMotionProgress;
+    private Vector3 _motionDirection;
+    private bool _motionDirectionLocked;
+    private bool _jumpStrikeCommitted;
+    private bool _jumpHolding;
+    private bool _jumpWindupReleased;
     public void SetAttackType(PlayerAttackType type) => _attackType = type;
 
     /// <summary>
@@ -20,7 +29,13 @@ public sealed class PlayerAttackState : PlayerState
         StateMachine.InputReader.ClearActionRequests();
         if (_attackType != PlayerAttackType.Jump) StateMachine.Motor.StopHorizontalMovement();
         _elapsedTime = 0f;
+        StateMachine.PlayerAnimator.SetJumpAttackPaused(false);
+        _lastMotionProgress = 0f;
+        _motionDirectionLocked = false;
+        _jumpStrikeCommitted = _jumpHolding = _jumpWindupReleased = false;
         _startFailed = !StateMachine.Combat.TryStartAttack(_attackType);
+        _motionDistance = !_startFailed && _attackType == PlayerAttackType.WeaponSkill
+            ? StateMachine.Combat.CurrentAttack.MoveDistance : 0f;
     }
 
     public override void Tick(float deltaTime)
@@ -36,7 +51,7 @@ public sealed class PlayerAttackState : PlayerState
 
         // Jump 暂不缓存；Dodge 在当前攻击的取消窗口中优先于连击。
         StateMachine.InputReader.ConsumeJump();
-        if (_attackType != PlayerAttackType.Light || !StateMachine.Motor.IsGrounded)
+        if (_attackType == PlayerAttackType.Jump || (_attackType == PlayerAttackType.Light && !StateMachine.Motor.IsGrounded))
             StateMachine.Motor.TickAirborne(deltaTime);
         if (_attackType != PlayerAttackType.Light)
             StateMachine.InputReader.ClearAllBuffers();
@@ -56,12 +71,34 @@ public sealed class PlayerAttackState : PlayerState
             return;
         }
 
-        // Day5 Task3：rotateAssistTime 内优先向锁定目标修正朝向；
-        // 无目标、或目标超出 AttackAssist 距离/角度时回退为朝移动输入转向。
-        if (_elapsedTime < StateMachine.Combat.CurrentRotateAssistTime)
+        AttackData data = StateMachine.Combat.CurrentAttack;
+        bool hasTime = StateMachine.PlayerAnimator.TryGetAttackNormalizedTime(out float time);
+        if (_attackType == PlayerAttackType.Jump && data.AlignJumpStrikeToLanding && !_jumpWindupReleased &&
+            hasTime && time >= data.JumpWindupHoldPoint)
+        {
+            if (StateMachine.Motor.IsNearGroundForJumpStrike(data.JumpStrikeGroundDistance))
+            {
+                _jumpWindupReleased = true;
+                _jumpHolding = false;
+                StateMachine.PlayerAnimator.SetJumpAttackPaused(false);
+            }
+            else if (!_jumpHolding)
+            {
+                _jumpHolding = true;
+                StateMachine.PlayerAnimator.HoldJumpAttackAt(data.JumpWindupHoldPoint);
+            }
+        }
+        if (_attackType == PlayerAttackType.Jump && !_jumpHolding && hasTime && time >= data.HitWindowStart)
+            _jumpStrikeCommitted = true;
+
+        bool assist = _attackType == PlayerAttackType.Jump ? !_jumpStrikeCommitted :
+            _attackType == PlayerAttackType.WeaponSkill ? !_motionDirectionLocked && (!hasTime || time < data.MotionStart) :
+            _elapsedTime < StateMachine.Combat.CurrentRotateAssistTime;
+        if (assist)
         {
             TryRotateTowardsTarget(deltaTime);
         }
+        if (_attackType == PlayerAttackType.WeaponSkill) TickSkillMotion(data, hasTime ? time : 0f, deltaTime);
 
         _elapsedTime += deltaTime;
 
@@ -85,7 +122,7 @@ public sealed class PlayerAttackState : PlayerState
         }
 
         bool landed = StateMachine.Motor.IsGrounded && StateMachine.Motor.VerticalVelocity <= 0f;
-        StateMachine.Combat.TickAttack(deltaTime, _attackType != PlayerAttackType.Jump || landed);
+        StateMachine.Combat.TickAttack(deltaTime, _attackType != PlayerAttackType.Jump || landed, !_jumpHolding);
 
         // 情况 A：已缓存下一段且到达 ComboTransitionPoint：
         // 再次确认体力后直接进入下一段，不等待完成点与后摇。
@@ -138,7 +175,24 @@ public sealed class PlayerAttackState : PlayerState
         // FinishLightAttack 会关闭命中窗口并重置连击进度，
         // 因此被 Hurt / Dodge / Dead 打断时连击也会正确重置。
         StateMachine.Combat.FinishAttack();
+        StateMachine.PlayerAnimator.SetJumpAttackPaused(false);
+        if (_attackType == PlayerAttackType.WeaponSkill) StateMachine.Motor.StopHorizontalMovement();
         _attackType = PlayerAttackType.Light;
+    }
+
+    private void TickSkillMotion(AttackData data, float normalizedTime, float deltaTime)
+    {
+        float progress = data.MotionEnd > data.MotionStart
+            ? Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(data.MotionStart, data.MotionEnd, normalizedTime)) : 0f;
+        // Charge attempted travel once; collision never creates stored displacement for a later burst.
+        float step = Mathf.Max(0f, progress - _lastMotionProgress) * _motionDistance;
+        _lastMotionProgress = Mathf.Max(_lastMotionProgress, progress);
+        if (step > 0f && !_motionDirectionLocked)
+        {
+            _motionDirection = StateMachine.transform.forward;
+            _motionDirectionLocked = true;
+        }
+        StateMachine.Motor.TickAttackMotion(_motionDirection, step, deltaTime);
     }
 
     /// <summary>
@@ -155,11 +209,12 @@ public sealed class PlayerAttackState : PlayerState
 
         bool assisted =
             target != null &&
+            target.IsAvailable &&
             target.LockPoint != null &&
             StateMachine.Motor.RotateTowardsTarget(
                 target.LockPoint,
                 StateMachine.Combat.AttackAssistRange,
-                StateMachine.Combat.AttackAssistAngle,
+                _attackType == PlayerAttackType.Jump ? Mathf.Max(120f, StateMachine.Combat.AttackAssistAngle) : StateMachine.Combat.AttackAssistAngle,
                 deltaTime
             );
 

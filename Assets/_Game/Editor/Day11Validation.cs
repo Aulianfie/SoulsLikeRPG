@@ -141,6 +141,8 @@ public static class Day11Validation
         }
         if (SessionState.GetString(Running + ".Mode", "").StartsWith("Damage"))
             yield return Day11DamageValidation.Scenarios();
+        if (SessionState.GetString(Running + ".Mode", "") == "Feel")
+            yield return Day11FeelValidation.Scenarios();
         Check(_errors == 0, "No runtime Console errors");
         File.WriteAllLines("Logs/Day11/" + SessionState.GetString(Running + ".Mode", "Unknown") + "_RuntimeValidation.txt", Checks);
         EditorApplication.isPlaying = false;

@@ -1,6 +1,6 @@
 # Day11 跳劈与战技实施记录
 
-日期：2026-10-01。范围依据 `实现计划/Day11 跳劈和战技/SoulsLikeRPG_Day11_WeaponMoveset.md`；用户已授权继续实现至人工检查点。状态：功能及资产已实现；用户试玩反馈后已修复赐福回蓝和长剑早跳劈漏伤害，最新125项动作回归、74项真实敌人/赐福验收通过，最终人工手感验收待完成。修复详情见 Day11_RestAndDamageFix.md。
+日期：2026-10-01。范围依据 `实现计划/Day11 跳劈和战技/SoulsLikeRPG_Day11_WeaponMoveset.md`；用户已授权继续实现至人工检查点。状态：功能及资产已实现；用户试玩反馈后已修复赐福回蓝和长剑早跳劈漏伤害，最新125项动作回归、74项真实敌人/赐福验收和63项跳劈瞄准/战技位移验收通过，最终人工手感验收待完成。修复详情见 Day11_RestAndDamageFix.md；跳劈下降衔接、锁定与战技前进调参见 Day11_JumpAimAndSkillMotion.md。
 
 ## 已实现
 
@@ -11,11 +11,13 @@
 - 同帧可执行输入的顺序：闪避、轻攻击、战技、喝药、换武器。已有起跳处理保留。退出攻击统一关闭命中窗口和清理执行状态。
 - Base Layer 新增 JumpAttack/WeaponSkill，使用原 AOC_LongSword / AOC_GreatSword；原轻击 Override、ItemUse 和 WeaponSwitch 层保持原配置。场景和 Player prefab 无改动。
 
+- 最新手感修复：长剑抬刀时等待下降接近地面再挥砍，跳劈前摇朝已有锁定目标转向，空中锁定短暂出屏容忍0.35秒；长剑/大剑战技分别通过CharacterController前进0.6/0.8米。Move Distance、Motion Start、Motion End可在各自AttackData资产中调整，重跑Day11设置保留这些调参。
+
 ## 当前动作和参数
 
 | 武器 / 动作 | 源动画 | 体力实际消耗 | MP | 命中窗口（归一化） | 完成点 / 额外后摇 |
 |---|---|---:|---:|---|---|
-| 长剑跳劈 | 1Hand_Base_Jump_Attack_1_InPlace | 25 | 0 | 0.32–0.85 | 0.90 / 0.12秒 |
+| 长剑跳劈 | 1Hand_Base_Jump_Attack_1_InPlace | 25 | 0 | 0.32–0.62 | 0.90 / 0.12秒 |
 | 大剑跳劈 | 2Hand_Up_Jump_Attack_InPlace | 33（22×1.5） | 0 | 0.33–0.60 | 0.78 / 0.16秒 |
 | 长剑战技 | 1Hand_Up_Skill_3_InPlace | 0 | 20 | 0.36–0.60 | 0.90 / 0.12秒 |
 | 大剑战技 | 2Hand_Base_Skill_1_InPlace | 0 | 35 | 0.33–0.62 | 0.90 / 0.20秒 |
@@ -25,7 +27,7 @@
 ## 验证证据
 
 - 先独立完成迁移，再添加新行为：`Logs/Day11/Migration_RuntimeValidation.txt`，32项真实 Play Mode 检查通过；检查原五连/三连、逐段体力消耗、命中窗口、武器切换和资源引用。迁移步骤还比对原轻击/Combo 资产字节未变化。
-- 最终动作验收：`Logs/Day11/Actions_RuntimeValidation.txt`，124项真实 Play Mode 检查全部通过；`actions_validation.log` 记录 `Actions_VALIDATION_PASS checks=124`。覆盖原轻击连招、两把武器新动作和实际模拟键盘Q绑定、扣蓝一次与MP HUD、资源不足/配置缺失无扣费、真实碰撞伤害单目标去重、跳劈移动与重力、腾空受击后的重复跳劈拒绝、落地后再跳、受击/死亡打断、输入优先级、喝药、实际死亡淡出/复活、合法存档、锁定敌人和战技转向。
+- 最终动作验收：`Logs/Day11/Actions_RuntimeValidation.txt`，125项真实 Play Mode 检查全部通过；`actions_validation.log` 记录 `Actions_VALIDATION_PASS checks=125`。覆盖原轻击连招、两把武器新动作和实际模拟键盘Q绑定、扣蓝一次与MP HUD、资源不足/配置缺失无扣费、真实碰撞伤害单目标去重、跳劈移动与重力、腾空受击后的重复跳劈拒绝、落地后再跳、受击/死亡打断、输入优先级、喝药、实际死亡淡出/复活、合法存档、锁定敌人和战技转向。
 - 最终资产检查：`Logs/Day11/final_assets.txt` 和 `final_assets.log`，通过原 LightCombo 引用、四个动作定义/Override、Humanoid 根运动烘焙、动画层及 Player prefab Avatar 检查；最终编辑器工具编译成功。回写资产及修改后的运行时代码与验收副本逐文件校验一致，Git 确认场景/prefab/原轻攻击资产未改动。
 - Unity MCP 当前不可连接；使用同版本 Unity 编辑器，在 `G:/Unity Project/SoulsLikeRPG/_codex_day11_review` 副本上导入、编译并进入真实 Play Mode，使用实际关卡 Player、Animator、CharacterController 和 WeaponHitbox。只将本次目标资产及 `.meta` 回写主项目。主编辑器尚未完成刷新后的现场验证。
 - 验收备份并逐字节恢复原 `checkpoint_save.json`，验证对象只在 Play Mode 创建，不写入场景。批处理的模拟键盘采用测试专用输入路由；不修改主项目 InputSettings 或系统配置。

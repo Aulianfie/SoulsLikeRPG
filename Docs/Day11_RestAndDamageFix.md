@@ -34,3 +34,7 @@
 此前124项验收使用的大范围测试靶，只证明伤害流程与去重能运行，没有覆盖正常敌人高度下的早跳劈漏伤害。本次新增 `Day11DamageValidation`，可从 `Tools → SoulsLike RPG → Day11 → Validate Rest and Real Enemy Damage` 在已保存的Edit Mode重跑。
 
 主Unity退出Play Mode并Assets → Refresh后，再贴近敌人测试Space后快速按LMB，以及地面Q战技。赐福休息时HP、MP、体力与血瓶应全部恢复。场景、Prefab、原轻攻击配置和大剑/战技数值未修改。
+
+## 后续更新：跳劈下降衔接与战技前进
+
+同日用户进一步反馈后，长剑跳劈改为前摇抬刀等待下降接近地面，再释放挥砍；当前命中窗口为0.32–0.62，替代本报告所述的早期延长窗口方案。当前fixed_damage.csv及fixed_blade_poses.csv已更新为下降衔接和战技前进版本，74项实际敌人验收及125项动作回归仍全部通过。新增63项瞄准/位移验证也通过。当前调参和实现说明见 [Day11_JumpAimAndSkillMotion.md](Day11_JumpAimAndSkillMotion.md)。

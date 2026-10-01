@@ -23,6 +23,9 @@ public sealed class PlayerTargeting : MonoBehaviour
 
     private PlayerInputReader _inputReader;
     private float _nextOcclusionCheckTime;
+    [SerializeField, Min(0f)] private float _airborneScreenGraceTime = .35f;
+    private float _offscreenSince = -1f;
+    private PlayerStateMachine _player;
 
     public Targetable CurrentTarget { get; private set; }
     public Transform CurrentLockPoint =>
@@ -37,6 +40,7 @@ public sealed class PlayerTargeting : MonoBehaviour
     private void Awake()
     {
         _inputReader = GetComponent<PlayerInputReader>();
+        _player = GetComponent<PlayerStateMachine>();
         if (_camera == null)
             _camera = Camera.main;
 
@@ -49,14 +53,26 @@ public sealed class PlayerTargeting : MonoBehaviour
 
     private void Update()
     {
-        // 当前目标失效或离开屏幕时立即结束会话。
-        // 直接解除锁定并结束本轮会话，等待下次中键重新建立。
-        if (!ReferenceEquals(CurrentTarget, null) &&
-            (!IsTargetValid(CurrentTarget) ||
-             !IsTargetOnScreen(CurrentTarget, out _)))
+        if (!ReferenceEquals(CurrentTarget, null) && !IsTargetValid(CurrentTarget))
         {
             EndSession();
             return;
+        }
+        if (CurrentTarget != null)
+        {
+            if (IsTargetOnScreen(CurrentTarget, out _)) _offscreenSince = -1f;
+            else
+            {
+                bool airborne = _player != null && !_player.Motor.IsGrounded &&
+                    (_player.CurrentState == _player.AirborneState ||
+                     (_player.CurrentState == _player.AttackState && _player.Combat.CurrentAttackType == PlayerAttackType.Jump));
+                if (_offscreenSince < 0f) _offscreenSince = Time.time;
+                if (!airborne || Time.time - _offscreenSince >= _airborneScreenGraceTime)
+                {
+                    EndSession();
+                    return;
+                }
+            }
         }
 
         if (CurrentTarget != null && Time.time >= _nextOcclusionCheckTime)
@@ -265,6 +281,7 @@ public sealed class PlayerTargeting : MonoBehaviour
             return;
 
         CurrentTarget = target;
+        _offscreenSince = -1f;
         if (_logTargetChanges)
             Debug.Log($"Lock-on Target: {(target != null ? target.name : "None")}", this);
     }

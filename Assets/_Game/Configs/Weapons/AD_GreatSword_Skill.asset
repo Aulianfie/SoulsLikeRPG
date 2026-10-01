@@ -27,5 +27,10 @@ MonoBehaviour:
   _dodgeCancelStart: 0
   _dodgeCancelEnd: 0
   _rotateAssistTime: 0.2
-  _moveDistance: 0
+  _moveDistance: 0.8
+  _motionStart: 0.2
+  _motionEnd: 0.5
+  _alignJumpStrikeToLanding: 0
+  _jumpWindupHoldPoint: 0.25
+  _jumpStrikeGroundDistance: 0.9
   _forwardImpulse: 0

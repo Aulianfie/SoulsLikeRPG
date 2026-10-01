@@ -316,14 +316,15 @@ public sealed class PlayerCombat : MonoBehaviour
         TickAttack(Time.deltaTime);
     }
 
-    public void TickAttack(float deltaTime, bool allowRecovery = true)
+    public void TickAttack(float deltaTime, bool allowRecovery = true, bool allowHitWindow = true)
     {
         AttackData data = CurrentAttack;
 
         if (data == null)
             return;
 
-        TickHitWindow(data);
+        if (allowHitWindow) TickHitWindow(data);
+        else CloseHitWindow();
         if (allowRecovery) TickRecovery(data, deltaTime);
     }
 
