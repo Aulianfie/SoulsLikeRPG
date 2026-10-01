@@ -20,6 +20,7 @@ public sealed class WeaponHitbox : MonoBehaviour
 
     private readonly HashSet<IDamageable> _hitTargets =
         new HashSet<IDamageable>();
+    private HashSet<IDamageable> _sharedHitTargets;
 
     private GameObject _attacker;
     private bool _isActive;
@@ -58,6 +59,12 @@ public sealed class WeaponHitbox : MonoBehaviour
 
     public void BeginAttack(int damage)
     {
+        BeginAttack(damage, null);
+    }
+
+    public void BeginAttack(int damage, HashSet<IDamageable> sharedHitTargets)
+    {
+        _sharedHitTargets = sharedHitTargets;
         _damage = damage;
         _hitTargets.Clear();
         _hasPreviousPose = false;
@@ -66,6 +73,7 @@ public sealed class WeaponHitbox : MonoBehaviour
 
     public void EndAttack()
     {
+        _sharedHitTargets = null;
         _isActive = false;
         _hasPreviousPose = false;
         _damage = 0;
@@ -164,7 +172,7 @@ public sealed class WeaponHitbox : MonoBehaviour
             IDamageable target =
                 targetCollider.GetComponentInParent<IDamageable>();
 
-            if (target == null || !_hitTargets.Add(target))
+            if (target == null || !(_sharedHitTargets ?? _hitTargets).Add(target))
                 continue;
 
             Vector3 hitPoint = targetCollider.ClosestPoint(center);

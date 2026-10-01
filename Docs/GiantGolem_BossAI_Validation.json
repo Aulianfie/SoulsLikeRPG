@@ -1,0 +1,654 @@
+{
+    "timestamp": "2026-10-01T23:16:35.9343228+08:00",
+    "scene": "Assets/_Game/Scenes/04_GiantGolem_BossTest.unity",
+    "passed": 128,
+    "failed": 0,
+    "runtimeErrors": 0,
+    "runtimeWarnings": 0,
+    "checks": [
+        {
+            "name": "独立 Boss 控制器",
+            "detail": "Boss 不挂小怪 FSM",
+            "passed": true
+        },
+        {
+            "name": "十个技能接线",
+            "detail": "四普通、两踩踏、冲刺、旋转、跳攻、投石",
+            "passed": true
+        },
+        {
+            "name": "Humanoid Avatar 与移动权威",
+            "detail": "Avatar 有效；Root Motion 关闭",
+            "passed": true
+        },
+        {
+            "name": "Animator 状态接线",
+            "detail": "10 攻击 + Idle/Chase/Dead",
+            "passed": true
+        },
+        {
+            "name": "攻击与死亡单次播放",
+            "detail": "仅 Idle 和 Run 循环",
+            "passed": true
+        },
+        {
+            "name": "技能时序顺序",
+            "detail": "锁定 <= 出手 <= 结束",
+            "passed": true
+        },
+        {
+            "name": "执行器引用 _leftHand",
+            "detail": "预制体已落盘",
+            "passed": true
+        },
+        {
+            "name": "执行器引用 _rightHand",
+            "detail": "预制体已落盘",
+            "passed": true
+        },
+        {
+            "name": "执行器引用 _leftFoot",
+            "detail": "预制体已落盘",
+            "passed": true
+        },
+        {
+            "name": "执行器引用 _rightFoot",
+            "detail": "预制体已落盘",
+            "passed": true
+        },
+        {
+            "name": "执行器引用 _throwSocket",
+            "detail": "预制体已落盘",
+            "passed": true
+        },
+        {
+            "name": "执行器引用 _rockPrefab",
+            "detail": "预制体已落盘",
+            "passed": true
+        },
+        {
+            "name": "测试场景存档隔离",
+            "detail": "正式进度不读取、不写入",
+            "passed": true
+        },
+        {
+            "name": "左侧只允许左脚",
+            "detail": "Boss 根坐标为准",
+            "passed": true
+        },
+        {
+            "name": "右侧只允许右脚",
+            "detail": "前摇不会改脚",
+            "passed": true
+        },
+        {
+            "name": "正中死区",
+            "detail": "避免左右脚抖动",
+            "passed": true
+        },
+        {
+            "name": "普通类别权重不被四招放大",
+            "detail": "类别总权重=50",
+            "passed": true
+        },
+        {
+            "name": "远距快跑/投石比例",
+            "detail": "初始快跑60%，投石40%",
+            "passed": true
+        },
+        {
+            "name": "远距选石头",
+            "detail": "同一输入与样本可复现",
+            "passed": true
+        },
+        {
+            "name": "投射受阻只接近",
+            "detail": "障碍先于权重",
+            "passed": true
+        },
+        {
+            "name": "普通四招共享类别冷却",
+            "detail": "提交时记冷却",
+            "passed": true
+        },
+        {
+            "name": "上一类别与近期历史惩罚",
+            "detail": "上一类别 ×0.35、最近每次 ×0.7",
+            "passed": true
+        },
+        {
+            "name": "连续两次同动作暂时排除",
+            "detail": "存在替代普通动作时生效",
+            "passed": true
+        },
+        {
+            "name": "有效候选概率归一",
+            "detail": "两级选招的最终概率总和=1",
+            "passed": true
+        },
+        {
+            "name": "历史冷却重置",
+            "detail": "运行状态位于每实例 Blackboard",
+            "passed": true
+        },
+        {
+            "name": "无合法候选回退",
+            "detail": "不绕过距离/路径条件",
+            "passed": true
+        },
+        {
+            "name": "行为树优先级中断",
+            "detail": "切换高优先级分支时 Running 节点只 Abort 一次",
+            "passed": true
+        },
+        {
+            "name": "Boss 与小怪 NavMesh 出生点",
+            "detail": "真实 Play Mode Agent",
+            "passed": true
+        },
+        {
+            "name": "Boss 目标解析",
+            "detail": "复用场景玩家",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack01",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack01",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack01",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack01",
+            "detail": "HP loss=24; expected=24",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack02",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack02",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack02",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack02",
+            "detail": "HP loss=24; expected=24",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack03",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack03",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack03",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack03",
+            "detail": "HP loss=24; expected=24",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack04",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack04",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack04",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack04",
+            "detail": "HP loss=24; expected=24",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack_foot_left",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack_foot_left",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack_foot_left",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack_foot_left",
+            "detail": "HP loss=32; expected=32",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack_foot_right",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack_foot_right",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack_foot_right",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack_foot_right",
+            "detail": "HP loss=32; expected=32",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack_DashAtk",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack_DashAtk",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack_DashAtk",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack_DashAtk",
+            "detail": "HP loss=30; expected=30",
+            "passed": true
+        },
+        {
+            "name": "特殊位移与控制权恢复 attack_DashAtk",
+            "detail": "travel=4.2",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack_whirlwind",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack_whirlwind",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack_whirlwind",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack_whirlwind",
+            "detail": "HP loss=30; expected=30",
+            "passed": true
+        },
+        {
+            "name": "特殊位移与控制权恢复 attack_whirlwind",
+            "detail": "travel=8",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack_jumpAtk",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack_jumpAtk",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack_jumpAtk",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "真实技能命中一次 attack_jumpAtk",
+            "detail": "HP loss=40; expected=40",
+            "passed": true
+        },
+        {
+            "name": "真实技能启动 attack_throwstone",
+            "detail": "状态存在并提交技能",
+            "passed": true
+        },
+        {
+            "name": "真实技能完成 attack_throwstone",
+            "detail": "normalizedTime 到达结束，历史正确",
+            "passed": true
+        },
+        {
+            "name": "执行中不重新抽签 attack_throwstone",
+            "detail": "强制检查期间自动 AI 关闭",
+            "passed": true
+        },
+        {
+            "name": "投石真实命中与销毁",
+            "detail": "HP loss=30; live stones=0",
+            "passed": true
+        },
+        {
+            "name": "地波高度过滤 0",
+            "detail": "短暂离地仍受伤；足够高度免伤",
+            "passed": true
+        },
+        {
+            "name": "地波高度过滤 0.2",
+            "detail": "短暂离地仍受伤；足够高度免伤",
+            "passed": true
+        },
+        {
+            "name": "地波高度过滤 1.2",
+            "detail": "短暂离地仍受伤；足够高度免伤",
+            "passed": true
+        },
+        {
+            "name": "地波范围外安全",
+            "detail": "10m 超过8m半径",
+            "passed": true
+        },
+        {
+            "name": "真实玩家跳跃躲地波",
+            "detail": "使用现有 PlayerMotor/空中状态",
+            "passed": true
+        },
+        {
+            "name": "真实翻滚无敌帧躲地波",
+            "detail": "复用 PlayerDodgeState 的无敌窗口",
+            "passed": true
+        },
+        {
+            "name": "翻滚无敌结束后受伤",
+            "detail": "不把整个翻滚状态设成免伤",
+            "passed": true
+        },
+        {
+            "name": "特殊位移碰障碍停止",
+            "detail": "真实场景右侧石柱；不穿墙",
+            "passed": true
+        },
+        {
+            "name": "石头碰障碍碎裂并销毁",
+            "detail": "右侧石柱真实连续扫掠碰撞",
+            "passed": true
+        },
+        {
+            "name": "石头寿命销毁",
+            "detail": "未碰撞石头到寿命后清理",
+            "passed": true
+        },
+        {
+            "name": "现有玩家锁定 Boss",
+            "detail": "同一 Targetable/相机接线",
+            "passed": true
+        },
+        {
+            "name": "现有玩家武器攻击启动",
+            "detail": "真实玩家战斗入口",
+            "passed": true
+        },
+        {
+            "name": "现有武器可伤害 Boss",
+            "detail": "EnemyHealth 正常扣血，Boss 不进小怪 Hurt",
+            "passed": true
+        },
+        {
+            "name": "目标失效取消技能",
+            "detail": "玩家失效时关闭命中请求",
+            "passed": true
+        },
+        {
+            "name": "玩家出领地回位重置",
+            "detail": "回位完成后清空技能与历史",
+            "passed": true
+        },
+        {
+            "name": "死亡中断准备",
+            "detail": "旋转技能运行中",
+            "passed": true
+        },
+        {
+            "name": "Boss 死亡即时清理",
+            "detail": "命中、位移、目标、投射物关闭",
+            "passed": true
+        },
+        {
+            "name": "Boss 死亡奖励一次",
+            "detail": "复用 EnemyReward；重复伤害不会重复发奖",
+            "passed": true
+        },
+        {
+            "name": "检查点恢复 Boss",
+            "detail": "生命、回位、历史清零",
+            "passed": true
+        },
+        {
+            "name": "小怪伤害事件回归",
+            "detail": "旧 Hurt 流程保留",
+            "passed": true
+        },
+        {
+            "name": "小怪启停订阅回归",
+            "detail": "每次伤害只有一次通知",
+            "passed": true
+        },
+        {
+            "name": "小怪死亡奖励一次",
+            "detail": "重复致死调用不重复发奖",
+            "passed": true
+        },
+        {
+            "name": "检查点恢复小怪",
+            "detail": "死敌与 Boss 共用重置契约",
+            "passed": true
+        },
+        {
+            "name": "自动远距行动",
+            "detail": "运行中的行为树实际决策=快跑接近",
+            "passed": true
+        },
+        {
+            "name": "自动行动保持",
+            "detail": "远距接近或技能执行",
+            "passed": true
+        },
+        {
+            "name": "Play Mode 无运行错误",
+            "detail": "errors=0; warnings=0",
+            "passed": true
+        },
+        {
+            "name": "已释放石头的中断准备",
+            "detail": "远距投石真实执行",
+            "passed": true
+        },
+        {
+            "name": "普通 Abort 保留已释放石头",
+            "detail": "扩展破防入口只取消执行，不回收飞行物",
+            "passed": true
+        },
+        {
+            "name": "玩家死亡清理已飞出石头",
+            "detail": "目标失效进入回位，清除所属投射物",
+            "passed": true
+        },
+        {
+            "name": "真实玩家死亡重生",
+            "detail": "死亡动画、黑屏、默认出生点、世界重置",
+            "passed": true
+        },
+        {
+            "name": "实测存档字节不变",
+            "detail": "死亡掉魂/奖励/恢复均不覆盖正式存档",
+            "passed": true
+        },
+        {
+            "name": "左右脚前摇绕侧准备",
+            "detail": "提交左脚技能",
+            "passed": true
+        },
+        {
+            "name": "前摇绕侧不换脚不转正",
+            "detail": "提交后固定脚侧，玩家绕到另一侧仍执行左脚",
+            "passed": true
+        },
+        {
+            "name": "冲刺出手后不追踪急转",
+            "detail": "程序位移使用提交后的锁定方向",
+            "passed": true
+        },
+        {
+            "name": "Boss 禁用时清理",
+            "detail": "生命周期取消命中/移动/技能请求",
+            "passed": true
+        },
+        {
+            "name": "Boss 再启用初始化",
+            "detail": "实例历史归零，导航控制权恢复",
+            "passed": true
+        },
+        {
+            "name": "真实检查点休息接受",
+            "detail": "现有交互服务入口",
+            "passed": true
+        },
+        {
+            "name": "休息恢复 Boss 与玩家",
+            "detail": "共享世界重置契约与玩家恢复",
+            "passed": true
+        },
+        {
+            "name": "复用玩家 HUD 与相机组件",
+            "detail": "真实场景保留现有接线",
+            "passed": true
+        },
+        {
+            "name": "测试场景照明接线",
+            "detail": "Lit 模型具备实际光源",
+            "passed": true
+        },
+        {
+            "name": "Play Mode 无运行错误",
+            "detail": "errors=0; warnings=0",
+            "passed": true
+        },
+        {
+            "name": "保存重载无 Missing Script",
+            "detail": "实际重新打开测试场景",
+            "passed": true
+        },
+        {
+            "name": "保存重载 Boss 配置",
+            "detail": "场景 prefab 实例、十个配置引用",
+            "passed": true
+        },
+        {
+            "name": "保存重载 NavMesh 数据",
+            "detail": "导航数据资产引用有效",
+            "passed": true
+        },
+        {
+            "name": "保存重载死亡重生引用",
+            "detail": "玩家、管理器、淡入淡出和默认出生点",
+            "passed": true
+        },
+        {
+            "name": "保存重载材质 Shader",
+            "detail": "实际材质引用没有错误 Shader",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack01",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack02",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack03",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack04",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack_foot_left",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack_foot_right",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack_DashAtk",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack_whirlwind",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack_jumpAtk",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "自动选招区间覆盖 attack_throwstone",
+            "detail": "真实配置、合法位置、确定样本能选到此技能",
+            "passed": true
+        },
+        {
+            "name": "交付清理后编译与 Console",
+            "detail": "临时入口已删除；重新编译后0错误/0警告；场景已保存",
+            "passed": true
+        }
+    ],
+    "manualChecks": [
+        "键盘/手柄自由绕侧、完整战斗手感和镜头体验待人工试玩；代码触发的真实跳跃/翻滚不能替代手感验收",
+        "地波圆环与碎石为功能提示，非最终美术特效"
+    ]
+}

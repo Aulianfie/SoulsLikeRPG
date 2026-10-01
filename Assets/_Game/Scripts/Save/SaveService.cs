@@ -63,7 +63,8 @@ public static class SaveService
             {
                 version = 0, souls = -1, level = 0, vigor = 0, endurance = 0, strength = 0,
                 hasSoulDrop = true, droppedSouls = -1,
-                soulDropPosition = new Vector3(float.NaN, float.NaN, float.NaN), flaskCharges = -2
+                soulDropPosition = new Vector3(float.NaN, float.NaN, float.NaN), flaskCharges = -2,
+                hpFlaskCharges = -2, mpFlaskCharges = -2, currentQuickItemSlot = -1
             };
             JsonUtility.FromJsonOverwrite(File.ReadAllText(path, Encoding.UTF8), data);
             if (data != null && data.version == 1 &&
@@ -83,8 +84,15 @@ public static class SaveService
             }
             if (data.version == 3)
             {
-                data.version = GameSaveData.CurrentVersion;
+                data.version = 4;
                 data.flaskCharges = -1;
+            }
+            if (data.version == 4 && data.flaskCharges >= -1)
+            {
+                data.hpFlaskCharges = data.flaskCharges;
+                data.mpFlaskCharges = -1;
+                data.currentQuickItemSlot = 0;
+                data.version = GameSaveData.CurrentVersion;
             }
             if (!IsValid(data))
             {
@@ -102,9 +110,11 @@ public static class SaveService
 
     private static bool IsValid(GameSaveData data)
     {
-        // 空 checkpointId 表示使用默认出生点；v4 同时保存未取回的魂与血瓶数量。
+        // 空 checkpointId 表示默认出生点；-1 数量表示按配置补满。
         return data != null && data.version == GameSaveData.CurrentVersion &&
             !string.IsNullOrWhiteSpace(data.sceneName) && data.souls >= 0 && data.flaskCharges >= -1 &&
+            data.hpFlaskCharges >= -1 && data.mpFlaskCharges >= -1 &&
+            data.currentQuickItemSlot >= 0 && data.currentQuickItemSlot < 2 &&
             data.level >= 1 && data.vigor >= 1 && data.endurance >= 1 && data.strength >= 1 &&
             (data.hasSoulDrop ? data.droppedSouls > 0 : data.droppedSouls == 0) &&
             IsFinite(data.soulDropPosition.x) && IsFinite(data.soulDropPosition.y) &&

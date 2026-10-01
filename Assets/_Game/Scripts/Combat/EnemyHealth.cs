@@ -8,27 +8,14 @@ public sealed class EnemyHealth : MonoBehaviour, IDamageable
     private int _maxHealth = 100;
 
     private int _currentHealth;
-    private EnemyStateMachine _stateMachine;
 
     public event Action<int, int> HealthChanged;
     public event Action Died;
     public event Action Revived;
+    public event Action<DamageInfo> DamageTaken;
 
     public int CurrentHealth => _currentHealth;
     public int MaxHealth => _maxHealth;
-
-    private void Awake()
-    {
-        _stateMachine = GetComponent<EnemyStateMachine>();
-
-        if (_stateMachine == null)
-        {
-            Debug.LogError(
-                "EnemyHealth 找不到 EnemyStateMachine。",
-                this
-            );
-        }
-    }
 
     private void OnEnable()
     {
@@ -49,7 +36,7 @@ public sealed class EnemyHealth : MonoBehaviour, IDamageable
         HealthChanged?.Invoke(_currentHealth, _maxHealth);
         if (_currentHealth == 0)
             Died?.Invoke();
-        _stateMachine?.HandleDamageTaken();
+        DamageTaken?.Invoke(damageInfo);
 
         Debug.Log(
             $"{name} 剩余生命：{_currentHealth}/{_maxHealth}",

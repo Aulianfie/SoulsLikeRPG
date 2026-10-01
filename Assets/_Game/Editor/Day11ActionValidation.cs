@@ -188,9 +188,10 @@ public static class Day11ActionValidation
             yield return new Func<bool>(() => Idle);
             Player.Health.TakeDamage(new DamageInfo { Damage = 10 });
             yield return new Func<bool>(() => Idle);
+            Player.Items.EquipItemSlot(0);
             var flask = Player.GetComponent<PlayerHealingFlask>(); flask.Refill();
             int charges = flask.CurrentCharges, hp = Player.Health.CurrentHealth;
-            Check(Player.Items.TryUseItem() && Player.CurrentState == Player.HealState, "Healing Flask still enters Heal state after actions");
+            Check(Player.Items.TryUseItem() && Player.CurrentState == Player.UseItemState, "HP Flask still enters generic UseItem state after actions");
             float healMana = Mana.CurrentMana;
             Check(!Player.TryBeginAttack(PlayerAttackType.WeaponSkill) && Mana.CurrentMana == healMana, "Healing cannot start or charge WeaponSkill");
             yield return new Func<bool>(() => Idle);

@@ -141,7 +141,7 @@ public class PlayerAnimator : MonoBehaviour
         _animator.SetFloat(VerticalSpeedHash, _motor.VerticalVelocity);
     }
 
-    public bool PlayHealing()
+    public bool PlayUseItem()
     {
         if (_animator == null || _itemUseLayer < 0 || !_animator.HasState(_itemUseLayer, HealStateHash))
             return false;
@@ -151,7 +151,7 @@ public class PlayerAnimator : MonoBehaviour
         return true;
     }
 
-    public bool TryGetHealingNormalizedTime(out float time)
+    public bool TryGetUseItemNormalizedTime(out float time)
     {
         time = 0f;
         if (_animator == null || _itemUseLayer < 0) return false;
@@ -163,7 +163,7 @@ public class PlayerAnimator : MonoBehaviour
         return true;
     }
 
-    public void StopHealing()
+    public void StopUseItem()
     {
         if (_animator == null || _itemUseLayer < 0) return;
         _animator.SetLayerWeight(_itemUseLayer, 0f);
@@ -415,7 +415,7 @@ public class PlayerAnimator : MonoBehaviour
     {
         if (_animator != null)
         {
-            StopHealing();
+            StopUseItem();
             StopWeaponSwitch();
             _animator.SetFloat(MoveSpeedHash, 0f);
             _animator.SetBool(GroundedHash, true);

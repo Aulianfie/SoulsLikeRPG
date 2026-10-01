@@ -21,6 +21,9 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _lockOnAction;
     private InputAction _interactAction;
     private InputAction _useItemAction;
+    private InputAction _switchQuickItemAction;
+    private bool _switchQuickItemRequested;
+    private int _switchQuickItemRequestFrame;
     private InputAction _switchWeaponAction;
     private InputAction _weaponSkillAction;
     private bool _weaponSkillRequested;
@@ -70,6 +73,7 @@ public class PlayerInputReader : MonoBehaviour
         _lockOnAction = _gameplayMap.FindAction("LockOn", true);
         _interactAction = _gameplayMap.FindAction("Interact", true);
         _useItemAction = _gameplayMap.FindAction("UseItem", true);
+        _switchQuickItemAction = _gameplayMap.FindAction("SwitchQuickItem", false);
         _switchWeaponAction = _gameplayMap.FindAction("SwitchWeapon", false);
         _weaponSkillAction = _gameplayMap.FindAction("WeaponSkill", false);
     }
@@ -93,6 +97,7 @@ public class PlayerInputReader : MonoBehaviour
         _lockOnAction.performed += OnLockOn;
         _interactAction.performed += OnInteract;
         if (_useItemAction != null) _useItemAction.performed += OnUseItem;
+        if (_switchQuickItemAction != null) _switchQuickItemAction.performed += OnSwitchQuickItem;
         if (_switchWeaponAction != null) _switchWeaponAction.performed += OnSwitchWeapon;
         if (_weaponSkillAction != null) _weaponSkillAction.performed += OnWeaponSkill;
 
@@ -134,6 +139,7 @@ public class PlayerInputReader : MonoBehaviour
         if (_interactAction != null)
             _interactAction.performed -= OnInteract;
         if (_useItemAction != null) _useItemAction.performed -= OnUseItem;
+        if (_switchQuickItemAction != null) _switchQuickItemAction.performed -= OnSwitchQuickItem;
         if (_switchWeaponAction != null) _switchWeaponAction.performed -= OnSwitchWeapon;
         if (_weaponSkillAction != null) _weaponSkillAction.performed -= OnWeaponSkill;
 
@@ -204,6 +210,18 @@ public class PlayerInputReader : MonoBehaviour
     {
         bool requested = _useItemRequested && Time.frameCount <= _useItemRequestFrame + 1;
         _useItemRequested = false;
+        return requested;
+    }
+
+    private void OnSwitchQuickItem(InputAction.CallbackContext context)
+    {
+        _switchQuickItemRequested = true;
+        _switchQuickItemRequestFrame = Time.frameCount;
+    }
+    public bool ConsumeSwitchQuickItem()
+    {
+        bool requested = _switchQuickItemRequested && Time.frameCount <= _switchQuickItemRequestFrame + 1;
+        _switchQuickItemRequested = false;
         return requested;
     }
 
@@ -306,6 +324,7 @@ public class PlayerInputReader : MonoBehaviour
         _interactRequested = false;
         _useItemRequested = false;
         _switchWeaponDirection = 0;
+        _switchQuickItemRequested = false;
         _weaponSkillRequested = false;
     }
 

@@ -210,6 +210,8 @@ public static class Day9Setup
         held.gameObject.SetActive(false);
         var serialized = new SerializedObject(flask);
         serialized.FindProperty("_heldBottle").objectReferenceValue = held.gameObject;
+        serialized.FindProperty("_data").objectReferenceValue = AssetDatabase.LoadAssetAtPath<ConsumableData>(
+            "Assets/_Game/Configs/Consumables/SO_HPFlask.asset");
         serialized.ApplyModifiedPropertiesWithoutUndo();
         var weaponData = new SerializedObject(visibility);
         var renderers = weaponData.FindProperty("_weaponRenderers");

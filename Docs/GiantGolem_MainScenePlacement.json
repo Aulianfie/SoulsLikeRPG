@@ -1,0 +1,48 @@
+{
+    "scene": "Assets/_Game/Scenes/03_AncientDungeon_Checkpoint.unity",
+    "sourceScene": "Assets/_Game/Scenes/03_AncientDungeon_Checkpoint.unity",
+    "navigation": "Assets/_Game/Navigation/NM_AncientDungeon_Checkpoint_GiantGolem.asset",
+    "timestamp": "2026-10-02T00:32:18.0983354+08:00",
+    "requested": {
+        "x": -88.5,
+        "y": 39.5,
+        "z": -169.0
+    },
+    "placed": {
+        "x": -89.75,
+        "y": 39.64804458618164,
+        "z": -167.75
+    },
+    "navSize": {
+        "x": 68.0,
+        "y": 18.0,
+        "z": 68.0
+    },
+    "approach": {
+        "x": -97.25,
+        "y": 39.68000030517578,
+        "z": -167.75
+    },
+    "rotation": {
+        "x": 1.545433470084845e-8,
+        "y": -0.7071057558059692,
+        "z": 1.5454288515570626e-8,
+        "w": 0.7071078419685364
+    },
+    "agentRadius": 0.8500000238418579,
+    "agentHeight": 4.400000095367432,
+    "voxelSize": 0.11999999731779099,
+    "sourceCount": 203,
+    "reachableSamples": 284,
+    "checkedSamples": 294,
+    "spawnOnNavMesh": true,
+    "bodyClear": true,
+    "savedReloadVerified": true,
+    "runtimeOnNavMesh": true,
+    "runtimeChase": true,
+    "runtimeReset": true,
+    "runtimeWeaponHud": true,
+    "runtimeQuickItemHud": true,
+    "runtimeCheckpointReset": true,
+    "saveBytesRestored": true
+}

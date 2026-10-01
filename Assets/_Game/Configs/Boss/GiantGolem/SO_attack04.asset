@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c3c4feb42c98804ba8c78974bc32461, type: 3}
+  m_Name: SO_attack04
+  m_EditorClassIdentifier: 
+  _id: attack04
+  _stateName: attack04
+  _family: 0
+  _side: 0
+  _damageKind: 0
+  _minRange: 0
+  _maxRange: 2.8
+  _maxAngle: 100
+  _baseWeight: 1
+  _cooldown: 2.5
+  _damage: 24
+  _directionLock: 0.2
+  _hitStart: 0.24
+  _hitEnd: 0.74
+  _release: 0.5
+  _completion: 0.99
+  _recovery: 0.55
+  _playbackSpeed: 1
+  _moveStart: 0.25
+  _moveEnd: 0.7
+  _moveSpeed: 0
+  _radius: 3
+  _hands: 3

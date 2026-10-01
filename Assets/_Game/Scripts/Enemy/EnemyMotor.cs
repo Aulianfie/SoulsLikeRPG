@@ -13,6 +13,8 @@ public sealed class EnemyMotor : MonoBehaviour
     private NavMeshAgent _agent;
     private float _defaultStoppingDistance;
     private bool _hasDestination;
+    private bool _specialMovement;
+    private readonly RaycastHit[] _specialHits = new RaycastHit[16];
 
     public bool IsOnNavMesh => _agent != null && _agent.enabled && _agent.isOnNavMesh;
     public bool IsPathPending => IsOnNavMesh && _agent.pathPending;
@@ -33,7 +35,7 @@ public sealed class EnemyMotor : MonoBehaviour
 
     private void LateUpdate()
     {
-        if (IsOnNavMesh && !_agent.isStopped)
+        if (IsOnNavMesh && !_agent.isStopped && !_specialMovement)
             FaceDirection(_agent.desiredVelocity, Time.deltaTime);
     }
 
@@ -44,6 +46,7 @@ public sealed class EnemyMotor : MonoBehaviour
 
     public bool MoveTo(Vector3 position, float stoppingDistance)
     {
+        if (_specialMovement) return false;
         if (!IsOnNavMesh)
             return false;
 
@@ -78,6 +81,7 @@ public sealed class EnemyMotor : MonoBehaviour
     /// <returns></returns>
     public bool Teleport(Vector3 position, Quaternion rotation)
     {
+        EndSpecialMovement();
         Stop();
         _agent.stoppingDistance = _defaultStoppingDistance;
 
@@ -121,6 +125,50 @@ public sealed class EnemyMotor : MonoBehaviour
         FaceDirection(direction, deltaTime);
     }
 
+    public void BeginSpecialMovement()
+    {
+        Stop();
+        _specialMovement = true;
+        if (IsOnNavMesh) _agent.updatePosition = false;
+    }
+
+    public bool CanMoveSpecial(Vector3 direction, float distance, LayerMask obstacleLayers)
+    {
+        if (!IsOnNavMesh || direction.sqrMagnitude < .001f) return false;
+        direction.y = 0; direction.Normalize();
+        Vector3 destination = transform.position + direction * distance;
+        if (NavMesh.Raycast(transform.position, destination, out _, _agent.areaMask)) return false;
+        float radius = Mathf.Max(.15f, _agent.radius);
+        float height = Mathf.Max(radius * 2, _agent.height);
+        Vector3 bottom = transform.position + Vector3.up * (radius + .12f);
+        Vector3 top = transform.position + Vector3.up * (height - radius);
+        int count = Physics.CapsuleCastNonAlloc(bottom, top, radius, direction, _specialHits, distance + .05f, obstacleLayers, QueryTriggerInteraction.Ignore);
+        for (int i = 0; i < count; i++)
+        {
+            var collider = _specialHits[i].collider;
+            if (collider.transform.IsChildOf(transform) || collider.GetComponentInParent<PlayerHealth>() != null) continue;
+            return false;
+        }
+        return true;
+    }
+
+    public bool MoveSpecial(Vector3 direction, float distance, LayerMask obstacleLayers)
+    {
+        if (!_specialMovement || !CanMoveSpecial(direction, distance, obstacleLayers)) return false;
+        Vector3 next = transform.position + direction.normalized * distance;
+        if (!NavMesh.SamplePosition(next, out NavMeshHit hit, .25f, _agent.areaMask)) return false;
+        transform.position = hit.position;
+        _agent.nextPosition = hit.position;
+        return true;
+    }
+
+    public void EndSpecialMovement()
+    {
+        if (!_specialMovement) return;
+        _specialMovement = false;
+        if (IsOnNavMesh) { _agent.Warp(transform.position); _agent.updatePosition = true; }
+    }
+
     private void FaceDirection(Vector3 direction, float deltaTime)
     {
         direction.y = 0f;
@@ -134,6 +182,7 @@ public sealed class EnemyMotor : MonoBehaviour
 
     private void OnDisable()
     {
+        EndSpecialMovement();
         Stop();
     }
 }

@@ -81,6 +81,7 @@ public static class Day11Validation
                 }
                 else if (File.Exists(save)) File.Delete(save);
                 File.WriteAllLines(report, Checks);
+                if (mode == "Consumables") File.Copy(report, "Logs/Day12/RuntimeValidation.txt", true);
             }
             finally { SessionState.SetBool(Running, false); }
             bool passed = Checks.All(c => !c.StartsWith("FAIL"));
@@ -133,6 +134,11 @@ public static class Day11Validation
         yield return new Func<bool>(() => Player.Motor.IsGrounded && Player.CurrentState == Player.LocomotionState);
         Check(Animator.avatar.isHuman && Animator.avatar.isValid, "Player Humanoid Avatar valid");
         yield return LightCombos();
+        if (SessionState.GetString(Running + ".Mode", "") == "Consumables")
+        {
+            Type type = typeof(Day11Validation).Assembly.GetType("Day12Validation");
+            yield return (IEnumerator)type.GetMethod("Scenarios").Invoke(null, null);
+        }
         if (SessionState.GetString(Running + ".Mode", "") == "Actions")
         {
             Type type = typeof(Day11Validation).Assembly.GetType("Day11ActionValidation");

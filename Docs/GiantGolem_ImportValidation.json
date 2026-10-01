@@ -1,0 +1,2661 @@
+{
+    "project": "G:\\Unity Project\\SoulsLikeRPG\\SoulsLikeRPG",
+    "unityVersion": "2022.3.62f3c1",
+    "timestamp": "2026-10-01T21:12:17.5282679+08:00",
+    "playing": false,
+    "compiling": false,
+    "consoleErrors": 0,
+    "consoleWarnings": 0,
+    "consoleLogs": 0,
+    "mainSceneDirtyBefore": false,
+    "mainSceneDirtyAfter": false,
+    "models": [
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": true,
+            "humanBoneMappings": 52,
+            "meshCount": 1,
+            "clips": [
+                {
+                    "name": "00_T-pose_golem",
+                    "seconds": 0.03333333507180214,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": false,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_DashAtk.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_DashAtk",
+                    "seconds": 4.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_foot_left.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_foot_left",
+                    "seconds": 3.4666669368743898,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_foot_right.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_foot_right",
+                    "seconds": 3.4666669368743898,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_ground01.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_ground01",
+                    "seconds": 4.733333587646484,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_ground02.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_ground02",
+                    "seconds": 3.3333334922790529,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_jumpAtk.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_jumpAtk",
+                    "seconds": 3.066666841506958,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_throwstone.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_throwstone",
+                    "seconds": 7.000000476837158,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_whirlwind.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_whirlwind",
+                    "seconds": 3.633333444595337,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack01.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack01",
+                    "seconds": 3.7333335876464845,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack02.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack02",
+                    "seconds": 3.3333334922790529,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack03.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack03",
+                    "seconds": 3.6666667461395265,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack04.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack04",
+                    "seconds": 3.3333334922790529,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/dead01.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "dead01",
+                    "seconds": 2.866666793823242,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/dead02.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "dead02",
+                    "seconds": 2.200000047683716,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/defence01.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "defence01",
+                    "seconds": 1.3333333730697632,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/defence02.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "defence02",
+                    "seconds": 3.6000001430511476,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/defence03.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "defence03",
+                    "seconds": 3.6000001430511476,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/down01.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "down01",
+                    "seconds": 2.6666667461395265,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_back.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_back",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_front.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_front",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_left.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_left",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_right.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_right",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_shoulder_left.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_shoulder_left",
+                    "seconds": 1.5000001192092896,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_shoulder_right.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_shoulder_right",
+                    "seconds": 1.5000001192092896,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/idle.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "idle",
+                    "seconds": 1.6666667461395264,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_DashAtk_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_DashAtk",
+                    "seconds": 4.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_foot_left_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_foot_left",
+                    "seconds": 3.4666669368743898,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_foot_right_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_foot_right",
+                    "seconds": 3.4666669368743898,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_ground01_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_ground01",
+                    "seconds": 4.733333587646484,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_ground02_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_ground02",
+                    "seconds": 3.3333334922790529,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_jumpAtk_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_jumpAtk",
+                    "seconds": 3.066666841506958,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_throwstone_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_throwstone",
+                    "seconds": 7.000000476837158,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_whirlwind_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack_whirlwind",
+                    "seconds": 3.633333444595337,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack01_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack01",
+                    "seconds": 3.7333335876464845,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack02_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack02",
+                    "seconds": 3.3333334922790529,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack03_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack03",
+                    "seconds": 3.6666667461395265,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack04_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "attack04",
+                    "seconds": 3.3333334922790529,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/dead01_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "dead01",
+                    "seconds": 2.866666793823242,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/dead02_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "dead02",
+                    "seconds": 2.200000047683716,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/defence01_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "defence01",
+                    "seconds": 1.3333333730697632,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/defence02_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "defence02",
+                    "seconds": 3.6000001430511476,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/defence03_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "defence03",
+                    "seconds": 3.6000001430511476,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/down01_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "down01",
+                    "seconds": 2.6666667461395265,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_back_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_back",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_front_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_front",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_left_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_left",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_right_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_right",
+                    "seconds": 0.40000003576278689,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_shoulder_left_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_shoulder_left",
+                    "seconds": 1.5000001192092896,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_shoulder_right_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "hit_shoulder_right",
+                    "seconds": 1.5000001192092896,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/idle_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "idle",
+                    "seconds": 1.6666667461395264,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_back_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_back",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_backL45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_backL45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_backR45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_backR45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_front_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_front",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_frontL45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_frontL45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_frontR45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_frontR45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_left_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_left",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_right_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_right",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_back_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_back",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_backL45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_backL45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_backR45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_backR45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_front_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_front",
+                    "seconds": 2.0333335399627687,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_frontL45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_frontL45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_frontR45_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_frontR45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_Left_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_Left",
+                    "seconds": 2.0333335399627687,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_Right_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_Right",
+                    "seconds": 2.0333335399627687,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/rise01_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "rise01",
+                    "seconds": 4.333333492279053,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/Stun_End_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "Stun_End",
+                    "seconds": 1.6000001430511475,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/Stun_Loop_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "Stun_Loop",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/Stun_Start_inplace.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "Stun_Start",
+                    "seconds": 1.6666667461395264,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_back.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_back",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_backL45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_backL45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_backR45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_backR45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_front.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_front",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_frontL45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_frontL45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_frontR45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_frontR45",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_left.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_left",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_right.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_run_right",
+                    "seconds": 1.4000000953674317,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_back.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_back",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_backL45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_backL45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_backR45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_backR45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_front.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_front",
+                    "seconds": 2.0333335399627687,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_frontL45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_frontL45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_frontR45.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_frontR45",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_Left.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_Left",
+                    "seconds": 2.0333335399627687,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_Right.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "move_walk_Right",
+                    "seconds": 2.0333335399627687,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/rise01.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "rise01",
+                    "seconds": 4.333333492279053,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Stun_End.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "Stun_End",
+                    "seconds": 1.6000001430511475,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Stun_Loop.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "Stun_Loop",
+                    "seconds": 2.0,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Stun_Start.fbx",
+            "rig": "Human",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/00_T-pose_golem.FBX",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": true,
+            "ownAvatar": false,
+            "humanBoneMappings": 52,
+            "meshCount": 0,
+            "clips": [
+                {
+                    "name": "Stun_Start",
+                    "seconds": 1.6666667461395264,
+                    "frameRate": 30.0,
+                    "humanMotion": true,
+                    "looping": true,
+                    "hasRootCurves": true,
+                    "hasMotionCurves": false
+                }
+            ]
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Mesh/Dome.fbx",
+            "rig": "Generic",
+            "avatarSource": "Assets/ThirdParty/GiantGolemAnimSet/Mesh/Dome.fbx",
+            "loaded": true,
+            "avatarValid": true,
+            "avatarHuman": false,
+            "ownAvatar": true,
+            "humanBoneMappings": 0,
+            "meshCount": 0,
+            "clips": []
+        }
+    ],
+    "samples": [
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_DashAtk.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 27,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_foot_left.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 21,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_foot_right.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 18,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_ground01.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 19,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_ground02.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 32,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_jumpAtk.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 51,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_throwstone.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 52,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack_whirlwind.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack01.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 49,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack02.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 32,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack03.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 48,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/attack04.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 49,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/dead01.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 52,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/dead02.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 19,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/defence01.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 45,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/defence02.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 32,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/defence03.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 36,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/down01.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 51,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_back.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_front.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_left.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_right.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_shoulder_left.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 21,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/hit_shoulder_right.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 22,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/idle.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 18,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_DashAtk_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 27,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_foot_left_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 21,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_foot_right_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 18,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_ground01_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 19,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_ground02_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 32,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_jumpAtk_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 51,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_throwstone_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 52,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack_whirlwind_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack01_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 49,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack02_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 32,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack03_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 48,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/attack04_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 49,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/dead01_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 52,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/dead02_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 19,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/defence01_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 45,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/defence02_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 32,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/defence03_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 36,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/down01_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 51,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_back_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_front_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_left_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_right_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_shoulder_left_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 21,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/hit_shoulder_right_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 21,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/idle_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 18,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_back_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_backL45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_backR45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_front_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_frontL45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_frontR45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_left_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_run_right_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_back_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_backL45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_backR45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_front_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 50,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_frontL45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_frontR45_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_Left_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 50,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/move_walk_Right_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 50,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/rise01_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 51,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/Stun_End_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 48,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/Stun_Loop_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 21,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Inplace/Stun_Start_inplace.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 52,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_back.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_backL45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_backR45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_front.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_frontL45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_frontR45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_left.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_run_right.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 46,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_back.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_backL45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_backR45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_front.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 50,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_frontL45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_frontR45.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 44,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_Left.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 50,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/move_walk_Right.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 50,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/rise01.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 51,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Stun_End.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 48,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Stun_Loop.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 21,
+            "error": ""
+        },
+        {
+            "path": "Assets/ThirdParty/GiantGolemAnimSet/Animation/Humanoid/Stun_Start.fbx",
+            "evaluated": true,
+            "finiteBones": true,
+            "changedBones": 52,
+            "error": ""
+        }
+    ],
+    "unresolvedReferences": []
+}

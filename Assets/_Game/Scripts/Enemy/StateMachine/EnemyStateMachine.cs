@@ -10,7 +10,7 @@ using UnityEngine;
 [RequireComponent(typeof(EnemyMotor))]
 [RequireComponent(typeof(EnemyCombat))]
 [RequireComponent(typeof(EnemyTerritory))]
-public sealed class EnemyStateMachine : MonoBehaviour
+public sealed class EnemyStateMachine : MonoBehaviour, ICheckpointResettable
 {
     private const float RangeTolerance = 0.02f;
 
@@ -75,6 +75,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
 
     private void OnEnable()
     {
+        Health.DamageTaken += OnDamageTaken;
         _hasEngagedTarget = false;
         _isReturningHome = false;
         ResolveTarget();
@@ -88,6 +89,7 @@ public sealed class EnemyStateMachine : MonoBehaviour
 
     private void OnDisable()
     {
+        if (Health != null) Health.DamageTaken -= OnDamageTaken;
         CurrentState?.Exit();
         CurrentState = null;
         Combat?.CancelAttack();
@@ -103,6 +105,8 @@ public sealed class EnemyStateMachine : MonoBehaviour
 
         ChangeState(HurtState);
     }
+
+    private void OnDamageTaken(DamageInfo damageInfo) => HandleDamageTaken();
 
     public void EvaluateTargetState()
     {

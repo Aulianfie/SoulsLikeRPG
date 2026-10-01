@@ -169,14 +169,18 @@ public sealed class ProgressionPresenter : MonoBehaviour
         IsOpen = false;
         _cancelAction.Disable();
         if (_blessingMenu != null) _blessingMenu.Hide();
-        else _graceMenu.Hide();
-        _levelUpPanel.Hide();
+        else if (_graceMenu != null) _graceMenu.Hide();
+        if (_levelUpPanel != null) _levelUpPanel.Hide();
         SetOverlayVisible(false);
         Time.timeScale = _previousTimeScale;
         Cursor.lockState = _previousCursorLock;
         Cursor.visible = _previousCursorVisible;
-        _inputReader.ClearPendingActions();
-        _inputReader.enabled = _previousInputEnabled;
+        // 场景卸载/退出 Play Mode 时，玩家可能已先于 UI 销毁。
+        if (_inputReader != null)
+        {
+            _inputReader.ClearPendingActions();
+            _inputReader.enabled = _previousInputEnabled;
+        }
         if (_freeLookCamera != null)
         {
             _freeLookCamera.m_XAxis.m_InputAxisName = _previousXAxis;
@@ -188,6 +192,7 @@ public sealed class ProgressionPresenter : MonoBehaviour
 
     private void SetOverlayVisible(bool visible)
     {
+        if (_canvasGroup == null) return;
         _canvasGroup.alpha = visible ? 1f : 0f;
         _canvasGroup.interactable = visible;
         _canvasGroup.blocksRaycasts = visible;

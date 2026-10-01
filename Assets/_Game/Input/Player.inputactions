@@ -7,6 +7,15 @@
             "id": "879f776c-3c35-494b-b13f-53c7cb565812",
             "actions": [
                 {
+                    "name": "SwitchQuickItem",
+                    "type": "Button",
+                    "id": "ecc25862-aab7-46aa-a473-836702bcb5fb",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "SwitchWeapon",
                     "type": "PassThrough",
                     "id": "ea09202e-ad70-4d9e-8d93-03c3a981e6ae",
@@ -107,6 +116,28 @@
                 }
             ],
             "bindings": [
+                {
+                    "name": "",
+                    "id": "87c9c995-0b12-49e5-aeba-4d18a59dc370",
+                    "path": "<Keyboard>/1",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "SwitchQuickItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1021bea7-6c55-4b6c-8bbf-4f6bd1c2fcc7",
+                    "path": "<Gamepad>/dpad/down",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Gamepad",
+                    "action": "SwitchQuickItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
                 {
                     "name": "",
                     "id": "c1c5abb0-f8ce-44e0-a1fa-a8720845653e",

@@ -91,6 +91,8 @@ public static class BlessingUIValidation
         SessionState.SetBool(Running+".SaveExists",File.Exists(path));
         if (File.Exists(path)) File.WriteAllBytes("Logs/BlessingUIBackup/OriginalSave.json",File.ReadAllBytes(path));
         SessionState.SetBool(Running,true);
+        SessionState.SetInt(Running + ".KeyboardId", -1);
+        SessionState.SetInt(Running + ".GamepadId", -1);
         _deadline = EditorApplication.timeSinceStartup + 90;
         _next = EditorApplication.timeSinceStartup + 2;
         EditorApplication.isPlaying = true;
@@ -171,53 +173,75 @@ public static class BlessingUIValidation
             }
             Time.timeScale=1;
             _checkpoint.Interact(); _nav[3].onClick.Invoke();
-            _keyboard = Keyboard.current;
-            if (_keyboard == null) { _keyboard = InputSystem.AddDevice<Keyboard>(); _keyboardAdded = true; }
+            // 后台验收不能依赖 Game View 焦点；沿用 Day11 的显式玩家输入更新。
+            File.WriteAllText("Logs/BlessingUI_InputRouting.txt", "Focused=" + Application.isFocused +
+                "\nRouting=" + InputSystem.settings.editorInputBehaviorInPlayMode +
+                "\nBackground=" + InputSystem.settings.backgroundBehavior + "\n");
+            SessionState.SetInt(Running + ".Routing", (int)InputSystem.settings.editorInputBehaviorInPlayMode);
+            SessionState.SetInt(Running + ".Background", (int)InputSystem.settings.backgroundBehavior);
+            SessionState.SetInt(Running + ".Update", (int)InputSystem.settings.updateMode);
+            SessionState.SetBool(Running + ".InputChanged", true);
+            InputSystem.settings.editorInputBehaviorInPlayMode = InputSettings.EditorInputBehaviorInPlayMode.AllDeviceInputAlwaysGoesToGameView;
+            InputSystem.settings.backgroundBehavior = InputSettings.BackgroundBehavior.IgnoreFocus;
+            InputSystem.settings.updateMode = InputSettings.UpdateMode.ProcessEventsManually;
+            _keyboard = InputSystem.AddDevice<Keyboard>(); _keyboardAdded = true;
+            SessionState.SetInt(Running + ".KeyboardId", _keyboard.deviceId);
             InputSystem.QueueStateEvent(_keyboard,new KeyboardState(Key.Escape));
+            PumpInput();
             _phase++; _next = EditorApplication.timeSinceStartup+.2; return;
         }
         if (_phase == 2)
         {
             Check(_presenter.IsOpen && _menu.CurrentPage == BlessingPage.None, "Escape from content returns to default page");
             InputSystem.QueueStateEvent(_keyboard,new KeyboardState());
+            PumpInput();
             _phase++; _next = EditorApplication.timeSinceStartup+.2; return;
         }
         if (_phase == 3)
         {
             InputSystem.QueueStateEvent(_keyboard,new KeyboardState(Key.Escape));
+            PumpInput();
             _phase++; _next = EditorApplication.timeSinceStartup+.2; return;
         }
         if (_phase == 4)
         {
             Check(!_presenter.IsOpen && _player.GetComponent<PlayerInputReader>().enabled, "Escape from default closes menu and restores controls");
             InputSystem.QueueStateEvent(_keyboard,new KeyboardState());
+            PumpInput();
             if (_keyboardAdded) InputSystem.RemoveDevice(_keyboard);
             _checkpoint.Interact(); _nav[2].onClick.Invoke();
-            _gamepad = Gamepad.current;
-            if (_gamepad == null) { _gamepad = InputSystem.AddDevice<Gamepad>(); _gamepadAdded = true; }
+            _gamepad = InputSystem.AddDevice<Gamepad>(); _gamepadAdded = true;
+            SessionState.SetInt(Running + ".GamepadId", _gamepad.deviceId);
             InputSystem.QueueStateEvent(_gamepad,new GamepadState().WithButton(GamepadButton.East));
+            PumpInput();
             _phase++; _next = EditorApplication.timeSinceStartup+.2; return;
         }
         if (_phase == 5)
         {
             Check(_presenter.IsOpen && _menu.CurrentPage == BlessingPage.None, "Gamepad B returns from content to default");
             InputSystem.QueueStateEvent(_gamepad,new GamepadState());
+            PumpInput();
             _phase++; _next = EditorApplication.timeSinceStartup+.2; return;
         }
         if (_phase == 6)
         {
             InputSystem.QueueStateEvent(_gamepad,new GamepadState().WithButton(GamepadButton.East));
+            PumpInput();
             _phase++; _next = EditorApplication.timeSinceStartup+.2; return;
         }
         if (_phase == 7)
         {
             Check(!_presenter.IsOpen && Time.timeScale == 1, "Gamepad B closes menu from default");
             InputSystem.QueueStateEvent(_gamepad,new GamepadState());
+            PumpInput();
             if (_gamepadAdded) InputSystem.RemoveDevice(_gamepad);
             Check(_runtimeErrors==0 && _runtimeWarnings==0, "No runtime Console errors or warnings during validation");
             Finish();
         }
     }
+
+    private static void PumpInput() => typeof(InputSystem).GetMethod("Update", BindingFlags.Static | BindingFlags.NonPublic,
+        null, new[] { typeof(InputUpdateType) }, null).Invoke(null, new object[] { InputUpdateType.Manual });
 
     private static void Capture(string name)
     {
@@ -253,7 +277,22 @@ public static class BlessingUIValidation
             else if(File.Exists(path)) File.Delete(path);
             File.AppendAllText("Logs/BlessingUI_RuntimeValidation.txt","Original user save restored; returned to Edit Mode.\n");
         }
-        finally { SessionState.SetBool(Running,false); }
+        finally
+        {
+            foreach (string key in new[] { ".KeyboardId", ".GamepadId" })
+            {
+                var device = InputSystem.GetDeviceById(SessionState.GetInt(Running + key, -1));
+                if (device != null) InputSystem.RemoveDevice(device);
+            }
+            if (SessionState.GetBool(Running + ".InputChanged", false))
+            {
+                InputSystem.settings.editorInputBehaviorInPlayMode = (InputSettings.EditorInputBehaviorInPlayMode)SessionState.GetInt(Running + ".Routing", 0);
+                InputSystem.settings.backgroundBehavior = (InputSettings.BackgroundBehavior)SessionState.GetInt(Running + ".Background", 0);
+                InputSystem.settings.updateMode = (InputSettings.UpdateMode)SessionState.GetInt(Running + ".Update", 0);
+                SessionState.SetBool(Running + ".InputChanged", false);
+            }
+            SessionState.SetBool(Running,false);
+        }
     }
 
     private static void RecordLog(string message,string stack,LogType type)

@@ -34,7 +34,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerDeadState DeadState { get; private set; }
 
     public PlayerInteractState InteractState { get; private set; }
-    public PlayerHealState HealState { get; private set; }
+    public PlayerUseItemState UseItemState { get; private set; }
     public PlayerWeaponSwitchState WeaponSwitchState { get; private set; }
 
     private bool _hasStarted;
@@ -60,7 +60,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         HurtState = new PlayerHurtState(this);
         DeadState = new PlayerDeadState(this);
         InteractState = new PlayerInteractState(this);
-        HealState = new PlayerHealState(this);
+        UseItemState = new PlayerUseItemState(this);
         WeaponSwitchState = new PlayerWeaponSwitchState(this);
     }
 
@@ -84,6 +84,8 @@ public sealed class PlayerStateMachine : MonoBehaviour
     private void Update()
     {
         if (Motor.IsGrounded && Motor.VerticalVelocity <= 0f) _jumpAttackUsed = false;
+        // 切槽独立于动作状态，在 Tick 及动作清理输入前处理；死亡/菜单/暂停由 Items 拦截。
+        if (InputReader.ConsumeSwitchQuickItem()) Items?.SwitchNextItem();
         if (CurrentState != LocomotionState)
         {
             InputReader.ConsumeUseItem();
@@ -109,15 +111,16 @@ public sealed class PlayerStateMachine : MonoBehaviour
         return started;
     }
 
-    public bool TryBeginHealing(IPlayerHealingItem item)
+    public bool TryBeginUseItem(IPlayerQuickItem item)
     {
         MonoBehaviour behaviour = item as MonoBehaviour;
         if (CurrentState != LocomotionState || !Motor.IsGrounded || Health.IsDead ||
+            !InputReader.isActiveAndEnabled || Time.timeScale <= 0f ||
             behaviour == null || behaviour.gameObject != gameObject || !item.CanUse)
             return false;
-        HealState.SetItem(item);
-        ChangeState(HealState);
-        return CurrentState == HealState;
+        UseItemState.SetItem(item);
+        ChangeState(UseItemState);
+        return CurrentState == UseItemState;
     }
 
     private void OnDisable()

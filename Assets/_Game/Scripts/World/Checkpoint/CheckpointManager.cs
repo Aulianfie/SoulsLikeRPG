@@ -6,16 +6,17 @@ using UnityEngine;
 [DisallowMultipleComponent]
 public sealed class CheckpointManager : MonoBehaviour
 {
+    [Tooltip("独立测试场景关闭此项，避免测试进度覆盖正式场景存档。")]
+    [SerializeField] private bool _persistProgression = true;
     [SerializeField] private PlayerHealth _playerHealth;
     [SerializeField] private PlayerStamina _playerStamina;
 
     private readonly Dictionary<string, CheckpointSite> _checkpoints =
         new Dictionary<string, CheckpointSite>(StringComparer.Ordinal);
-    private EnemyStateMachine[] _enemies;
+    private ICheckpointResettable[] _enemies;
     private SoulWallet _wallet;
     private PlayerProgression _progression;
     private PlayerSoulDrop _soulDrop;
-    private PlayerHealingFlask _flask;
     private PlayerItemController _items;
     private PlayerMana _playerMana;
     private GameSaveData _loadedSave;
@@ -39,19 +40,18 @@ public sealed class CheckpointManager : MonoBehaviour
             _wallet = _playerHealth.GetComponent<SoulWallet>();
             _progression = _playerHealth.GetComponent<PlayerProgression>();
             _soulDrop = _playerHealth.GetComponent<PlayerSoulDrop>();
-            _flask = _playerHealth.GetComponent<PlayerHealingFlask>();
             _items = _playerHealth.GetComponent<PlayerItemController>();
             _playerMana = _playerHealth.GetComponent<PlayerMana>();
             if (_progression != null)
                 _observedProgression = (_progression.Level, _progression.Vigor,
                     _progression.Endurance, _progression.Strength);
         }
-        EnemyStateMachine[] allEnemies = FindObjectsOfType<EnemyStateMachine>(true);
-        var sceneEnemies = new List<EnemyStateMachine>(allEnemies.Length);
-        foreach (EnemyStateMachine enemy in allEnemies)
+        MonoBehaviour[] allEnemies = FindObjectsOfType<MonoBehaviour>(true);
+        var sceneEnemies = new List<ICheckpointResettable>();
+        foreach (MonoBehaviour enemy in allEnemies)
         {
-            if (enemy.gameObject.scene == gameObject.scene)
-                sceneEnemies.Add(enemy);
+            if (enemy is ICheckpointResettable resettable && enemy.gameObject.scene == gameObject.scene)
+                sceneEnemies.Add(resettable);
         }
         _enemies = sceneEnemies.ToArray();
 
@@ -70,6 +70,7 @@ public sealed class CheckpointManager : MonoBehaviour
 
     private void RestoreCheckpointFromSave()
     {
+        if (!_persistProgression) { _canSave = false; return; }
         _loadedSave = SaveService.Load();
         // 无法读取的文件保留原样，避免自动保存覆盖损坏或更高版本的存档。
         _canSave = _loadedSave != null || !File.Exists(SaveService.SaveFilePath);
@@ -86,8 +87,8 @@ public sealed class CheckpointManager : MonoBehaviour
             _progression.ProgressionChanged += HandleProgressionChanged;
         if (_soulDrop != null)
             _soulDrop.SoulDropChanged += MarkSavePending;
-        if (_flask != null)
-            _flask.ChargesChanged += HandleFlaskChanged;
+        if (_items != null)
+            _items.QuickItemsChanged += MarkSavePending;
     }
 
     private void Start()
@@ -102,8 +103,7 @@ public sealed class CheckpointManager : MonoBehaviour
                     _loadedSave.endurance, _loadedSave.strength);
             if (_soulDrop != null)
                 _soulDrop.RestoreFromSave(_loadedSave);
-            if (_flask != null)
-                _flask.RestoreCharges(_loadedSave.flaskCharges);
+            _items?.RestoreFromSave(_loadedSave);
         }
         _initialized = true;
         _savePending = _canSave && !_hasForeignSceneSave;
@@ -128,9 +128,9 @@ public sealed class CheckpointManager : MonoBehaviour
             level = _progression.Level,
             vigor = _progression.Vigor,
             endurance = _progression.Endurance,
-            strength = _progression.Strength,
-            flaskCharges = _flask != null ? _flask.CurrentCharges : -1
+            strength = _progression.Strength
         };
+        _items?.WriteToSave(data);
         if (_soulDrop != null)
             _soulDrop.WriteToSave(data);
         bool saved = SaveService.Save(data);
@@ -139,7 +139,6 @@ public sealed class CheckpointManager : MonoBehaviour
     }
 
     private void HandleSoulsChanged(int souls) => MarkSavePending();
-    private void HandleFlaskChanged(int current, int maximum) => MarkSavePending();
     private void HandleProgressionChanged()
     {
         var current = (_progression.Level, _progression.Vigor,
@@ -153,7 +152,7 @@ public sealed class CheckpointManager : MonoBehaviour
 
     private void MarkSavePending()
     {
-        if (!_initialized)
+        if (!_initialized || !_persistProgression)
             return;
         // 明确的钱包、成长、掉魂变化或赐福交互允许替换有效的异场景存档。
         // 损坏/未来存档仍由 _canSave 阻止覆盖。
@@ -179,8 +178,8 @@ public sealed class CheckpointManager : MonoBehaviour
             _progression.ProgressionChanged -= HandleProgressionChanged;
         if (_soulDrop != null)
             _soulDrop.SoulDropChanged -= MarkSavePending;
-        if (_flask != null)
-            _flask.ChargesChanged -= HandleFlaskChanged;
+        if (_items != null)
+            _items.QuickItemsChanged -= MarkSavePending;
     }
 
     public bool ActivateCheckpoint(CheckpointSite checkpoint)
@@ -206,9 +205,9 @@ public sealed class CheckpointManager : MonoBehaviour
 
     public void ResetWorld()
     {
-        foreach (EnemyStateMachine enemy in _enemies)
+        foreach (ICheckpointResettable enemy in _enemies)
         {
-            if (enemy != null)
+            if (enemy is MonoBehaviour component && component != null)
                 enemy.ResetForCheckpoint();
         }
     }

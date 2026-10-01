@@ -67,6 +67,26 @@ public sealed class EnemyAnimator : MonoBehaviour
         CrossFade(AttackStateHash);
     }
 
+    public Animator Animator => _animator;
+
+    public bool PlayState(int stateHash, float transitionDuration = 0.08f)
+    {
+        if (_animator == null || !_animator.HasState(BaseLayerIndex, stateHash)) return false;
+        _animator.speed = 1f;
+        _animator.CrossFadeInFixedTime(stateHash, transitionDuration, BaseLayerIndex, 0f);
+        return true;
+    }
+
+    public bool TryGetStateNormalizedTime(int stateHash, out float normalizedTime)
+    {
+        normalizedTime = 0f;
+        if (_animator == null) return false;
+        AnimatorStateInfo state = _animator.GetCurrentAnimatorStateInfo(BaseLayerIndex);
+        if (state.fullPathHash != stateHash) return false;
+        normalizedTime = state.normalizedTime;
+        return true;
+    }
+
     /// <summary>
     /// 设置动画播放速度（全局）。
     /// 攻击前摇段会临时减速，切换状态时务必还原为 1。
