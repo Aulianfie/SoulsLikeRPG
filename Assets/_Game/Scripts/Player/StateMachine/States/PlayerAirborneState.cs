@@ -14,9 +14,8 @@ public sealed class PlayerAirborneState : PlayerState
 
     public override void Tick(float deltaTime)
     {
-        // Day2 暂不实现 Jump Buffer，空中输入直接丢弃。
+        // No jump/dodge buffering in the air; LightAttack may start one JumpAttack.
         StateMachine.InputReader.ConsumeJump();
-        StateMachine.InputReader.ConsumeLightAttack();
         StateMachine.InputReader.ConsumeDodge();
 
         StateMachine.Motor.TickAirborne(deltaTime);
@@ -27,6 +26,9 @@ public sealed class PlayerAirborneState : PlayerState
         )
         {
             StateMachine.ChangeState(StateMachine.LocomotionState);
+            return;
         }
+        if (StateMachine.InputReader.ConsumeLightAttack())
+            StateMachine.TryBeginAttack(PlayerAttackType.Jump);
     }
 }

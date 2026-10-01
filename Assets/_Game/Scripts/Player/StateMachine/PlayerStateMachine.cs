@@ -38,6 +38,8 @@ public sealed class PlayerStateMachine : MonoBehaviour
     public PlayerWeaponSwitchState WeaponSwitchState { get; private set; }
 
     private bool _hasStarted;
+    private bool _jumpAttackUsed;
+    public bool HasUsedJumpAttack => _jumpAttackUsed;
 
     private void Awake()
     {
@@ -81,12 +83,30 @@ public sealed class PlayerStateMachine : MonoBehaviour
     /// </summary>
     private void Update()
     {
+        if (Motor.IsGrounded && Motor.VerticalVelocity <= 0f) _jumpAttackUsed = false;
         if (CurrentState != LocomotionState)
         {
             InputReader.ConsumeUseItem();
             InputReader.ConsumeSwitchWeapon();
+            InputReader.ConsumeWeaponSkill();
         }
         CurrentState?.Tick(Time.deltaTime);
+    }
+
+    public bool TryBeginAttack(PlayerAttackType type)
+    {
+        if (Health.IsDead || !InputReader.isActiveAndEnabled || Time.timeScale <= 0f) return false;
+        if (type == PlayerAttackType.Jump)
+        {
+            if (CurrentState != AirborneState || Motor.IsGrounded || _jumpAttackUsed) return false;
+        }
+        else if (CurrentState != LocomotionState || !Motor.IsGrounded) return false;
+        if (!Combat.CanStartAttack(type)) return false;
+        AttackState.SetAttackType(type);
+        ChangeState(AttackState);
+        bool started = CurrentState == AttackState && Combat.IsAttacking;
+        if (started && type == PlayerAttackType.Jump) _jumpAttackUsed = true;
+        return started;
     }
 
     public bool TryBeginHealing(IPlayerHealingItem item)
@@ -185,6 +205,7 @@ public sealed class PlayerStateMachine : MonoBehaviour
         CurrentState = null;
         InputReader.ClearPendingActions();
         Combat.ResetForRespawn();
+        _jumpAttackUsed = false;
         Items?.RefillRestItems();
         Targeting.ClearTarget();
         Motor.StopHorizontalMovement();

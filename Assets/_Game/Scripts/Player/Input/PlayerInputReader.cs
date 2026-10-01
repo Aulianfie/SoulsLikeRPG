@@ -22,6 +22,9 @@ public class PlayerInputReader : MonoBehaviour
     private InputAction _interactAction;
     private InputAction _useItemAction;
     private InputAction _switchWeaponAction;
+    private InputAction _weaponSkillAction;
+    private bool _weaponSkillRequested;
+    private int _weaponSkillRequestFrame;
     private int _switchWeaponDirection;
     private int _switchWeaponRequestFrame;
     private bool _jumpRequested;
@@ -68,6 +71,7 @@ public class PlayerInputReader : MonoBehaviour
         _interactAction = _gameplayMap.FindAction("Interact", true);
         _useItemAction = _gameplayMap.FindAction("UseItem", true);
         _switchWeaponAction = _gameplayMap.FindAction("SwitchWeapon", false);
+        _weaponSkillAction = _gameplayMap.FindAction("WeaponSkill", false);
     }
 
     private void OnEnable()
@@ -90,6 +94,7 @@ public class PlayerInputReader : MonoBehaviour
         _interactAction.performed += OnInteract;
         if (_useItemAction != null) _useItemAction.performed += OnUseItem;
         if (_switchWeaponAction != null) _switchWeaponAction.performed += OnSwitchWeapon;
+        if (_weaponSkillAction != null) _weaponSkillAction.performed += OnWeaponSkill;
 
         _gameplayMap.Enable();
     }
@@ -130,6 +135,7 @@ public class PlayerInputReader : MonoBehaviour
             _interactAction.performed -= OnInteract;
         if (_useItemAction != null) _useItemAction.performed -= OnUseItem;
         if (_switchWeaponAction != null) _switchWeaponAction.performed -= OnSwitchWeapon;
+        if (_weaponSkillAction != null) _weaponSkillAction.performed -= OnWeaponSkill;
 
         ClearPendingActions();
 
@@ -217,6 +223,20 @@ public class PlayerInputReader : MonoBehaviour
         return direction;
     }
 
+    private void OnWeaponSkill(InputAction.CallbackContext context)
+    {
+        _weaponSkillRequested = true;
+        _weaponSkillRequestFrame = Time.frameCount;
+    }
+
+    // Like UseItem and WeaponSwitch, skill requests never survive another state.
+    public bool ConsumeWeaponSkill()
+    {
+        bool requested = _weaponSkillRequested && Time.frameCount <= _weaponSkillRequestFrame + 1;
+        _weaponSkillRequested = false;
+        return requested;
+    }
+
     public bool ConsumeJump()
     {
         if (!_jumpRequested)
@@ -286,6 +306,7 @@ public class PlayerInputReader : MonoBehaviour
         _interactRequested = false;
         _useItemRequested = false;
         _switchWeaponDirection = 0;
+        _weaponSkillRequested = false;
     }
 
     public void ClearPendingActions()

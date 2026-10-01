@@ -98,6 +98,7 @@ public sealed class RespawnController : MonoBehaviour
         _player.Motor.Teleport(position, rotation);
         _player.Health.ReviveFull();
         _player.Stamina.RestoreFull();
+        _player.GetComponent<PlayerMana>()?.RestoreFull();
         _player.Respawn();
         _checkpointManager.ResetWorld();
 

@@ -217,6 +217,13 @@ public static class Day10Setup
         data.FindProperty("_weaponType").enumValueIndex = (int)type;
         data.FindProperty("_weaponPrefab").objectReferenceValue = prefab;
         data.FindProperty("_lightAttackCombo").objectReferenceValue = combo;
+        // Day11 assets keep their actions when the Day10 authoring tool is rerun.
+        if (weapon.Moveset != null)
+        {
+            var moveset = new SerializedObject(weapon.Moveset);
+            moveset.FindProperty("_lightCombo").objectReferenceValue = combo;
+            moveset.ApplyModifiedPropertiesWithoutUndo();
+        }
         data.FindProperty("_animatorOverrideController").objectReferenceValue = controller;
         data.FindProperty("_damageMultiplier").floatValue = damage;
         data.FindProperty("_staminaMultiplier").floatValue = stamina;

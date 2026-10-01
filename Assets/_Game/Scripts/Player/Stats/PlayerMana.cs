@@ -51,4 +51,6 @@ public sealed class PlayerMana : MonoBehaviour
         _currentMana = nextMana;
         ManaChanged?.Invoke(_currentMana, MaxMana);
     }
+
+    public void RestoreFull() => Restore(MaxMana);
 }

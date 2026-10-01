@@ -1,6 +1,8 @@
 public sealed class PlayerAttackState : PlayerState
 {
     private float _elapsedTime;
+    private PlayerAttackType _attackType;
+    public void SetAttackType(PlayerAttackType type) => _attackType = type;
 
     /// <summary>
     /// 第一段攻击是否启动失败（AttackData 缺失 / Animator State 不存在）。
@@ -15,10 +17,10 @@ public sealed class PlayerAttackState : PlayerState
 
     public override void Enter()
     {
-        StateMachine.InputReader.ConsumeJump();
-        StateMachine.Motor.StopHorizontalMovement();
+        StateMachine.InputReader.ClearActionRequests();
+        if (_attackType != PlayerAttackType.Jump) StateMachine.Motor.StopHorizontalMovement();
         _elapsedTime = 0f;
-        _startFailed = !StateMachine.Combat.StartLightAttack();
+        _startFailed = !StateMachine.Combat.TryStartAttack(_attackType);
     }
 
     public override void Tick(float deltaTime)
@@ -28,14 +30,19 @@ public sealed class PlayerAttackState : PlayerState
         if (_startFailed)
         {
             StateMachine.InputReader.ClearLightAttackBuffer();
-            StateMachine.ChangeState(StateMachine.LocomotionState);
+            StateMachine.ChangeState(StateMachine.Motor.IsGrounded ? StateMachine.LocomotionState : StateMachine.AirborneState);
             return;
         }
 
         // Jump 暂不缓存；Dodge 在当前攻击的取消窗口中优先于连击。
         StateMachine.InputReader.ConsumeJump();
+        if (_attackType != PlayerAttackType.Light || !StateMachine.Motor.IsGrounded)
+            StateMachine.Motor.TickAirborne(deltaTime);
+        if (_attackType != PlayerAttackType.Light)
+            StateMachine.InputReader.ClearAllBuffers();
 
         if (
+            _attackType == PlayerAttackType.Light &&
             StateMachine.InputReader.HasBufferedDodge &&
             StateMachine.Combat.IsInDodgeCancelWindow &&
             StateMachine.Motor.IsGrounded &&
@@ -77,7 +84,8 @@ public sealed class PlayerAttackState : PlayerState
             }
         }
 
-        StateMachine.Combat.TickLightAttack();
+        bool landed = StateMachine.Motor.IsGrounded && StateMachine.Motor.VerticalVelocity <= 0f;
+        StateMachine.Combat.TickAttack(deltaTime, _attackType != PlayerAttackType.Jump || landed);
 
         // 情况 A：已缓存下一段且到达 ComboTransitionPoint：
         // 再次确认体力后直接进入下一段，不等待完成点与后摇。
@@ -113,22 +121,24 @@ public sealed class PlayerAttackState : PlayerState
         // 情况 B：没有缓存的下一段（或衔接失败/体力不足）：
         // 挥砍未完成或后摇未结束时保持攻击状态。
         if (
-            !StateMachine.Combat.IsLightAttackFinished() ||
-            !StateMachine.Combat.IsRecoveryDone()
+            !StateMachine.Combat.IsAttackFinished() ||
+            !StateMachine.Combat.IsRecoveryDone() ||
+            (_attackType == PlayerAttackType.Jump && !landed)
         )
         {
             return;
         }
 
         // 完成点 + 后摇都已结束：回 Locomotion。
-        StateMachine.ChangeState(StateMachine.LocomotionState);
+        StateMachine.ChangeState(landed ? StateMachine.LocomotionState : StateMachine.AirborneState);
     }
 
     public override void Exit()
     {
         // FinishLightAttack 会关闭命中窗口并重置连击进度，
         // 因此被 Hurt / Dodge / Dead 打断时连击也会正确重置。
-        StateMachine.Combat.FinishLightAttack();
+        StateMachine.Combat.FinishAttack();
+        _attackType = PlayerAttackType.Light;
     }
 
     /// <summary>

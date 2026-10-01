@@ -17,6 +17,7 @@ MonoBehaviour:
   _weaponPrefab: {fileID: 5486533534341851849, guid: a9a1d2167df5e1f46b85c2bed6a03fe1,
     type: 3}
   _icon: {fileID: 21300000, guid: b0ce0ce81f6d7f046a6f8799736340a1, type: 3}
+  _moveset: {fileID: 11400000, guid: 96732417fc35aee4d8a40e44617386e9, type: 2}
   _lightAttackCombo: {fileID: 11400000, guid: 973a2bc0e862a314e8b0e65ab78c78a2, type: 2}
   _damageMultiplier: 1.6
   _staminaMultiplier: 1.5

@@ -25,12 +25,18 @@ public sealed class PlayerCombat : MonoBehaviour
 
     private PlayerAnimator _playerAnimator;
     private PlayerProgression _progression;
+    private PlayerStamina _stamina;
+    private PlayerMana _mana;
+    private AttackData _singleAttack;
     private WeaponData _currentWeapon;
     private AttackCombo ActiveCombo => _currentWeapon != null
         ? _currentWeapon.LightAttackCombo : _attackCombo;
     private float StaminaMultiplier => _currentWeapon != null ? _currentWeapon.StaminaMultiplier : 1f;
     private bool _hitboxActive;
     private float _recoveryTimer;
+
+    public PlayerAttackType CurrentAttackType { get; private set; }
+    public bool IsAttacking { get; private set; }
 
     /// <summary>
     /// 当前连击段索引（0-based），0 表示第一段。
@@ -48,11 +54,13 @@ public sealed class PlayerCombat : MonoBehaviour
 
     /// <summary>是否还有下一段攻击可以衔接。</summary>
     public bool HasNextAttack =>
-        ActiveCombo != null && ComboIndex + 1 < ActiveCombo.Count;
+        CurrentAttackType == PlayerAttackType.Light && ActiveCombo != null && ComboIndex + 1 < ActiveCombo.Count;
 
     /// <summary>当前段的配置数据；未配置连招时返回 null。</summary>
     public AttackData CurrentAttack =>
-        ActiveCombo != null ? ActiveCombo.Get(ComboIndex) : null;
+        CurrentAttackType == PlayerAttackType.Light
+            ? (ActiveCombo != null ? ActiveCombo.Get(ComboIndex) : null)
+            : _singleAttack;
 
     /// <summary>下一段攻击的体力消耗；没有下一段时返回 0。</summary>
     public float NextAttackStaminaCost
@@ -164,6 +172,8 @@ public sealed class PlayerCombat : MonoBehaviour
     {
         _playerAnimator = GetComponent<PlayerAnimator>();
         _progression = GetComponent<PlayerProgression>();
+        _stamina = GetComponent<PlayerStamina>();
+        _mana = GetComponent<PlayerMana>();
 
         if (_weaponHitbox == null)
         {
@@ -194,13 +204,45 @@ public sealed class PlayerCombat : MonoBehaviour
     /// </summary>
     public bool StartLightAttack()
     {
+        return TryStartAttack(PlayerAttackType.Light);
+    }
+
+    public AttackData GetAttack(PlayerAttackType type)
+    {
+        if (type == PlayerAttackType.Light) return ActiveCombo != null ? ActiveCombo.Get(0) : null;
+        WeaponMoveset moveset = _currentWeapon != null ? _currentWeapon.Moveset : null;
+        if (moveset == null) return null;
+        return type == PlayerAttackType.Jump ? moveset.JumpAttack :
+            type == PlayerAttackType.WeaponSkill ? moveset.WeaponSkill : null;
+    }
+
+    public bool CanStartAttack(PlayerAttackType type)
+    {
+        AttackData data = GetAttack(type);
+        return !IsAttacking && data != null && _playerAnimator.HasAttackAnimation(data.AnimationStateName) &&
+            (data.StaminaCost <= 0f || (_stamina != null && _stamina.CanConsume(data.StaminaCost * StaminaMultiplier))) &&
+            (data.ManaCost <= 0f || (_mana != null && _mana.CanConsume(data.ManaCost)));
+    }
+
+    // Validate resources and animation before charging; failed starts never spend MP.
+    public bool TryStartAttack(PlayerAttackType type)
+    {
+        if (!CanStartAttack(type)) return false;
+        AttackData data = GetAttack(type);
         ComboIndex = 0;
         AttackQueued = false;
         _recoveryTimer = 0f;
         CloseHitWindow();
+        CurrentAttackType = type;
+        _singleAttack = type == PlayerAttackType.Light ? null : data;
 
         if (PlayCurrentAttack())
+        {
+            IsAttacking = true;
+            if (data.StaminaCost > 0f) _stamina.Consume(data.StaminaCost * StaminaMultiplier);
+            if (data.ManaCost > 0f) _mana.Consume(data.ManaCost);
             return true;
+        }
 
         ResetCombo();
         return false;
@@ -212,7 +254,7 @@ public sealed class PlayerCombat : MonoBehaviour
     /// </summary>
     public void QueueNextAttack()
     {
-        AttackQueued = true;
+        if (CurrentAttackType == PlayerAttackType.Light) AttackQueued = true;
     }
 
     /// <summary>
@@ -249,6 +291,9 @@ public sealed class PlayerCombat : MonoBehaviour
         ComboIndex = 0;
         AttackQueued = false;
         _recoveryTimer = 0f;
+        _singleAttack = null;
+        CurrentAttackType = PlayerAttackType.Light;
+        IsAttacking = false;
     }
 
     public void SetWeapon(WeaponData weapon, WeaponHitbox hitbox)
@@ -268,24 +313,34 @@ public sealed class PlayerCombat : MonoBehaviour
 
     public void TickLightAttack()
     {
+        TickAttack(Time.deltaTime);
+    }
+
+    public void TickAttack(float deltaTime, bool allowRecovery = true)
+    {
         AttackData data = CurrentAttack;
 
         if (data == null)
             return;
 
         TickHitWindow(data);
-        TickRecovery(data);
+        if (allowRecovery) TickRecovery(data, deltaTime);
     }
 
     /// <summary>动画是否到达本段的完成点（挥砍结束）。</summary>
     public bool IsLightAttackFinished()
+    {
+        return IsAttackFinished();
+    }
+
+    public bool IsAttackFinished()
     {
         AttackData data = CurrentAttack;
 
         if (data == null)
             return true;
 
-        return _playerAnimator.IsLightAttackFinished(
+        return _playerAnimator.IsAttackFinished(
             data.CompletionNormalizedTime
         );
     }
@@ -302,6 +357,11 @@ public sealed class PlayerCombat : MonoBehaviour
     }
 
     public void FinishLightAttack()
+    {
+        FinishAttack();
+    }
+
+    public void FinishAttack()
     {
         CloseHitWindow();
         ResetCombo();
@@ -339,7 +399,7 @@ public sealed class PlayerCombat : MonoBehaviour
         }
 
         if (
-            _playerAnimator.PlayLightAttack(
+            _playerAnimator.PlayAttack(
                 data.AnimationStateName,
                 _transitionDuration,
                 data.StartTimeOffset
@@ -363,7 +423,7 @@ public sealed class PlayerCombat : MonoBehaviour
     {
         if (
             _weaponHitbox == null ||
-            !_playerAnimator.TryGetLightAttackNormalizedTime(
+            !_playerAnimator.TryGetAttackNormalizedTime(
                 out float normalizedTime
             )
         )
@@ -391,13 +451,13 @@ public sealed class PlayerCombat : MonoBehaviour
         }
     }
 
-    private void TickRecovery(AttackData data)
+    private void TickRecovery(AttackData data, float deltaTime)
     {
         if (_recoveryTimer >= data.RecoveryTime)
             return;
 
         if (
-            !_playerAnimator.IsLightAttackFinished(
+            !_playerAnimator.IsAttackFinished(
                 data.CompletionNormalizedTime
             )
         )
@@ -405,6 +465,6 @@ public sealed class PlayerCombat : MonoBehaviour
             return;
         }
 
-        _recoveryTimer += Time.deltaTime;
+        _recoveryTimer += deltaTime;
     }
 }

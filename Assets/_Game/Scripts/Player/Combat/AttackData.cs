@@ -22,6 +22,8 @@ public sealed class AttackData : ScriptableObject
     [Header("Damage & Stamina")]
     [SerializeField, Min(0)] private int _damage = 25;
     [SerializeField, Min(0f)] private float _staminaCost = 20f;
+    [Tooltip("战技消耗的蓝量；普通攻击和跳劈通常为0。")]
+    [SerializeField, Min(0f)] private float _manaCost;
 
     [Header("Hit Window (Normalized)")]
     [SerializeField, Range(0f, 1f)] private float _hitWindowStart = 0.25f;
@@ -65,6 +67,7 @@ public sealed class AttackData : ScriptableObject
     public float StartTimeOffset => _startTimeOffset;
     public int Damage => _damage;
     public float StaminaCost => _staminaCost;
+    public float ManaCost => _manaCost;
     public float HitWindowStart => _hitWindowStart;
     public float HitWindowEnd => _hitWindowEnd;
     public float CompletionNormalizedTime => _completionNormalizedTime;

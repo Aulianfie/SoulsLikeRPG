@@ -95,6 +95,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "WeaponSkill",
+                    "type": "Button",
+                    "id": "d598f7bc-8753-4b0e-8384-1d853834ea51",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -326,6 +335,17 @@
                     "processors": "",
                     "groups": "Gamepad",
                     "action": "UseItem",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "02ac1dbe-e228-4869-a45f-78132dc92626",
+                    "path": "<Keyboard>/q",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "Keyboard&Mouse",
+                    "action": "WeaponSkill",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

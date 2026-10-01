@@ -1,0 +1,184 @@
+[
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Jump/InPlace/1Hand_Base_Jump_Attack_1_InPlace.fbx",
+    "id": "c625c26ffa23d7c48b41c43c7a6a4a03",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/JumpAttack/1Hand_Base_Jump_Attack_1_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Jump/InPlace/1Hand_Base_Jump_Attack_2_InPlace.fbx",
+    "id": "3ed73cac56b80dc44ab0f878456c6cac",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/JumpAttack/1Hand_Base_Jump_Attack_2_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Jump/1Hand_Base_Jump_Attack_1.fbx",
+    "id": "bd0460207ebd4f14e94c7efed9e5b899",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/JumpAttack/1Hand_Base_Jump_Attack_1.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Jump/InPlace/2Hand_Base_Jump_Attack_1_InPlace.fbx",
+    "id": "63fc5c7a99bd70d4d8c4a7d1da2a2ebd",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Base_Jump_Attack_1_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Jump/InPlace/2Hand_Base_Jump_Attack_2_InPlace.fbx",
+    "id": "e24b8e4a7520b0747bc2620e1666b059",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Base_Jump_Attack_2_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Up1.6.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Up/Jump/InPlace/2Hand_Up_Jump_Attack_InPlace.fbx",
+    "id": "1945d4731164c9f49a5769fb669f254c",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Up_Jump_Attack_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Skills/InPlace/1Hand_Base_Skill_1_InPlace.fbx",
+    "id": "38bc6e2b7cd2e2a4ab9549162976130f",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/WeaponSkill/1Hand_Base_Skill_1_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Skills/InPlace/1Hand_Base_Skill_2_InPlace.fbx",
+    "id": "2b89174435f49bf4a99d1bbbbce0ec46",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/WeaponSkill/1Hand_Base_Skill_2_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Skills/InPlace/1Hand_Base_Skill_4_InPlace.fbx",
+    "id": "c46b7821356ab33409e7a04095f4ffdf",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/WeaponSkill/1Hand_Base_Skill_4_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Up.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Up/Skills/InPlace/1Hand_Up_Skill_1_InPlace.fbx",
+    "id": "c3e4737c3c5bf064c88ff48de0f04531",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/WeaponSkill/1Hand_Up_Skill_1_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Up.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Up/Skills/InPlace/1Hand_Up_Skill_3_InPlace.fbx",
+    "id": "6a4690f5cfe71854295489ee0a2081cb",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/WeaponSkill/1Hand_Up_Skill_3_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Skills/InPlace/2Hand_Base_Skill_1_InPlace.fbx",
+    "id": "5d326295381c5e2409543bc555d1b5f4",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/WeaponSkill/2Hand_Base_Skill_1_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Skills/InPlace/2Hand_Base_Skill_3_InPlace.fbx",
+    "id": "91e62dbe76385414e8f7a42947a8c88c",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/WeaponSkill/2Hand_Base_Skill_3_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Skills/InPlace/2Hand_Base_Skill_4_InPlace.fbx",
+    "id": "956a4f2757f37cd46a015582e283f694",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/WeaponSkill/2Hand_Base_Skill_4_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Up1.6.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Up/Skills/InPlace/2Hand_Up_Skill_1_InPlace.fbx",
+    "id": "ff3d918239371af4483618dff604d43c",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/WeaponSkill/2Hand_Up_Skill_1_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - Two Hand Up1.6.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Up/Skills/InPlace/2Hand_Up_Skill_4_InPlace.fbx",
+    "id": "87eabc26fbed48f47a2c8d99db68a098",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/WeaponSkill/2Hand_Up_Skill_4_InPlace.fbx",
+    "support": false
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Jump/InPlace/1Hand_Base_Jump_Attack_1_Hold_InPlace.fbx",
+    "id": "7184c296b7ebae041b4b2955ec298abf",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/JumpAttack/1Hand_Base_Jump_Attack_1_Hold_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Jump/InPlace/1Hand_Base_Jump_Attack_1_End_InPlace.fbx",
+    "id": "90e51943587f5d84db4a0569459ac2fb",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/JumpAttack/1Hand_Base_Jump_Attack_1_End_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Jump/InPlace/1Hand_Base_Jump_Attack_2_Hold_InPlace.fbx",
+    "id": "85479e55f9919864dbc7558112b4a032",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/JumpAttack/1Hand_Base_Jump_Attack_2_Hold_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - One Hand Base1.11.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/One Hand Base/Jump/InPlace/1Hand_Base_Jump_Attack_2_End_InPlace.fbx",
+    "id": "205039add4f0ec847adf7a597c97988f",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/LongSword/JumpAttack/1Hand_Base_Jump_Attack_2_End_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Jump/InPlace/2Hand_Base_Jump_Attack_1_Hold_InPlace.fbx",
+    "id": "8c1828d76329e0247ac35e412690c51a",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Base_Jump_Attack_1_Hold_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Jump/InPlace/2Hand_Base_Jump_Attack_1_End_InPlace.fbx",
+    "id": "a34af6b34ed520846b346fd3d54b5055",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Base_Jump_Attack_1_End_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Jump/InPlace/2Hand_Base_Jump_Attack_2_Hold_InPlace.fbx",
+    "id": "1d7811e554ed90544b8ee1adbd8c4693",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Base_Jump_Attack_2_Hold_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - Two Hand Base1.10.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Base/Jump/InPlace/2Hand_Base_Jump_Attack_2_End_InPlace.fbx",
+    "id": "ffe568903aa2f0f4f8f2b634a41a3fbe",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Base_Jump_Attack_2_End_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - Two Hand Up1.6.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Up/Jump/InPlace/2Hand_Up_Jump_Attack_Hold_InPlace.fbx",
+    "id": "0ebcf627574811b4cbf55b59e683e76e",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Up_Jump_Attack_Hold_InPlace.fbx",
+    "support": true
+  },
+  {
+    "package": "RPGAnimations - Two Hand Up1.6.unitypackage",
+    "path": "Assets/DoubleL/FBX_Animations/Two Hand Up/Jump/InPlace/2Hand_Up_Jump_Attack_End_InPlace.fbx",
+    "id": "0c2d668daabcc8d49913c757810222d2",
+    "importedPath": "Assets/ThirdParty/DoubleL/Day11_Candidates/GreatSword/JumpAttack/2Hand_Up_Jump_Attack_End_InPlace.fbx",
+    "support": true
+  }
+]

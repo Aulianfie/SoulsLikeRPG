@@ -161,6 +161,19 @@ public class PlayerAnimator : MonoBehaviour
         float startTimeOffset
     )
     {
+        return PlayAttack(animationStateName, transitionDuration, startTimeOffset);
+    }
+
+    public bool HasAttackAnimation(string stateName)
+    {
+        return _animator != null && _animator.isActiveAndEnabled && !string.IsNullOrEmpty(stateName) &&
+            (_animator.HasState(BaseLayerIndex, Animator.StringToHash(stateName)) ||
+             _animator.HasState(BaseLayerIndex, Animator.StringToHash("Base Layer." + stateName)));
+    }
+
+    // All action types use the same playback and normalized-time tracking.
+    public bool PlayAttack(string animationStateName, float transitionDuration, float startTimeOffset = 0f)
+    {
         if (string.IsNullOrEmpty(animationStateName))
         {
             Debug.LogError(
@@ -228,8 +241,13 @@ public class PlayerAnimator : MonoBehaviour
     /// <returns></returns>
     public bool IsLightAttackFinished(float completionNormalizedTime)
     {
+        return IsAttackFinished(completionNormalizedTime);
+    }
+
+    public bool IsAttackFinished(float completionNormalizedTime)
+    {
         return
-            TryGetLightAttackNormalizedTime(out float normalizedTime) &&
+            TryGetAttackNormalizedTime(out float normalizedTime) &&
             normalizedTime >= completionNormalizedTime;
     }
 
@@ -237,9 +255,14 @@ public class PlayerAnimator : MonoBehaviour
         out float normalizedTime
     )
     {
+        return TryGetAttackNormalizedTime(out normalizedTime);
+    }
+
+    public bool TryGetAttackNormalizedTime(out float normalizedTime)
+    {
         normalizedTime = 0f;
 
-        if (_animator.IsInTransition(BaseLayerIndex))
+        if (_animator == null || !_animator.isActiveAndEnabled || _animator.IsInTransition(BaseLayerIndex))
             return false;
 
         AnimatorStateInfo stateInfo =

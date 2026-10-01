@@ -8,17 +8,8 @@ public sealed class PlayerLocomotionState : PlayerState
     public override void Tick(float deltaTime)
     {
         int switchDirection = StateMachine.InputReader.ConsumeSwitchWeapon();
-        if (switchDirection != 0)
-            StateMachine.Equipment?.CycleWeapon(switchDirection);
-        if (StateMachine.CurrentState != this)
-        {
-            // 开始上半身切换的这一帧也保持正常移动，避免漏掉一次 Motor 更新。
-            if (StateMachine.CurrentState == StateMachine.WeaponSwitchState)
-                StateMachine.Motor.TickLocomotion(StateMachine.InputReader.MoveInput,
-                    StateMachine.InputReader.SprintInput, deltaTime);
-            return;
-        }
         bool useItemRequested = StateMachine.InputReader.ConsumeUseItem();
+        bool skillRequested = StateMachine.InputReader.ConsumeWeaponSkill();
         bool jumpRequested = StateMachine.InputReader.ConsumeJump();
 
         if (
@@ -49,18 +40,28 @@ public sealed class PlayerLocomotionState : PlayerState
         if (
             StateMachine.Motor.IsGrounded &&
             StateMachine.InputReader.HasBufferedLightAttack &&
-            StateMachine.Stamina.Consume(
-                GetLightAttackStaminaCost()
-            )
+            StateMachine.TryBeginAttack(PlayerAttackType.Light)
         )
         {
             StateMachine.InputReader.ConsumeBufferedLightAttack();
-            StateMachine.ChangeState(StateMachine.AttackState);
             return;
         }
 
+        if (skillRequested && StateMachine.TryBeginAttack(PlayerAttackType.WeaponSkill)) return;
+
         if (useItemRequested && StateMachine.Items != null && StateMachine.Items.TryUseItem())
             return;
+
+        if (switchDirection != 0)
+        {
+            StateMachine.Equipment?.CycleWeapon(switchDirection);
+            if (StateMachine.CurrentState != this)
+            {
+                StateMachine.Motor.TickLocomotion(StateMachine.InputReader.MoveInput,
+                    StateMachine.InputReader.SprintInput, deltaTime);
+                return;
+            }
+        }
 
         // Day5 Task3（按反馈调整）：锁定与否共用同一套相机相对移动，
         // 角色朝移动方向转身、可奔跑；
@@ -77,16 +78,4 @@ public sealed class PlayerLocomotionState : PlayerState
         }
     }
 
-    /// <summary>
-    /// 第一段攻击的体力消耗：只有连招未配置（AttackData 为 null）时
-    /// 才回退到 PlayerStamina 上的默认消耗；
-    /// 配置里的 0 是合法值，必须原样使用。
-    /// </summary>
-    private float GetLightAttackStaminaCost()
-    {
-        if (StateMachine.Combat.HasFirstAttack)
-            return StateMachine.Combat.FirstAttackStaminaCost;
-
-        return StateMachine.Stamina.AttackCost;
-    }
 }
