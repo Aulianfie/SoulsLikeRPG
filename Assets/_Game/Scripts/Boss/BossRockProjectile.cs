@@ -21,17 +21,37 @@ public sealed class BossRockProjectile : MonoBehaviour
     private int _damage;
     private float _age;
     private bool _isResolved;
+    private bool _isLaunched;
 
     // Public properties
     public bool Resolved => _isResolved;
     public GameObject Owner => _owner;
+    public bool IsLaunched => _isLaunched;
+
+    private void Awake()
+    {
+        // 石头随手部动画经过地面时只显示模型，发射之前不参与碰撞。
+        GetComponent<SphereCollider>().enabled = false;
+    }
+
+    public void PrepareHeld(GameObject attacker)
+    {
+        _owner = attacker;
+        _isLaunched = false;
+        _isResolved = false;
+        _age = 0;
+        GetComponent<SphereCollider>().enabled = false;
+    }
 
     public void Launch(GameObject attacker, Vector3 target, int amount)
     {
+        transform.SetParent(null, true);
         _owner = attacker;
         _damage = amount;
         _age = 0;
         _isResolved = false;
+        _isLaunched = true;
+        GetComponent<SphereCollider>().enabled = true;
         float duration = Mathf.Clamp(Vector3.Distance(transform.position, target) / 12, .65f, 2);
         _velocity = (target - transform.position - .5f * Physics.gravity * duration * duration) / duration;
     }
@@ -42,6 +62,11 @@ public sealed class BossRockProjectile : MonoBehaviour
             _owner == null)
         {
             Destroy(gameObject);
+            return;
+        }
+
+        if (!_isLaunched)
+        {
             return;
         }
 

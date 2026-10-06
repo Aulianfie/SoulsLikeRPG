@@ -3,6 +3,8 @@ using UnityEngine;
 
 public sealed class BossDamageArea : MonoBehaviour
 {
+    private const float PulseCueHeight = .07f;
+
     // Serialized fields
     [SerializeField]
     private LayerMask _targetLayers = 1;
@@ -14,7 +16,7 @@ public sealed class BossDamageArea : MonoBehaviour
     private Material _cueMaterial;
 
     // Runtime state
-    private readonly Collider[] _targetOverlaps = new Collider[32];
+    private Collider[] _targetOverlaps = new Collider[32];
     private readonly RaycastHit[] _groundHits = new RaycastHit[16];
     private Vector3 _previousSweepPosition;
     private bool _hasPreviousSweep;
@@ -34,6 +36,22 @@ public sealed class BossDamageArea : MonoBehaviour
         center.y = ground;
         Detect(center, radius, damage, hitTargets, true);
         ShowPulse(center, radius);
+    }
+
+    public void Stomp(Vector3 footPosition, float reach, BossSkillSide side, int damage, HashSet<IDamageable> hitTargets)
+    {
+        Quaternion orientation = Quaternion.LookRotation(Vector3.ProjectOnPlane(transform.forward, Vector3.up));
+        Vector3 right = orientation * Vector3.right;
+        Vector3 forward = orientation * Vector3.forward;
+        Vector2 halfSize = new Vector2(reach * .5f, reach);
+        float sideOffset = side == BossSkillSide.Left ? -halfSize.x : halfSize.x;
+
+        // 内侧边界对齐 Boss 中线；脚的前后落点决定矩形位置，避免另一侧脚也造成伤害。
+        Vector3 center = transform.position + forward * Vector3.Dot(footPosition - transform.position, forward);
+        center += right * sideOffset;
+        center.y = GroundHeight(footPosition + Vector3.up, footPosition.y);
+        Detect(center, reach, damage, hitTargets, true, halfSize, orientation);
+        ShowStomp(center, halfSize, orientation);
     }
 
     public void Sweep(Vector3 center, float radius, int damage, HashSet<IDamageable> hitTargets)
@@ -63,15 +81,45 @@ public sealed class BossDamageArea : MonoBehaviour
         _hasPreviousSweep = true;
     }
 
-    private void Detect(Vector3 center, float radius, int damage, HashSet<IDamageable> hitTargets, bool groundWave)
+    private void Detect(Vector3 center, float radius, int damage, HashSet<IDamageable> hitTargets, bool groundWave,
+        Vector2 rectangleHalfSize = default, Quaternion orientation = default)
     {
-        int count = Physics.OverlapSphereNonAlloc(
-            center + (groundWave ? Vector3.up * .3f : Vector3.zero),
-            radius,
-            _targetOverlaps,
-            _targetLayers,
-            QueryTriggerInteraction.Ignore
-        );
+        Vector3 queryCenter = center + (groundWave ? Vector3.up * .3f : Vector3.zero);
+        bool rectangular = rectangleHalfSize.x > 0;
+        int count;
+        while (true)
+        {
+            if (rectangular)
+            {
+                count = Physics.OverlapBoxNonAlloc(
+                    queryCenter,
+                    new Vector3(rectangleHalfSize.x, radius, rectangleHalfSize.y),
+                    _targetOverlaps,
+                    orientation,
+                    _targetLayers,
+                    QueryTriggerInteraction.Ignore
+                );
+            }
+            else
+            {
+                count = Physics.OverlapSphereNonAlloc(
+                    queryCenter,
+                    radius,
+                    _targetOverlaps,
+                    _targetLayers,
+                    QueryTriggerInteraction.Ignore
+                );
+            }
+            if (count < _targetOverlaps.Length)
+            {
+                break;
+            }
+
+            // 环境与玩家共用 Default 层；缓冲区满时不能认为玩家不在伤害范围内。
+            // 仅在容量不足时扩容，后续检测继续复用同一数组。
+            System.Array.Resize(ref _targetOverlaps, _targetOverlaps.Length * 2);
+        }
+
         for (int i = 0; i < count; i++)
         {
             Collider collider = _targetOverlaps[i];
@@ -95,7 +143,19 @@ public sealed class BossDamageArea : MonoBehaviour
                 float height = GroundHeight(feet + Vector3.up * .15f, float.NegativeInfinity);
                 Vector3 flat = feet - center;
                 flat.y = 0;
-                if (flat.sqrMagnitude > radius * radius ||
+                bool outsideFootprint;
+                if (rectangular)
+                {
+                    Vector3 local = Quaternion.Inverse(orientation) * flat;
+                    outsideFootprint = Mathf.Abs(local.x) > rectangleHalfSize.x ||
+                        Mathf.Abs(local.z) > rectangleHalfSize.y;
+                }
+                else
+                {
+                    outsideFootprint = flat.sqrMagnitude > radius * radius;
+                }
+
+                if (outsideFootprint ||
                     float.IsNegativeInfinity(height) ||
                     Mathf.Abs(height - center.y) > .6f ||
                     feet.y - height > _waveHeight)
@@ -143,9 +203,38 @@ public sealed class BossDamageArea : MonoBehaviour
 
     private void ShowPulse(Vector3 center, float radius)
     {
-        if (_cueMaterial == null)
+        LineRenderer line = CreatePulseCue(48);
+        if (line == null)
         {
             return;
+        }
+
+        for (int i = 0; i < 48; i++)
+        {
+            float angle = i * Mathf.PI * 2 / 48;
+            line.SetPosition(i, center + new Vector3(Mathf.Cos(angle) * radius, PulseCueHeight, Mathf.Sin(angle) * radius));
+        }
+    }
+
+    private void ShowStomp(Vector3 center, Vector2 halfSize, Quaternion orientation)
+    {
+        LineRenderer line = CreatePulseCue(4);
+        if (line == null)
+        {
+            return;
+        }
+
+        line.SetPosition(0, center + orientation * new Vector3(-halfSize.x, PulseCueHeight, -halfSize.y));
+        line.SetPosition(1, center + orientation * new Vector3(-halfSize.x, PulseCueHeight, halfSize.y));
+        line.SetPosition(2, center + orientation * new Vector3(halfSize.x, PulseCueHeight, halfSize.y));
+        line.SetPosition(3, center + orientation * new Vector3(halfSize.x, PulseCueHeight, -halfSize.y));
+    }
+
+    private LineRenderer CreatePulseCue(int pointCount)
+    {
+        if (_cueMaterial == null)
+        {
+            return null;
         }
 
         var cue = new GameObject("GolemGroundPulse", typeof(LineRenderer));
@@ -156,13 +245,8 @@ public sealed class BossDamageArea : MonoBehaviour
         line.useWorldSpace = true;
         line.loop = true;
         line.widthMultiplier = .1f;
-        line.positionCount = 48;
-        for (int i = 0; i < 48; i++)
-        {
-            float angle = i * Mathf.PI * 2 / 48;
-            line.SetPosition(i, center + new Vector3(Mathf.Cos(angle) * radius, .07f, Mathf.Sin(angle) * radius));
-        }
-
+        line.positionCount = pointCount;
         Destroy(cue, .7f);
+        return line;
     }
 }

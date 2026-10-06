@@ -27,6 +27,11 @@ public sealed class BossBlackboard
     private readonly Dictionary<BossSkillFamily, float> _familyReadyTimes = new Dictionary<BossSkillFamily, float>();
     private readonly Queue<BossSkillFamily> _recentSkillFamilies = new Queue<BossSkillFamily>();
 
+    /// <summary>
+    /// 获取指定SkillFamily的准备时间。
+    /// </summary>
+    /// <param name="family">SkillFamily</param>
+    /// <returns>准备时间</returns>
     public float ReadyAt(BossSkillFamily family)
     {
         if (_familyReadyTimes.TryGetValue(family, out float value))
@@ -39,6 +44,11 @@ public sealed class BossBlackboard
         }
     }
 
+    /// <summary>
+    /// 获取指定SkillFamily在最近三次使用中出现的次数。
+    /// </summary>
+    /// <param name="family"></param>
+    /// <returns></returns>
     public int RecentCount(BossSkillFamily family)
     {
         int count = 0;
@@ -53,12 +63,22 @@ public sealed class BossBlackboard
         return count;
     }
 
+    /// <summary>
+    /// 提交一个技能使用，更新准备时间和历史。
+    /// </summary>
+    /// <param name="skill"></param>
+    /// <param name="now"></param>
     public void Commit(BossSkillData skill, float now)
     {
         CurrentSkill = skill;
         _familyReadyTimes[skill.Family] = now + skill.Cooldown;
     }
 
+    /// <summary>
+    /// 结束当前技能的使用，更新历史和计数。
+    /// </summary>
+    /// <param name="now"></param>
+    /// <param name="completed"></param>
     public void Finish(float now, bool completed)
     {
         if (CurrentSkill == null)
@@ -90,7 +110,9 @@ public sealed class BossBlackboard
         NextDecisionTime = now + CurrentSkill.Recovery;
         CurrentSkill = null;
     }
-
+    /// <summary>
+    /// 清除技能历史和计数。
+    /// </summary>
     public void Reset()
     {
         _familyReadyTimes.Clear();

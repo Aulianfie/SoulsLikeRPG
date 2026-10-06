@@ -78,6 +78,11 @@ public sealed class BTSequence : BTNode
         this.children = children;
     }
 
+    /// <summary>
+    /// 执行子节点，直到遇到第一个失败或正在运行的节点。若所有子节点都成功，则返回成功。
+    /// </summary>
+    /// <param name="deltaTime"></param>
+    /// <returns></returns>
     public override BTStatus Tick(float deltaTime)
     {
         for (int i = 0; i < children.Length; i++)
@@ -132,6 +137,12 @@ public sealed class BTSelector : BTNode
         this.children = children;
     }
 
+    /// <summary>
+    /// 执行子节点，直到遇到第一个成功或正在运行的节点。若所有子节点都失败，则返回失败。
+    /// 若当前正在运行的子节点被中止，则继续执行下一个子节点。
+    /// </summary>
+    /// <param name="deltaTime"></param>
+    /// <returns></returns>
     public override BTStatus Tick(float deltaTime)
     {
         for (int i = 0; i < children.Length; i++)

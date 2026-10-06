@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// BossActionSelector 负责在 Boss 的技能池中选择一个技能，考虑距离、角度、冷却、历史使用等因素。
+/// </summary>
 [Serializable]
 public sealed class BossSelectionSettings
 {
@@ -131,7 +134,9 @@ public sealed class BossActionSelector
                 {
                     factors += "；近期出现" + recent + "次";
                 }
-
+                
+                // SideDwell 表示玩家在 Boss 某一侧待了多久，FarDwell 表示玩家在远距离区域待了多久。
+                // 对于 踩地 和 投石 技能，玩家在该区域停留的时间越长，权重越高。
                 if (skill.Family == BossSkillFamily.Stomp)
                 {
                     weight *= 1 + Mathf.Min(settings.dwellCap, board.SideDwell * .15f);
@@ -141,7 +146,8 @@ public sealed class BossActionSelector
                 {
                     weight *= 1 + Mathf.Min(settings.dwellCap, board.FarDwell * .08f);
                 }
-
+                
+                // 连续使用 Dash 或 Whirlwind 后，普通攻击的权重会增加。
                 if (board.LastSkill != null &&
                     (board.LastSkill.Family == BossSkillFamily.Dash ||
                     board.LastSkill.Family == BossSkillFamily.Whirlwind) &&
@@ -160,7 +166,7 @@ public sealed class BossActionSelector
                     Reason = reason ?? "可用" + factors
                 });
         }
-
+        // ordinaryAlternative 假设上一个技能是某一个普通攻击，且当前有其他普通攻击可选，则 ordinaryAlternative 为 true。
         bool ordinaryAlternative = Candidates.Exists(c => c.Weight > 0 &&
                 c.Skill.Family == BossSkillFamily.Ordinary &&
                 c.Skill != board.LastSkill);
@@ -171,12 +177,13 @@ public sealed class BossActionSelector
                 continue;
             }
 
+            // 每一类技能都求一个平均权重，防止普通攻击因为技能数量多，概率天然变成踩地的四倍
             int family = (int)candidate.Skill.Family;
             candidate.Weight /= _familyCounts[family];
             _familyWeights[family] += candidate.Weight;
         }
 
-        float total = RunWeight;
+        float total = RunWeight; // TODO 这里我有点疑问？RunWeight 也算在总权重里，方便计算 RunProbability
         for (int i = 0; i < SkillFamilyCount; i++)
         {
             total += _familyWeights[i];
@@ -187,7 +194,7 @@ public sealed class BossActionSelector
             return null;
         }
 
-        // 类别概率保持不变；普通动作的重复惩罚仅调整该类别内的变体抽签。
+        // 其余类别普通攻击概率保持不变，仅针对上次使用的普通攻击做权重衰减，避免连续使用同一个普通攻击。
         foreach (var c in Candidates)
         {
             if (c.Skill.Family == BossSkillFamily.Ordinary &&
@@ -199,6 +206,7 @@ public sealed class BossActionSelector
             }
         }
 
+        // 计算类别概率和变体概率
         for (int family = 0; family < SkillFamilyCount; family++)
         {
             float variants = 0;
@@ -227,7 +235,7 @@ public sealed class BossActionSelector
             run = true;
             return null;
         }
-
+        // 先选一个SkillFamily
         sample -= RunWeight;
         int chosenFamily = -1;
         for (int i = 0; i < SkillFamilyCount; i++)
@@ -240,7 +248,7 @@ public sealed class BossActionSelector
 
             sample -= _familyWeights[i];
         }
-
+        // 再在该SkillFamily中选一个具体的技能
         float variantTotal = 0;
         foreach (var candidate in Candidates)
         {
@@ -272,7 +280,15 @@ public sealed class BossActionSelector
 
         return null;
     }
-
+    /// <summary>
+    /// 获取指定技能在当前状态下不适用的原因，如果返回 null 则表示技能可用。
+    /// 有任何string返回值，表示技能不可用，返回值为原因描述。
+    /// </summary>
+    /// <param name="skill"></param>
+    /// <param name="b"></param>
+    /// <param name="s"></param>
+    /// <param name="now"></param>
+    /// <returns></returns>
     public static string IneligibleReason(BossSkillData skill, BossBlackboard b, BossSelectionSettings s, float now)
     {
         if (b.Target == null)

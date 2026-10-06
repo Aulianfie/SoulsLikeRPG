@@ -25,7 +25,12 @@ MonoBehaviour:
   _damage: 30
   _directionLock: 0.2
   _hitStart: 0.31
-  _hitEnd: 0.64
+  _hitEnd: 0.72
+  _hitWindows:
+  - _start: 0.31
+    _end: 0.43
+  - _start: 0.53
+    _end: 0.72
   _release: 0.5
   _completion: 0.99
   _recovery: 0.55

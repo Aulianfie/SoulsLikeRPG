@@ -308,9 +308,48 @@ public static class GiantGolemBossSetup
         Set(thrown, "_damage", 30);
         Set(thrown, "_directionLock", .60f);
         Set(thrown, "_release", .68f);
+        Set(thrown, "_projectilePickup", .25f);
         Set(thrown, "_hitStart", .68f);
         Set(thrown, "_hitEnd", .70f);
+        ConfigureCombatHitWindows(skills[1], skills[6]);
         return skills;
+    }
+
+    [MenuItem("Tools/SoulsLike RPG/Giant Golem/Apply Multi Hit Windows")]
+    public static void ApplyCombatHitWindows()
+    {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+        {
+            throw new InvalidOperationException("请在 Edit Mode 配置技能窗口。");
+        }
+
+        var attack2 = AssetDatabase.LoadAssetAtPath<BossSkillData>(ConfigRoot + "SO_attack02.asset");
+        var dash = AssetDatabase.LoadAssetAtPath<BossSkillData>(ConfigRoot + "SO_attack_DashAtk.asset");
+        ConfigureCombatHitWindows(attack2, dash);
+        AssetDatabase.SaveAssets();
+    }
+
+    private static void ConfigureCombatHitWindows(BossSkillData attack2, BossSkillData dash)
+    {
+        ConfigureHitWindows(attack2, new Vector2(.23f, .43f), new Vector2(.58f, .76f));
+        ConfigureHitWindows(dash, new Vector2(.31f, .43f), new Vector2(.53f, .72f));
+        Set(dash, "_hitEnd", .72f);
+    }
+
+    private static void ConfigureHitWindows(BossSkillData skill, params Vector2[] windows)
+    {
+        var serialized = new SerializedObject(skill);
+        var property = serialized.FindProperty("_hitWindows");
+        property.arraySize = windows.Length;
+        for (int i = 0; i < windows.Length; i++)
+        {
+            var window = property.GetArrayElementAtIndex(i);
+            window.FindPropertyRelative("_start").floatValue = windows[i].x;
+            window.FindPropertyRelative("_end").floatValue = windows[i].y;
+        }
+
+        serialized.ApplyModifiedPropertiesWithoutUndo();
+        EditorUtility.SetDirty(skill);
     }
 
     private static void ConfigureMove(BossSkillData s, BossSkillFamily family, float min, float max, float moveStart, float moveEnd, float speed, float hitStart, float hitEnd, float radius)

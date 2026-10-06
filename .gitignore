@@ -33,3 +33,6 @@ Thumbs.db
 
 # Local backup archives
 /Assets.7z
+
+# Local Boss AI study notes
+/Docs/Local/GiantGolem_BossAI_CodeWalkthrough.md

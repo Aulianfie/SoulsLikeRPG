@@ -72,7 +72,7 @@ public sealed class EnemyAnimator : MonoBehaviour
         _animator.CrossFadeInFixedTime(stateHash, transitionDuration, BaseLayerIndex, 0f);
         return true;
     }
-
+    
     public bool TryGetStateNormalizedTime(int stateHash, out float normalizedTime)
     {
         normalizedTime = 0f;

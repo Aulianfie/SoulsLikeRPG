@@ -181,7 +181,10 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
         _nextRepathTime = 0;
         _animationDriver.PlayIdle();
     }
-
+    /// <summary>
+    /// 解析目标。
+    /// </summary>
+    /// <returns></returns>
     private void ResolveTarget()
     {
         if (_targetOverride == null)

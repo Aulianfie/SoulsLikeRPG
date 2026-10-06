@@ -648,7 +648,12 @@ public static class GiantGolemBossValidation
             Test(boss.DecisionCount == decisions, "执行中不重新抽签 " + skill.Id, "强制检查期间自动 AI 关闭");
             if (skill.Family != BossSkillFamily.ThrowStone)
             {
-                Test(loss == skill.Damage, "真实技能命中一次 " + skill.Id, "HP loss=" + loss + "; expected=" + skill.Damage);
+                int expectedDamage = skill.Damage * skill.HitWindowCount;
+                Test(
+                    loss == expectedDamage,
+                    "真实技能每段命中一次 " + skill.Id,
+                    "HP loss=" + loss + "; expected=" + expectedDamage + "; strikes=" + skill.HitWindowCount
+                );
             }
             else
             {
