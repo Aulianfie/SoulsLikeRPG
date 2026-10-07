@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _id: attack_jumpAtk
   _stateName: attack_jumpAtk
-  _family: 4
+  _family: 1
   _side: 0
   _damageKind: 1
   _minRange: 0

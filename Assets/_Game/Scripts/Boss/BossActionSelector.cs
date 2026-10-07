@@ -28,7 +28,8 @@ public sealed class BossSelectionSettings
 
 public sealed class BossActionSelector
 {
-    private const int SkillFamilyCount = 6;
+    // 按序列化数值分配槽位，兼容合并 Jump 后保留的枚举空位。
+    private const int SkillFamilyCount = (int)BossSkillFamily.ThrowStone + 1;
 
     public sealed class Candidate
     {
@@ -82,7 +83,7 @@ public sealed class BossActionSelector
                 weight = 0;
             }
 
-            // 四个普通动作共享一个类别预算：先对有效动作数量归一，再做类别抽签。
+            // 同一 family 的有效动作共享类别预算，GroundSlam 包括踩地与跳跃落地。
             if (weight > 0)
             {
                 if (far)
@@ -95,7 +96,7 @@ public sealed class BossActionSelector
                     {
                         weight *= 50;
                     }
-                    else if (skill.Family == BossSkillFamily.Stomp)
+                    else if (skill.Family == BossSkillFamily.GroundSlam)
                     {
                         weight *= 55;
                     }
@@ -137,7 +138,7 @@ public sealed class BossActionSelector
                 
                 // SideDwell 表示玩家在 Boss 某一侧待了多久，FarDwell 表示玩家在远距离区域待了多久。
                 // 对于 踩地 和 投石 技能，玩家在该区域停留的时间越长，权重越高。
-                if (skill.Family == BossSkillFamily.Stomp)
+                if (skill.IsSidedGroundSlam)
                 {
                     weight *= 1 + Mathf.Min(settings.dwellCap, board.SideDwell * .15f);
                 }
@@ -177,13 +178,13 @@ public sealed class BossActionSelector
                 continue;
             }
 
-            // 每一类技能都求一个平均权重，防止普通攻击因为技能数量多，概率天然变成踩地的四倍
+            // 按类别平均权重，避免普通攻击或 GroundSlam 因变体数量增加而放大类别概率。
             int family = (int)candidate.Skill.Family;
             candidate.Weight /= _familyCounts[family];
             _familyWeights[family] += candidate.Weight;
         }
 
-        float total = RunWeight; // TODO 这里我有点疑问？RunWeight 也算在总权重里，方便计算 RunProbability
+        float total = RunWeight; // RunWeight 也算在总权重里，方便计算 RunProbability
         for (int i = 0; i < SkillFamilyCount; i++)
         {
             total += _familyWeights[i];
@@ -318,7 +319,7 @@ public sealed class BossActionSelector
             return "远距行动池";
         }
 
-        if (skill.Family == BossSkillFamily.Stomp)
+        if (skill.IsSidedGroundSlam)
         {
             if (Mathf.Abs(b.Side) <= s.sideDeadZone)
             {

@@ -185,7 +185,7 @@ public static class GiantGolemBossValidation
             {
                 distance = 6;
             }
-            else if (skill.Family == BossSkillFamily.Jump)
+            else if (skill.Family == BossSkillFamily.GroundSlam && !skill.IsSidedGroundSlam)
             {
                 distance = 5;
             }
@@ -413,7 +413,7 @@ public static class GiantGolemBossValidation
         var center = Snapshot(2.5f, 0);
         s.Select(skills, center, cfg, 100, .1f, .1f, out _);
         Test(
-            s.Candidates.Where(c => c.Skill.Family == BossSkillFamily.Stomp).All(c => c.Reason == "中央死区"),
+            s.Candidates.Where(c => c.Skill.IsSidedGroundSlam).All(c => c.Reason == "中央死区"),
             "正中死区",
             "避免左右脚抖动"
         );
@@ -610,7 +610,7 @@ public static class GiantGolemBossValidation
             {
                 distance = 6;
             }
-            else if (skill.Family == BossSkillFamily.Jump)
+            else if (skill.Family == BossSkillFamily.GroundSlam && !skill.IsSidedGroundSlam)
             {
                 distance = 5;
             }

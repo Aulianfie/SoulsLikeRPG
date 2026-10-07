@@ -21,7 +21,7 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
     [SerializeField]
     private BossSelectionSettings _selection = new BossSelectionSettings();
     [SerializeField]
-    private LayerMask _obstacleLayers = 1;
+    private LayerMask _obstacleLayers = 1; // LayerMask = 1 对应的就是 Unity 中的 Default 层
     [SerializeField]
     private int _randomSeed = 1781;
     [SerializeField]
@@ -100,7 +100,8 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
                     _hasEngagedTarget &&
                     (!HasValidTarget ||
                         !_territory.IsInsideLeashArea(transform.position) ||
-                        !_territory.IsInsideLeashArea(_blackboard.Target.position)),
+                        !_territory.IsInsideLeashArea(_blackboard.Target.position)), 
+                        // 玩家 / Boss跑出 Leash 区域，Boss 都要回位
                 ReturnHome
             ),
             Branch("技能执行", () => _skillRunner.IsRunning, dt => _skillRunner.Tick(dt)),
@@ -216,7 +217,7 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
         {
             return;
         }
-
+        // 大概0.12秒感知一次玩家状态，避免每帧都计算距离、角度、侧向位置、停留时间等信息。
         if (Time.time >= _nextSenseTime)
         {
             Sense(SenseInterval);
@@ -225,7 +226,10 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
 
         _behaviorTreeRoot.Tick(Time.deltaTime);
     }
-
+    /// <summary>
+    /// 感知玩家的状态，包括距离、角度、侧向位置、停留时间等信息，并更新BossBlackboard数据。
+    /// </summary>
+    /// <param name="dt"></param>
     private void Sense(float dt)
     {
         if (!HasValidTarget)
@@ -256,20 +260,37 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
             side = 0;
         }
 
+        // 记录玩家在 Boss 同一侧停留了多久
         bool isStayingOnSameSide = side != 0 &&
             side == _previousTargetSide &&
             _blackboard.Distance <= _selection.nearRange;
         _blackboard.SideDwell = isStayingOnSameSide ? _blackboard.SideDwell + dt : 0;
         _previousTargetSide = side;
+        
+        // 记录玩家在 Boss 远距离区域停留了多久
         _blackboard.FarDwell = _blackboard.Distance >= _selection.farRange ? _blackboard.FarDwell + dt : 0;
+
+        // 检查 Boss 如果执行 Dash / Whirlwind 这种特殊移动，会不会撞墙
         _blackboard.MovementClear = _motor.CanMoveSpecial(delta, Mathf.Min(2, _blackboard.Distance), _obstacleLayers);
+        
+        // 检查 Boss 能不能正常走到玩家附近
         _blackboard.PathReachable = _motor.IsOnNavMesh &&
             NavMesh.SamplePosition(_blackboard.Target.position, out NavMeshHit sample, 3, _motor.AreaMask) &&
             NavMesh.CalculatePath(transform.position, sample.position, _motor.AreaMask, _navigationPath) &&
             _navigationPath.status == NavMeshPathStatus.PathComplete;
+        
+        // 检查 Boss 投掷技能的轨迹是否会被障碍物挡住
         _blackboard.ThrowClear = ThrowLineClear(_skillRunner.ThrowPosition, _blackboard.Target.position + Vector3.up);
     }
 
+    /// <summary>
+    /// 投石技能专用检查，即从起点到目标点的抛物线轨迹上没有障碍物阻挡。
+    /// 它先计算一条抛物线，然后把轨迹分成若干段（ThrowTrajectorySampleCount = 8）
+    /// 使用 SphereCast 检查每一段是否有障碍物阻挡。
+    /// </summary>
+    /// <param name="start"></param>
+    /// <param name="target"></param>
+    /// <returns></returns>
     private bool ThrowLineClear(Vector3 start, Vector3 target)
     {
         float duration = Mathf.Clamp(Vector3.Distance(start, target) / 12, .65f, 2);
@@ -340,11 +361,13 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
             );
         }
 
+        // case 1: selector 选中了一个技能，尝试执行它，下一帧行为树会进入技能执行
         if (skill != null && _skillRunner.Begin(skill))
         {
             return BTStatus.Success;
         }
 
+        // case 2: selector 返回了 run = true，Boss 决定接近玩家
         if ((run || _blackboard.Distance > _selection.nearRange - ChaseDistanceBuffer) &&
             _blackboard.PathReachable)
         {
@@ -352,6 +375,7 @@ public sealed class BossBrain : MonoBehaviour, ICheckpointResettable
             return BTStatus.Success;
         }
 
+        // case 3: selector 没有选中技能，也没有决定接近玩家，Boss 进入等待状态
         _motor.Stop();
         _motor.FaceTarget(_blackboard.Target.position, dt);
         _blackboard.NextDecisionTime = Time.time + .2f;

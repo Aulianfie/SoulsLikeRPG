@@ -30,6 +30,15 @@ public sealed class BossDamageArea : MonoBehaviour
         LastDamageCount = 0;
     }
 
+    /// <summary>
+    /// 处理圆形砸地攻击
+    /// 1. Detect 会检测所有在范围内的目标，满足条件的会受到伤害。
+    /// 2. ShowPulse 会在地面上显示一个圆形提示，持续约 0.7 秒后自动销毁。
+    /// </summary>
+    /// <param name="center"></param>
+    /// <param name="radius"></param>
+    /// <param name="damage"></param>
+    /// <param name="hitTargets"></param>
     public void Pulse(Vector3 center, float radius, int damage, HashSet<IDamageable> hitTargets)
     {
         float ground = GroundHeight(center + Vector3.up, center.y);
@@ -38,6 +47,16 @@ public sealed class BossDamageArea : MonoBehaviour
         ShowPulse(center, radius);
     }
 
+    /// <summary>
+    /// 处理矩形砸地攻击
+    /// 1. Detect 会检测所有在范围内的目标，满足条件的会受到伤害。
+    /// 2. ShowStomp 会在地面上显示一个矩形提示，持续约 0.7 秒后自动销毁。
+    /// </summary>
+    /// <param name="footPosition"></param>
+    /// <param name="reach"></param>
+    /// <param name="side"></param>
+    /// <param name="damage"></param>
+    /// <param name="hitTargets"></param>
     public void Stomp(Vector3 footPosition, float reach, BossSkillSide side, int damage, HashSet<IDamageable> hitTargets)
     {
         Quaternion orientation = Quaternion.LookRotation(Vector3.ProjectOnPlane(transform.forward, Vector3.up));
@@ -54,9 +73,19 @@ public sealed class BossDamageArea : MonoBehaviour
         ShowStomp(center, halfSize, orientation);
     }
 
+    /// <summary>
+    /// 旋转攻击中的连续扫掠
+    /// </summary>
+    /// <param name="center"></param>
+    /// <param name="radius"></param>
+    /// <param name="damage"></param>
+    /// <param name="hitTargets"></param>
     public void Sweep(Vector3 center, float radius, int damage, HashSet<IDamageable> hitTargets)
     {
         int steps;
+        // steps 的计算逻辑：
+        // 1. 如果上一次 Sweep 没有记录位置，steps = 1
+        // 2. 如果上一次 Sweep 有记录位置，计算当前中心与上一次中心的距离，按每 0.2 米一个步长计算 steps，最多 32 步。
         if (_hasPreviousSweep)
         {
             steps = Mathf.Clamp(Mathf.CeilToInt(Vector3.Distance(center, _previousSweepPosition) / .2f), 1, 32);
@@ -89,6 +118,7 @@ public sealed class BossDamageArea : MonoBehaviour
         int count;
         while (true)
         {
+            // 分别处理矩形和圆形的 Overlap 检测，使用 OverlapBoxNonAlloc 或 OverlapSphereNonAlloc
             if (rectangular)
             {
                 count = Physics.OverlapBoxNonAlloc(
@@ -120,6 +150,7 @@ public sealed class BossDamageArea : MonoBehaviour
             System.Array.Resize(ref _targetOverlaps, _targetOverlaps.Length * 2);
         }
 
+        // 
         for (int i = 0; i < count; i++)
         {
             Collider collider = _targetOverlaps[i];
@@ -201,6 +232,11 @@ public sealed class BossDamageArea : MonoBehaviour
         return result;
     }
 
+    /// <summary>
+    /// 显示地面冲击的圆形提示，持续约 0.7 秒后自动销毁。
+    /// </summary>
+    /// <param name="center"></param>
+    /// <param name="radius"></param>
     private void ShowPulse(Vector3 center, float radius)
     {
         LineRenderer line = CreatePulseCue(48);
@@ -216,6 +252,12 @@ public sealed class BossDamageArea : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 显示地面冲击的矩形提示，持续约 0.7 秒后自动销毁。
+    /// </summary>
+    /// <param name="center"></param>
+    /// <param name="halfSize"></param>
+    /// <param name="orientation"></param>
     private void ShowStomp(Vector3 center, Vector2 halfSize, Quaternion orientation)
     {
         LineRenderer line = CreatePulseCue(4);
@@ -230,6 +272,11 @@ public sealed class BossDamageArea : MonoBehaviour
         line.SetPosition(3, center + orientation * new Vector3(halfSize.x, PulseCueHeight, -halfSize.y));
     }
 
+    /// <summary>
+    /// 创建地面冲击提示线
+    /// </summary>
+    /// <param name="pointCount"></param>
+    /// <returns></returns>
     private LineRenderer CreatePulseCue(int pointCount)
     {
         if (_cueMaterial == null)

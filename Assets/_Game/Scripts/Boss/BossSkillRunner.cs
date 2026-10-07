@@ -220,7 +220,7 @@ public sealed class BossSkillRunner : MonoBehaviour
         {
             if (_blackboard.Target != null)
             {
-                if (_currentSkill.Family != BossSkillFamily.Stomp)
+                if (!_currentSkill.IsSidedGroundSlam)
                 {
                     _motor.FaceTarget(_blackboard.Target.position, dt);
                 }
@@ -352,9 +352,7 @@ public sealed class BossSkillRunner : MonoBehaviour
                 center.y = transform.position.y;
                 // Stomp 技能的伤害区域是矩形，Pulse 技能的伤害区域是圆形。
                 // 对于左/右脚踩地，伤害区域的中心点在 Boss 中线的左/右侧，对于跳跃落地，伤害区域的中心点在 Boss 中线的正下方。
-                bool sidedStomp = _currentSkill.Family == BossSkillFamily.Stomp &&
-                    _currentSkill.Side != BossSkillSide.Any;
-                if (sidedStomp)
+                if (_currentSkill.IsSidedGroundSlam)
                 {
                     _damageArea.Stomp(center, _currentSkill.Radius, _currentSkill.Side, _currentSkill.Damage, _hitTargets);
                 }

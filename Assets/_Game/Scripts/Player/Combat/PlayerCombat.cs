@@ -207,15 +207,30 @@ public sealed class PlayerCombat : MonoBehaviour
         return TryStartAttack(PlayerAttackType.Light);
     }
 
+    /// <summary>
+    /// 获取指定类型的攻击配置数据（AttackData）。
+    /// 返回 null 表示未配置该类型攻击。
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public AttackData GetAttack(PlayerAttackType type)
     {
-        if (type == PlayerAttackType.Light) return ActiveCombo != null ? ActiveCombo.Get(0) : null;
+        if (type == PlayerAttackType.Light) 
+            return ActiveCombo != null ? ActiveCombo.Get(0) : null;
         WeaponMoveset moveset = _currentWeapon != null ? _currentWeapon.Moveset : null;
-        if (moveset == null) return null;
+        if (moveset == null) 
+            return null;
         return type == PlayerAttackType.Jump ? moveset.JumpAttack :
             type == PlayerAttackType.WeaponSkill ? moveset.WeaponSkill : null;
     }
 
+    /// <summary>
+    /// 检查是否可以开始指定类型的攻击（体力/魔力/动画状态）。
+    /// 返回 false 表示体力不足、魔力不足、Animator 上没有对应的攻击状态，或当前正在攻击中。
+    /// 该方法只做检查，不会消耗体力/魔力，也不会播放动画；调用方必须在检查通过后再调用 TryStartAttack。
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public bool CanStartAttack(PlayerAttackType type)
     {
         AttackData data = GetAttack(type);
@@ -224,7 +239,11 @@ public sealed class PlayerCombat : MonoBehaviour
             (data.ManaCost <= 0f || (_mana != null && _mana.CanConsume(data.ManaCost)));
     }
 
-    // Validate resources and animation before charging; failed starts never spend MP.
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
     public bool TryStartAttack(PlayerAttackType type)
     {
         if (!CanStartAttack(type)) return false;

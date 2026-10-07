@@ -22,7 +22,7 @@ public class PlayerAnimator : MonoBehaviour
 
     private PlayerMotor _motor;
     private RuntimeAnimatorController _baseController;
-    private int _currentAttackStateHash;
+    private int _currentAttackStateHash; // 当前播放的攻击状态哈希值（Base Layer 下的 Attack1、Attack2 等）
     private static readonly int JumpAttackSpeedHash = Animator.StringToHash("JumpAttackSpeed");
     private bool _hasJumpAttackSpeed;
     private int _itemUseLayer = -1;
@@ -63,6 +63,7 @@ public class PlayerAnimator : MonoBehaviour
         }
 
         AnimatorStateInfo state;
+        // CrossFade 的时候，Animator 其实同时在处理两个 State，这时候读取 GetCurrentAnimatorStateInfo 有可能拿到的是上一个 state
         if (_animator.IsInTransition(_weaponSwitchLayer))
         {
             state = _animator.GetNextAnimatorStateInfo(_weaponSwitchLayer);
@@ -81,6 +82,11 @@ public class PlayerAnimator : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// 实现武器切换动画的淡出效果，normalizedTime = 当前动画播放的归一化时间，completionPoint = 动画完成点的归一化时间。
+    /// </summary>
+    /// <param name="normalizedTime"></param>
+    /// <param name="completionPoint"></param>
     public void FadeWeaponSwitch(float normalizedTime, float completionPoint)
     {
         if (_animator == null ||
@@ -148,6 +154,9 @@ public class PlayerAnimator : MonoBehaviour
         CacheJumpPlaybackParameter();
     }
 
+    /// <summary>
+    /// 缓存跳跃攻击播放速度参数。
+    /// </summary>
     private void CacheJumpPlaybackParameter()
     {
         _hasJumpAttackSpeed = System.Array.Exists(
@@ -185,6 +194,14 @@ public class PlayerAnimator : MonoBehaviour
         _animator.SetFloat(VerticalSpeedHash, _motor.VerticalVelocity);
     }
 
+    /// <summary>
+    /// 播放物品使用动画（例如回血药水）。
+    /// 该动画在 ItemUse Layer 下，播放时会覆盖 Locomotion Layer 的移动动画。
+    /// 该动画播放时，玩家仍然可以移动，但是上半身会被物品使用动画覆盖。
+    /// 使用了 AM_ItemUse_UpperBody 动画层，确保物品使用动画只影响上半身。
+    /// 相当于 现在 Animator 同时在算两套动画，Locomotion Layer 负责下半身移动，AM_ItemUse_UpperBody 负责上半身物品使用。
+    /// </summary>
+    /// <returns></returns>
     public bool PlayUseItem()
     {
         if (_animator == null ||
@@ -263,7 +280,13 @@ public class PlayerAnimator : MonoBehaviour
             _animator.HasState(BaseLayerIndex, Animator.StringToHash("Base Layer." + stateName)));
     }
 
-    // All action types use the same playback and normalized-time tracking.
+    /// <summary>
+    /// 播放 Base Layer 下指定名称的攻击状态（例如 Attack1，来自 AttackData）。
+    /// transitionDuration：动画_currentAttackStateHash混合时间（秒）。
+    /// startTimeOffset：从动画的第几秒开始播放（用于连击时跳过前摇），0 = 从头。
+    /// 返回 false 表示状态名无效或 Animator 上不存在该状态（此时不会切换动画），
+    /// 调用方必须安全中止攻击流程。
+    /// </summary>
     public bool PlayAttack(string animationStateName, float transitionDuration, float startTimeOffset = 0f)
     {
         if (string.IsNullOrEmpty(animationStateName))
@@ -294,6 +317,7 @@ public class PlayerAnimator : MonoBehaviour
         }
 
         _currentAttackStateHash = Animator.StringToHash(fullPathName);
+        // CrossFadeInFixedTime 从当前动画平滑混合到指定动画，transitionDuration = 混合时间（秒），startTimeOffset = 从动画的第几秒开始播放。
         _animator.CrossFadeInFixedTime(_currentAttackStateHash, transitionDuration, BaseLayerIndex, startTimeOffset);
         return true;
     }

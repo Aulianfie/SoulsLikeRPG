@@ -267,7 +267,7 @@ public static class GiantGolemBossSetup
         Set(skills[3], "_hitEnd", .74f);
         for (int i = 4; i <= 5; i++)
         {
-            Set(skills[i], "_family", (int)BossSkillFamily.Stomp);
+            Set(skills[i], "_family", (int)BossSkillFamily.GroundSlam);
             Set(skills[i], "_side", i == 4 ? (int)BossSkillSide.Left : (int)BossSkillSide.Right);
             Set(skills[i], "_damageKind", (int)BossDamageKind.GroundPulse);
             Set(skills[i], "_maxRange", 5.5f);
@@ -286,7 +286,7 @@ public static class GiantGolemBossSetup
         Set(skills[6], "_cooldown", 9f);
         Set(skills[7], "_cooldown", 11f);
         var jump = skills[8];
-        Set(jump, "_family", (int)BossSkillFamily.Jump);
+        Set(jump, "_family", (int)BossSkillFamily.GroundSlam);
         Set(jump, "_damageKind", (int)BossDamageKind.GroundPulse);
         Set(jump, "_maxRange", 7f);
         Set(jump, "_maxAngle", 180f);
@@ -387,11 +387,10 @@ public static class GiantGolemBossSetup
                 Set(skill, "_directionLock", .20f);
             }
 
-            if (skill.Family == BossSkillFamily.Stomp ||
-                skill.Family == BossSkillFamily.Jump)
+            if (skill.Family == BossSkillFamily.GroundSlam)
             {
                 float release;
-                if (skill.Family == BossSkillFamily.Stomp)
+                if (skill.IsSidedGroundSlam)
                 {
                     release = .49f;
                 }

@@ -3,20 +3,19 @@ using UnityEngine;
 /// <summary>
 /// 记录某个技能属于哪大类技能的
 /// Ordinary: 普通攻击
-/// Stomp: 踩地
+/// GroundSlam: 左右脚踩地与跳跃落地攻击
 /// Dash: 冲刺
 /// Whirlwind: 旋转冲刺攻击
-/// Jump: 跳跃攻击
 /// ThrowStone: 投石
 /// </summary>
 public enum BossSkillFamily
 {
-    Ordinary,
-    Stomp,
-    Dash,
-    Whirlwind,
-    Jump,
-    ThrowStone
+    Ordinary = 0,
+    GroundSlam = 1,
+    Dash = 2,
+    Whirlwind = 3,
+    // 4 原为 Jump，现有 Jump 配置迁移到 GroundSlam；保留其他类别的序列化数值。
+    ThrowStone = 5
 }
 
 /// <summary>
@@ -145,6 +144,7 @@ public sealed class BossSkillData : ScriptableObject
     public int StateHash => Animator.StringToHash("Base Layer." + _stateName);
     public BossSkillFamily Family => _family;
     public BossSkillSide Side => _side;
+    public bool IsSidedGroundSlam => _family == BossSkillFamily.GroundSlam && _side != BossSkillSide.Any;
     public BossDamageKind DamageKind => _damageKind;
     public float MinRange => _minRange;
     public float MaxRange => _maxRange;

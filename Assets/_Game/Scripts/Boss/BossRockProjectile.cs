@@ -34,6 +34,11 @@ public sealed class BossRockProjectile : MonoBehaviour
         GetComponent<SphereCollider>().enabled = false;
     }
 
+    /// <summary>
+    /// 石头准备被 Boss 挖掘起来，抛出前不参与碰撞检测。
+    /// 这个方法会在 Boss 手部动画的事件中调用。
+    /// </summary>
+    /// <param name="attacker"></param>
     public void PrepareHeld(GameObject attacker)
     {
         _owner = attacker;
@@ -43,6 +48,12 @@ public sealed class BossRockProjectile : MonoBehaviour
         GetComponent<SphereCollider>().enabled = false;
     }
 
+    /// <summary>
+    /// 石头在 Boss 手部动画中被抛出，开始参与碰撞检测。
+    /// </summary>
+    /// <param name="attacker"></param>
+    /// <param name="target"></param>
+    /// <param name="amount"></param>
     public void Launch(GameObject attacker, Vector3 target, int amount)
     {
         transform.SetParent(null, true);
@@ -52,12 +63,16 @@ public sealed class BossRockProjectile : MonoBehaviour
         _isResolved = false;
         _isLaunched = true;
         GetComponent<SphereCollider>().enabled = true;
+
+        // 根据石头位置和目标位置计算抛物线的初速度，确保石头在 0.65~2 秒内落到目标点。
         float duration = Mathf.Clamp(Vector3.Distance(transform.position, target) / 12, .65f, 2);
+        // 目标位置 = 起点 + 初速度 × t + 1/2 × 重力 × t² 把初速度反解出来
         _velocity = (target - transform.position - .5f * Physics.gravity * duration * duration) / duration;
     }
 
     private void FixedUpdate()
     {
+        // 如果石头已经与目标碰撞，则销毁石头
         if (_isResolved ||
             _owner == null)
         {
@@ -65,6 +80,7 @@ public sealed class BossRockProjectile : MonoBehaviour
             return;
         }
 
+        // 如果石头还没有被抛出，则下一个 tick 再处理
         if (!_isLaunched)
         {
             return;
@@ -72,6 +88,8 @@ public sealed class BossRockProjectile : MonoBehaviour
 
         float dt = Time.fixedDeltaTime;
         _age += dt;
+
+        // 如果石头飞行时间超过最大寿命，则销毁石头
         if (_age >= _lifetime)
         {
             Dissolve();
@@ -122,6 +140,11 @@ public sealed class BossRockProjectile : MonoBehaviour
         transform.Rotate(90 * dt, 160 * dt, 60 * dt, Space.Self);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="collider"></param>
+    /// <returns></returns>
     private bool IsValid(Collider collider)
     {
         return collider != null &&
@@ -130,6 +153,11 @@ public sealed class BossRockProjectile : MonoBehaviour
             !collider.transform.IsChildOf(_owner.transform));
     }
 
+    /// <summary>
+    /// 处理石头与目标的碰撞，造成伤害并播放破碎特效。
+    /// </summary>
+    /// <param name="collider"></param>
+    /// <param name="point"></param>
     private void Resolve(Collider collider, Vector3 point)
     {
         if (_isResolved)
@@ -139,6 +167,7 @@ public sealed class BossRockProjectile : MonoBehaviour
 
         _isResolved = true;
         GetComponent<SphereCollider>().enabled = false;
+        // 如果石头碰撞到的物体实现了 IDamageable 接口，则调用 TakeDamage 方法造成伤害
         collider.GetComponentInParent<IDamageable>()?.TakeDamage(new DamageInfo
             {
                 Damage = _damage,
@@ -146,6 +175,8 @@ public sealed class BossRockProjectile : MonoBehaviour
                 HitPoint = point,
                 HitDirection = _velocity.normalized
             });
+        
+        // 播放破碎特效并在 1.5 秒后销毁
         if (_breakEffect != null)
         {
             var effect = Instantiate(_breakEffect, point, Quaternion.identity);
@@ -156,7 +187,9 @@ public sealed class BossRockProjectile : MonoBehaviour
 
         Destroy(gameObject);
     }
-
+    /// <summary>
+    /// Dissolve 不同于 Resolve，强制清理石头，不会造成伤害，也不会播放破碎特效。
+    /// </summary>
     public void Dissolve()
     {
         _isResolved = true;
